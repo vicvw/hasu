@@ -2,6 +2,7 @@ module Main where
 
 import Data.List
 import Data.Maybe
+import System.Cmd
 
 
 
@@ -28,19 +29,35 @@ none     = "┼─"
 
 
 
-main = putStr
-     . show
-     -- . hasLiberty (Territory [(1,6)] Black)
-     . putStone (1,6) White
-     . putStone (4,6) White
-     $ game
+-- main = putStr
+--      . show
+--      -- . hasLiberty (Territory [(1,6)] Black)
+--      . putStone (1,6) White
+--      . putStone (4,6) White
+--      $ game
+  -- where
+  --   game   = Game (return [black1, black2, white1, white2]) (Captured 0 0)
+  --   black1 = Territory [(1,5),(2,5),(3,5),(3,4)] Black
+  --   black2 = Territory [(1,7),(2,7),(3,7)] Black
+  --   black3 = mergeTerritories black1 [black2]
+  --   white1 = Territory [(2,6),(3,6)] White
+  --   white2 = Territory [(4,7)] White
+
+
+
+main = mainLoop (cycle [Black, White]) $ Game (return []) (Captured 0 0)
   where
-    game   = Game (return [black1, black2, white1, white2]) (Captured 0 0)
-    black1 = Territory [(1,5),(2,5),(3,5),(3,4)] Black
-    black2 = Territory [(1,7),(2,7),(3,7)] Black
-    black3 = mergeTerritories black1 [black2]
-    white1 = Territory [(2,6),(3,6)] White
-    white2 = Territory [(4,7)] White
+    mainLoop colors game = do
+        system "clear"
+        putStrLn . show $ game
+
+        coord <- inputCoord
+        let colors' = tail colors
+            game'@(Game board _) = putStone coord (head colors) game
+
+        case board of
+            Just _  -> mainLoop colors' game'
+            Nothing -> mainLoop colors game
 
 
 
@@ -62,7 +79,7 @@ mergeTerritories :: Territory -> Territories -> Territory
 mergeTerritories territory@(Territory stones color) territories =
     Territory (concat $ stones : map getStones sameColor) color
   where
-    sameColor = filter ((==) color . getColor) territories
+    sameColor = filter ((== color) . getColor) territories
 
 
 
@@ -86,24 +103,40 @@ incrementCaptured color x (Captured black white) = case color of
 putStone :: Stone -> Color -> Game -> Game
 putStone stone color game@(Game board _) = changeBoard f game
   where
-    sameColor        = filter ((==) color . getColor)
+    sameColor        = filter ((== color) . getColor)
     territory        = Territory [stone] color
     neighborsOfStone = sameColor . neighbors territory $ game
     newTerritory     = mergeTerritories territory neighborsOfStone
-    f board          = case territoryAt stone game of
-                           Just _  -> Nothing
-                           Nothing -> return
-                                    . (newTerritory :)
-                                    . (\\ neighborsOfStone)
-                                    $ board
+    insideBoard      = let (x,y) = stone
+                       in all (flip elem [1..gameSize]) [x, y]
+    -- TODO: bullshit
+    f board          = if insideBoard
+                       then if allowedToPut stone color game
+                            then return . (newTerritory :) . (\\ neighborsOfStone) $ board
+                            else Nothing
+                       else Nothing
+
+
+
+allowedToPut :: Stone -> Color -> Game -> Bool
+allowedToPut stone color game@(Game board _) =
+    null deadNeighbors ||
+    any ((== enemy color) . getColor) deadNeighbors
+  where
+    fakeGame      = putStone stone None game
+    deadNeighbors = filter (not . flip hasLiberty fakeGame)
+                           (neighbors (Territory [stone] None) fakeGame)
+
+    enemy Black   = White
+    enemy White   = Black
 
 
 
 removeTerritoryAt :: Stone -> Game -> Game
 removeTerritoryAt stone game@(Game board _) = changeBoard f game
   where
-    f board = case territoryAt stone game of
-        Just t  -> return . delete t $ board
+    f board' = case territoryAt stone game of
+        Just t  -> return . delete t $ board'
         Nothing -> Nothing
 
 
@@ -111,8 +144,20 @@ removeTerritoryAt stone game@(Game board _) = changeBoard f game
 hasLiberty :: Territory -> Game -> Bool
 hasLiberty (Territory stones _) game@(Game board _) = any (not . isSurrounded) $ stones
   where
-    isSurrounded stone@(x,y) = all isJust . map (flip territoryAt game) $ possibleNeighbors stone
-    possibleNeighbors (x,y) = filter (\(x,y) -> elem x [1..gameSize] && elem y [1..gameSize]) [(x, y + 1), (x + 1, y), (x, y - 1), (x - 1, y)]
+    isSurrounded stone@(x,y) = all isJust . map (flip territoryAt game) . possibleNeighbors $ stone
+    possibleNeighbors (x,y)  = filter (\(x,y) -> elem x [1..gameSize] && elem y [1..gameSize]) [(x, y + 1), (x + 1, y), (x, y - 1), (x - 1, y)]
+
+
+
+inputCoord :: IO Stone
+inputCoord = do
+    line <- getLine
+    let [(x, rest)] = reads line
+        [(y, _)]    = reads rest
+    return (x, y)
+
+
+
 
 
 

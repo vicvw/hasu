@@ -30,7 +30,7 @@ main = bracket connect disconnect loop
 connect :: IO Bot
 connect = notify $ do
     t <- getClockTime
-    h <- connectTo server $ PortNumber $ fromIntegral port
+    h <- connectTo server . PortNumber $ fromIntegral port
     hSetBuffering h NoBuffering
     return $ Bot h t
 
