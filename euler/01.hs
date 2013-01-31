@@ -8,5 +8,5 @@ sumOfMultiplesUnder list x
     $ [1..]
 
     where
-    dividesAny x  = any (divides x)
-    divides x     = (== 0) . mod x
+    dividesAny = any . divides
+    divides x  = (== 0) . mod x
