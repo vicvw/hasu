@@ -1,5 +1,6 @@
-module Dzen
-    ( dzen
+module Dzen.Color
+    ( rgb
+    , hex
     , grey
     , red
     , green
@@ -7,16 +8,16 @@ module Dzen
     , with
     ) where
 
-import DzenInstances
 
-import Data.List   (nub)
-import Text.Printf (printf)
+import Dzen.DzenInstances (Color (..))
 
 
-dzen :: [DzenOption] -> String
-dzen = printf "%s %s" dzenCmd . unwords . map show . nub
-  where
-    dzenCmd = "dzen2"
+rgb :: Integer -> Integer -> Integer -> Color
+rgb = RGB
+
+
+hex :: String -> Color
+hex = Hex
 
 
 grey, red, green, blue :: Integer -> Color

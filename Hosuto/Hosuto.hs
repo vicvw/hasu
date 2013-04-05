@@ -1,8 +1,13 @@
-module Hosuto where
+module Hosuto
+    ( run
+    , launcherFromList
+    , getHostname
+    , lHostname
+    , chunk )
+    where
 
 
 import System.Process     (system, readProcess)
-import System.Environment (getArgs)
 import Control.Concurrent (threadDelay)
 
 
@@ -18,19 +23,6 @@ data Launcher = Launcher
     , lDelay     :: Double
     , lCommand   :: String }
     deriving Show
-
-
-main = do
-    args <- getArgs
-
-    if length args < 6
-    then error "too few arguments"
-    else do
-        let launchers = map launcherFromList $ chunk 3 args
-        hostname <- getHostname
-
-        -- mapM_ (putStrLn . show) launchers
-        mapM_ run $ filter ((== hostname) . lHostname) launchers
 
 
 run :: Launcher -> IO ()

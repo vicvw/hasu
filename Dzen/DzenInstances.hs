@@ -1,4 +1,5 @@
-module DzenInstances where
+module Dzen.DzenInstances where
+
 
 import Numeric     (showHex)
 import Text.Printf (printf)
@@ -51,27 +52,28 @@ data DzenOption
 
 instance Show Color where
     show color = case color of
-      (Hex hex)     -> hex
-      (RGB r g b) -> printf "'#%02x%02x%02x'" r g b
+        (Hex hex)     -> hex
+        (RGB r g b) -> printf "'#%02x%02x%02x'" r g b
+        -- (RGB r g b) -> printf "#%02x%02x%02x" r g b
 
 
 instance Show Direction where
     show direction = case direction of
-      DLeft  -> "left"
-      DRight -> "right"
+        DLeft  -> "left"
+        DRight -> "right"
 
 
 instance Show Alignment where
     show alignment = case alignment of
-      ALeft   -> "l"
-      ACenter -> "c"
-      ARight  -> "r"
+        ALeft   -> "l"
+        ACenter -> "c"
+        ARight  -> "r"
 
 
 instance Show Orientation where
     show orientation = case orientation of
-      Horizontal -> "h"
-      Vertical   -> "v"
+        Horizontal -> "h"
+        Vertical   -> "v"
 
 
 instance Show DzenOption where
@@ -101,9 +103,10 @@ instance Show DzenOption where
                                    True  -> showEmptyOption "dock"
                                    False -> ""
         (Events _)          -> undefined
+
       where
-        showEmptyOption = printf "-%s"
-        showOption      = printf "-%s %s"
+      showEmptyOption = printf "-%s"
+      showOption      = printf "-%s %s"
 
 
 instance Eq DzenOption where
@@ -128,70 +131,4 @@ instance Eq DzenOption where
     (UpdateSim      _) == (UpdateSim      _) = True
     (Dock           _) == (Dock           _) = True
     (Events         _) == (Events         _) = True
-    _                    == _                    = False
-
-
--- data DzenOptions = DzenOptions
---     { dTimeout         :: Integer
---     , dMenuMode        :: Orientation
---     , dTitleAlignment  :: Alignment
---     , dSlaveAlignment  :: Alignment
---     , dXPosition       :: Integer
---     , dYPosition       :: Integer
---     , dWidth           :: Integer
---     , dHeight          :: Integer
---     , dTitleWidth      :: Integer
---     , dEvents          :: ()
---     , dLines           :: Integer
---     , dFont            :: String
---     , dBackgroundColor :: Color
---     , dForegroundColor :: Color
---     , dGeometry        :: String
---     , dExpand          :: Direction
---     , dTitleName       :: String
---     , dSlaveName       :: String
---     , dScreen          :: Integer
---     , dUpdateSim       :: Bool
---     , dDock            :: Bool
---     }
-
-
--- instance Show DzenOptions where
---     show DzenOptions
---         { dTimeout         = timeout
---         , dMenuMode        = orientation
---         , dTitleAlignment  = titleAlignment
---         , dSlaveAlignment  = slaveAlignment
---         , dXPosition       = xPosition
---         , dYPosition       = yPosition
---         , dWidth           = width
---         , dHeight          = height
---         , dTitleWidth      = titleWidth
---         , dLines           = lines
---         , dFont            = font
---         , dBackgroundColor = bgColor
---         , dForegroundColor = fgColor
---         , dGeometry        = geometry
---         , dExpand          = expand
---         , dTitleName       = titleName
---         , dSlaveName       = slaveName
---         , dScreen          = screen
---         , dUpdateSim       = update
---         , dDock            = dock
---         , dEvents          = _
---         } = undefined
-
-
---         -- , dUpdateSim       = update -> case u of
---         --                                          True  -> showEmptyOption "u"
---         --                                          False -> ""
---         -- , dDock            = dock -> case d of
---         --                                          True  -> showEmptyOption "dock"
---         --                                          False -> ""
-
---       where
---         showEmptyOption :: String -> String
---         showEmptyOption = printf "-%s"
-
---         showOption :: String -> String -> String
---         showOption = printf "-%s %s"
+    _                  == _                  = False

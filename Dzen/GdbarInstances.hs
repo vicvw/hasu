@@ -1,8 +1,8 @@
-module GdbarInstances where
+module Dzen.GdbarInstances where
 
 
-import DzenInstances (Color)
-import Text.Printf (printf)
+import Dzen.DzenInstances  (Color)
+import Text.Printf    (printf)
 
 
 data GdbarStyle
