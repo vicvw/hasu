@@ -1,4 +1,3 @@
-hasu
-====
+# ハス (hasu)
 
-Things in Haskell.
+ハスケルで事 (Things in Haskell).
