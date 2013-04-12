@@ -32,4 +32,4 @@ parse_screenSize screen = do
 
 
 xrandr :: IO String
-xrandr = readProcess "xrandr" [] []
+xrandr = readProcess "xrandr" [] ""

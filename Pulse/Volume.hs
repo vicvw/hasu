@@ -1,4 +1,4 @@
-module Pulse.Volume
+module Volume
     ( getVolume
     , getLinearVolume
     , isMuted
@@ -11,18 +11,29 @@ module Pulse.Volume
 
 
 import Control.Monad    (void)
+import Data.Either      (either)
 import Data.Maybe       (fromJust)
-import Text.Regex.PCRE  ((=~))
 import System.Process   (readProcess)
+import Text.ParserCombinators.Parsec
 
 
 getVolume :: IO Level
 getVolume = do
-    amixer <- amixer "sget Master"
+    sinks <- pacmd "list-sinks"
 
-    let level = getFirstMatch $ amixer =~ "\\[(\\d+)%\\]"
+    either fail
+           succeed
+         $ parse parseVolume "volume" sinks
 
-    return $ read level
+    where
+    parseVolume = do
+        manyTill anyChar $ char '*'
+        manyTill anyChar . try $ string "volume: 0:"
+        skipMany1 space
+        manyTill digit $ string "%"
+
+    fail    = const $ error "poop."
+    succeed = return . read
 
 
 getLinearVolume :: IO Level
@@ -31,11 +42,21 @@ getLinearVolume = fmap linearize getVolume
 
 isMuted :: IO Bool
 isMuted = do
-    amixer <- amixer "sget Master"
+    sinks <- pacmd "list-sinks"
 
-    let muted = getFirstMatch $ amixer =~ "\\[(\\w*)\\]"
+    either fail
+           succeed
+         $ parse parseMuted "muted" sinks
 
-    return $ muted == "off"
+    where
+    parseMuted = do
+        manyTill anyChar $ char '*'
+        manyTill anyChar . try $ string "muted:"
+        skipMany1 space
+        manyTill letter newline
+
+    fail    = const $ error "poop."
+    succeed = return . (== "yes")
 
 
 toggleMute :: IO ()
@@ -43,12 +64,16 @@ toggleMute = void $ amixer "sset Master toggle"
 
 
 decreaseVolume, increaseVolume :: IO ()
-decreaseVolume = void $ amixer "-c 0 set Master 4- toggle"
-increaseVolume = void $ amixer "-c 0 set Master 4+ toggle"
+decreaseVolume = void $ amixer "-c 0 set Master 4-"
+increaseVolume = void $ amixer "-c 0 set Master 4+"
 
 
 amixer :: String -> IO String
 amixer args = readProcess "amixer" (words args) ""
+
+
+pacmd :: String -> IO String
+pacmd args = readProcess "pacmd" (words args) ""
 
 
 linearize :: Level -> Level
@@ -64,10 +89,14 @@ linearize = fromJust . (`lookup` mapping)
     -- mapping = map (id &&& \x -> x * (1920 `div` 4 `div` 16 - 1) * 100 `div` (1920 `div` 4) + (100 `div` length steps)) steps
 
 
+getMatches :: (String, String, String, [String]) -> [String]
+getMatches regex =
+    let (_, _, _, matches) = regex :: (String, String, String, [String])
+    in  matches
+
+
 getFirstMatch :: (String, String, String, [String]) -> String
-getFirstMatch regex =
-    let (_, _, _, first:_) = regex :: (String, String, String, [String])
-    in  first
+getFirstMatch regex = head $ getMatches regex
 
 
 type Level = Double
