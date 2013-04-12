@@ -6,7 +6,7 @@ import Dzen.Dzen
 import Dzen.Gdbar
 import Dzen.Misc
 
-import qualified Pulse.Volume as V
+import qualified Volume as V
 
 import System.Environment (getArgs)
 
