@@ -6,7 +6,6 @@ module Volume
     , decreaseVolume
     , increaseVolume
     , linearize
-    , volumeMap
     , Level
     ) where
 
@@ -19,56 +18,50 @@ import Text.ParserCombinators.Parsec
 
 
 getVolume :: IO Level
-getVolume = do
-    sinks <- pacmd ["list-sinks"]
-
-    either fail
-           succeed
-         $ parse parseVolume "volume" sinks
-
-    where
-    parseVolume = do
-        manyTill anyChar $ char '*'
-        manyTill anyChar . try $ string "volume: 0:"
-        skipMany1 space
-        manyTill digit $ string "%"
-
-    fail    = const $ error "poop."
-    succeed = return . read
+getVolume = parsePacmd read $ do
+    manyTill anyChar $ char '*'
+    manyTill anyChar . try $ string "volume: 0:"
+    skipMany1 space
+    manyTill digit $ string "%"
 
 
 getLinearVolume :: IO Level
-getLinearVolume = fmap linearize getVolume
+getLinearVolume = do
+    steps <- hostVolumeSteps
+
+    fmap (linearize steps) getVolume
+
+
+linearize :: [Level] -> Level -> Level
+linearize steps = fromJust . (`lookup` mapping)
+    where
+    mapping = zip steps
+            $ map (* (100 / fromIntegral (length steps - 1)))
+                  [0..]
 
 
 isMuted :: IO Bool
-isMuted = do
-    sinks <- pacmd ["list-sinks"]
-
-    either fail
-           succeed
-         $ parse parseMuted "muted" sinks
-
-    where
-    parseMuted = do
-        manyTill anyChar $ char '*'
-        manyTill anyChar . try $ string "muted:"
-        skipMany1 space
-        manyTill letter newline
-
-    fail    = const $ error "poop."
-    succeed = return . (== "yes")
+isMuted = parsePacmd (== "yes") $ do
+    manyTill anyChar $ char '*'
+    manyTill anyChar . try $ string "muted:"
+    skipMany1 space
+    manyTill letter newline
 
 
 toggleMute :: IO ()
-toggleMute = void $ amixer "sset Master toggle"
+toggleMute = do
+    sink  <- getSink
+    muted <- isMuted
+
+    let state = if muted
+                then "0"
+                else "1"
+
+    void $ pacmd ["set-sink-mute", sink, state]
 
 
-decreaseVolume :: IO ()
+decreaseVolume, increaseVolume :: IO ()
 decreaseVolume = changeVolume fst
-
-
-increaseVolume :: IO ()
 increaseVolume = changeVolume snd
 
 
@@ -97,7 +90,7 @@ setVolume level = do
 
 volumeMap :: IO [(Level, (Maybe Level, Maybe Level))]
 volumeMap = do
-    steps <- volumeSteps
+    steps <- hostVolumeSteps
 
     let steps' = map return steps
 
@@ -105,89 +98,53 @@ volumeMap = do
            . zip (Nothing : steps')
            $ tail steps' ++ [Nothing]
 
-    where
-    volumeSteps = do
-        host <- hostname
 
-        return $ case host of
-            "paradise" -> paradise
-            "heaven"   -> undefined
+hostVolumeSteps = do
+    host <- getHostname
 
-        where
-        paradise = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
-                   , 45, 50, 56, 63, 71, 79, 89, 100 ]
+    return $ case host of
+        "paradise" -> paradiseSteps
+        "heaven"   -> undefined
 
-        heaven   = []
 
-        hostname = fmap (takeWhile (/= '\n')) $ readProcess "hostname" [] ""
+paradiseSteps, heavenSteps :: [Level]
+paradiseSteps = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
+                , 45, 50, 56, 63, 71, 79, 89, 100 ]
+
+heavenSteps   = []
 
 
 getSink :: IO String
-getSink = do
-    sinks <- pacmd ["list-sinks"]
-
-    either fail
-           succeed
-         $ parse parseCurrentSink "current sink" sinks
-
-    where
-    parseCurrentSink = do
-        manyTill anyChar $ char '*'
-        manyTill anyChar . try $ string "name:"
-        manyTill space $ char '<'
-        manyTill anyChar $ char '>'
-
-    fail    = const $ error "poop."
-    succeed = return
+getSink = parsePacmd id $ do
+    manyTill anyChar $ char '*'
+    manyTill anyChar . try $ string "name:"
+    manyTill space $ char '<'
+    manyTill anyChar $ char '>'
 
 
 getVolumeSteps :: IO Integer
-getVolumeSteps = do
-    sinks <- pacmd ["list-sinks"]
-
-    either fail
-           succeed
-         $ parse parseVolumeSteps "volume steps" sinks
-
-    where
-    parseVolumeSteps = do
-        manyTill anyChar $ char '*'
-        manyTill anyChar . try $ string "volume steps:"
-        skipMany1 space
-        manyTill digit newline
-
-    fail    = const $ error "poop."
-    succeed = return . read
-
-
-amixer :: String -> IO String
-amixer args = readProcess "amixer" (words args) ""
+getVolumeSteps = parsePacmd read $ do
+    manyTill anyChar $ char '*'
+    manyTill anyChar . try $ string "volume steps:"
+    skipMany1 space
+    manyTill digit newline
 
 
 pacmd :: [String] -> IO String
 pacmd args = readProcess "pacmd" args ""
 
 
-linearize :: Level -> Level
-linearize = fromJust . (`lookup` mapping)
+parsePacmd succeed parser =
+    fmap (either fail succeed
+               . parse parser "something")
+         (pacmd ["list-sinks"])
 
     where
-    steps = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
-            , 45, 50, 56, 63, 71, 79, 89, 100 ]
-
-    mapping = steps
-        `zip` map (* (100 / fromIntegral (length steps - 1)))
-                  [0..]
+    fail = const $ error "poop"
 
 
-getMatches :: (String, String, String, [String]) -> [String]
-getMatches regex =
-    let (_, _, _, matches) = regex :: (String, String, String, [String])
-    in  matches
-
-
-getFirstMatch :: (String, String, String, [String]) -> String
-getFirstMatch = head . getMatches
+getHostname :: IO String
+getHostname = fmap (takeWhile (/= '\n')) $ readProcess "hostname" [] ""
 
 
 type Level = Double
