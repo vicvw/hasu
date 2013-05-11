@@ -13,18 +13,16 @@ import System.Environment (getArgs)
 
 main = do
     args <- getArgs
-    -- let args = ["-"]
     let cmd = head args
-    print cmd
 
     case cmd of
         "-" -> V.decreaseVolume
         "+" -> V.increaseVolume
         "%" -> V.toggleMute
+        _   -> error "invalid argument"
 
     volume <- V.getLinearVolume
     muted  <- V.isMuted
-    print volume
 
     displayVolumeBar volume muted
 
@@ -35,8 +33,6 @@ displayVolumeBar level muted = do
 
     let dzen1  = dzenVolume scr
         gdbar1 = gdbarVolume scr muted
-
-    print dzen1
 
     runDzen $ "echo " ++ show (level + 1) <|> gdbar1 <|> dzen1
 

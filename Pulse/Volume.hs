@@ -104,14 +104,15 @@ hostVolumeSteps = do
 
     return $ case host of
         "paradise" -> paradiseSteps
-        "heaven"   -> undefined
+        "heaven"   -> heavenSteps
 
 
 paradiseSteps, heavenSteps :: [Level]
 paradiseSteps = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
                 , 45, 50, 56, 63, 71, 79, 89, 100 ]
 
-heavenSteps   = []
+heavenSteps = [ 0, 5, 11, 16, 22, 27, 32, 38, 43 , 49
+              , 54, 59, 65, 70, 76, 81, 86, 92, 97, 100 ]
 
 
 getSink :: IO String
