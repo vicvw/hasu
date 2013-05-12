@@ -11,7 +11,6 @@ import DBus.Client    (call_, connectSession)
 
 import Control.Arrow  ((***))
 
-import Data.List      (sort)
 import Data.Maybe     (fromJust)
 
 import Data.Int       (Int32)

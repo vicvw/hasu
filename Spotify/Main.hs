@@ -7,5 +7,6 @@ import Spotify
 main = do
     meta <- getMetadata
 
-    print . m_artist $ meta
-    print . m_title $ meta
+    mapM_ ($ meta)
+        [ print . m_artist
+        , print . m_title ]
