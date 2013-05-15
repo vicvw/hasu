@@ -2,11 +2,20 @@ module Main where
 
 
 import Spotify
+import Monitor
 
 
 main = do
-    meta <- getMetadata
+    -- meta <- getMetadata
+    -- time <- getCurrentTime
+    stat <- getPlaybackStatus
 
-    mapM_ ($ meta)
-        [ print . m_artist
-        , print . m_title ]
+    print stat
+
+    -- print meta
+
+    -- mapM_ ($ meta)
+    --     [ print . _artist
+    --     , print . _title ]
+
+    -- listenForAd meta time
