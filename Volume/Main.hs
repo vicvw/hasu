@@ -6,9 +6,10 @@ import Dzen.Dzen
 import Dzen.Gdbar
 import Dzen.Misc
 
-import qualified Volume as V
+import Pulse.Volume
 
 import System.Environment (getArgs)
+import System.IO.Unsafe   (unsafePerformIO)
 
 
 main = do
@@ -16,18 +17,18 @@ main = do
     let cmd = head args
 
     case cmd of
-        "-" -> V.decreaseVolume
-        "+" -> V.increaseVolume
-        "%" -> V.toggleMute
+        "-" -> decreaseVolume
+        "+" -> increaseVolume
+        "%" -> toggleMuteGlobal
         _   -> error "invalid argument"
 
-    volume <- V.getLinearVolume
-    muted  <- V.isMuted
+    volume <- getLinearVolume
+    muted  <- isMutedGlobal
 
     displayVolumeBar volume muted
 
 
-displayVolumeBar :: V.Level -> Bool -> IO ()
+displayVolumeBar :: Level -> Bool -> IO ()
 displayVolumeBar level muted = do
     scr <- screenSize 0
 
@@ -59,7 +60,7 @@ gdbarVolume :: ScreenSize -> Bool -> String
 gdbarVolume (ScreenSize swidth sheight) muted = gdbar . concat $
     [ width |*| height
     , color
-    , segmented width 16 2
+    , segmented width segs 2
     ]
 
     where
@@ -68,3 +69,7 @@ gdbarVolume (ScreenSize swidth sheight) muted = gdbar . concat $
     color  = if muted
              then grey 50 `on` grey 25
              else grey 250 `on` grey 25
+    segs   = case unsafePerformIO getHostname of
+                 "paradise" -> 16
+                 "heaven"   -> 15
+                 _          -> error "forbidden host"

@@ -1,4 +1,4 @@
-module Volume
+module Pulse.Volume
     ( getVolume
     , getLinearVolume
 
@@ -16,6 +16,8 @@ module Volume
     , linearize
 
     , Level
+
+    , getHostname
     ) where
 
 
@@ -164,8 +166,8 @@ paradiseSteps, heavenSteps :: [Level]
 paradiseSteps = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
                 , 45, 50, 56, 63, 71, 79, 89, 100 ]
 
-heavenSteps = [ 0, 5, 11, 16, 22, 27, 32, 38, 43 , 49
-              , 54, 59, 65, 70, 76, 81, 86, 92, 97, 100 ]
+heavenSteps   = [ 0, 1, 3, 5, 7, 10, 13, 18, 23
+                , 29, 36, 45, 56, 69, 85, 100]
 
 
 -- getIndex :: IO String
