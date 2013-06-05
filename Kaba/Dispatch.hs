@@ -32,17 +32,21 @@ dispatch f
         . find (any (ext =~) . fst)
 
 
+extensionMap :: [([String], Handler)]
 extensionMap =
     [ ["^$"]    --> cat
     , ["hs"]    --> haskell
+    , ["py"]    --> python
     , ["rb"]    --> ruby
     , ["scala"] --> scala
     , ["."]     --> unknown
     ]
 
 
+cat, haskell, python, ruby, scala, unknown :: Handler
 cat     = generic "cat"
 haskell = generic "runhaskell"
+python  = generic "python2"
 ruby    = generic "ruby"
 scala   = undefined
 unknown = const $ putStrLn "unknown."
@@ -54,9 +58,11 @@ generic cmd f = do
     void . system $ printf "%s %s" cmd f
 
 
-clear = system "clear"
+clear :: IO ()
+clear = void $ system "clear"
 
 
+(-->) :: a -> b -> (a, b)
 (-->) = (,)
 
 
