@@ -158,16 +158,17 @@ hostVolumeSteps = do
     host <- getHostname
 
     return $ case host of
-        "paradise" -> paradiseSteps
-        "heaven"   -> heavenSteps
+        "kaze"   -> kazeSteps
+        "heaven" -> heavenSteps
+        _        -> error "illegal host"
 
 
-paradiseSteps, heavenSteps :: [Level]
-paradiseSteps = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
-                , 45, 50, 56, 63, 71, 79, 89, 100 ]
+kazeSteps, heavenSteps :: [Level]
+kazeSteps = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
+            , 45, 50, 56, 63, 71, 79, 89, 100 ]
 
-heavenSteps   = [ 0, 1, 3, 5, 7, 10, 13, 18, 23
-                , 29, 36, 45, 56, 69, 85, 100]
+heavenSteps = [ 0, 1, 3, 5, 7, 10, 13, 18, 23
+              , 29, 36, 45, 56, 69, 85, 100]
 
 
 -- getIndex :: IO String

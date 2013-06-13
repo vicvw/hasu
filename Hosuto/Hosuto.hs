@@ -12,7 +12,7 @@ import Control.Concurrent (threadDelay)
 
 
 data Hostname
-    = Paradise
+    = Kaze
     | Heaven
     | Illegal
     deriving (Show, Eq)
@@ -50,11 +50,12 @@ getHostname = do
 
 toHostname :: String -> Hostname
 toHostname host = case host of
-    "paradise"  ->  Paradise
-    "heaven"    ->  Heaven
-    _           ->  Illegal
+    "kaze"   ->  Kaze
+    "heaven" ->  Heaven
+    _        ->  Illegal
 
 
+chunk :: Int -> [a] -> [[a]]
 chunk n = foldr ((:) . take n) []
         . takeWhile (not . null)
         . iterate (drop n)

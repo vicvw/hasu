@@ -1,44 +1,27 @@
 module Main where
 
 
-import Dispatch
+import Dispatch         (run, watch)
+import Options          (getOptions, oCommand, oIgnored, oMain, oOnce)
 
-import Control.Monad      (forever, forM_, unless, void)
-import Control.Concurrent (threadDelay)
-
-import Data.Maybe         (fromJust)
-
-import System.Cmd         (system)
-import System.INotify     (addWatch, withINotify, Event (Modified), EventVariety (Modify))
-import System.Environment (getArgs)
-import System.Directory   (getCurrentDirectory)
-
-import Text.Regex.PCRE    ((=~))
+import Control.Monad    (when)
+import System.Directory (getCurrentDirectory)
 
 
+main :: IO ()
 main = do
-    args  <-  getArgs
-    cwd   <-  getCurrentDirectory
-    -- print cwd
-    let main = head args
-    watch main cwd
+    (o, r) <- getOptions
+    cwd    <- getCurrentDirectory
 
+    let [mfile, mcmd] = map ($ o) [oMain, oCommand]
+        igns = oIgnored o
+        once = oOnce o
 
-watch :: FilePath -> FilePath -> IO ()
-watch main dir = withINotify $ \inotify -> do
-    addWatch inotify [Modify] dir $ handle main
-    wait
+    -- print o
+    putStrLn "元"
 
-
-handle :: FilePath -> Event -> IO ()
-handle f (Modified _ path) =
-    unless (isTemp $ fromJust path) $
-        run f
-
-    where
-    isTemp f = any (f =~) tempList
-
-    tempList = ["\\.swp"]
-
-
-wait = forever . threadDelay $ 10^6
+    maybe (ioError . userError $ "no main file")
+          (\file -> do
+              when once $ run mcmd r file
+              watch cwd igns mcmd r file)
+          mfile

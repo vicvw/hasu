@@ -70,6 +70,6 @@ gdbarVolume (ScreenSize swidth sheight) muted = gdbar . concat $
              then grey 50 `on` grey 25
              else grey 250 `on` grey 25
     segs   = case unsafePerformIO getHostname of
-                 "paradise" -> 16
-                 "heaven"   -> 15
-                 _          -> error "forbidden host"
+                 "kaze"   -> 16
+                 "heaven" -> 15
+                 _        -> error "illegal host"
