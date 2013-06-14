@@ -29,7 +29,7 @@ main = do
 
 
 getFilestatus :: FilePath -> IO Filestatus
-getFilestatus path = withDropbox after .  send' $ unlines
+getFilestatus path = withDropbox after . flip send $ unlines
     [ "icon_overlay_file_status"
     , "path\t" ++ path
     , "done"
@@ -38,8 +38,6 @@ getFilestatus path = withDropbox after .  send' $ unlines
     where
     after = either (error "poop") toFilestatus .
                    parse parseFilestatus "filestatus"
-
-    send' msg sock = send sock msg
 
     parseFilestatus = do
         string "ok" >> newline
