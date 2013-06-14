@@ -24,7 +24,7 @@ extensionMap =
     , ["c"]          --> c
     , ["^$", "txt"]  --> cat
     , ["c++", "cpp"] --> cpp
-    , ["s"]          --> dlx
+    , ["^s$"]        --> dlx
     , ["hs"]         --> haskell
     , ["java"]       --> java
     , ["py"]         --> python

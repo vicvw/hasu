@@ -18,7 +18,7 @@ main = do
         once = oOnce o
 
     -- print o
-    putStrLn "元"
+    putStrLn "元\n"
 
     maybe (ioError . userError $ "no main file")
           (\file -> do

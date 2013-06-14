@@ -10,7 +10,7 @@ main :: IO ()
 main = mainLoop
     where
     mainLoop = do
-        kana <- randomKana hiragana
+        kana <- randomKana [平仮名, 平仮名濁点, 他の平仮名]
         putStrLn kana
 
         prompt ""
@@ -25,7 +25,7 @@ main = mainLoop
 
         where
         prompt result = do
-            putStr $ "\r> " ++ result
+            putStr $ "\r仮名 ▶ " ++ result
             hFlush stdout
 
 
@@ -51,56 +51,78 @@ getInput = do
     return input
 
 
-randomElement :: [a] -> IO a
-randomElement xs = do
-    index <- randomRIO (0, length xs - 1)
+randomKana :: [String] -> IO String
+randomKana = (elemToList `fmap`)
+           . randomElement
+           . concat
 
-    return $ xs !! index
-
-
-randomKana :: String -> IO String
-randomKana = (elemToList `fmap`) . randomElement
+    where
+    randomElement xs = (xs !!)
+                `fmap` randomRIO (0, length xs - 1)
 
 
 elemToList :: a -> [a]
 elemToList = (: [])
 
 
-hiragana :: String
-hiragana = concat
+平仮名, 平仮名濁点, 他の平仮名 :: String
+平仮名 = concat
     [ "あいうえお"
     , "かきくけこ"
-    , "がぎぐげご"
     , "さしすせそ"
-    , "ざじずぜぞ"
     , "たちつてと"
-    , "だぢづでど"
     , "なにぬねの"
     , "はひふへほ"
-    , "ばびぶべぼ"
-    , "ぱぴぷぺぽ"
     , "まみむめも"
     , "やゆよ"
     , "らりるれろ"
     , "わを"
     ]
 
+平仮名濁点 = concat
+    [ "がぎぐげご"
+    , "ざじずぜぞ"
+    , "だぢづでど"
+    , "ばびぶべぼ"
+    , "ぱぴぷぺぽ"
+    ]
 
-katakana :: String
-katakana = concat
+他の平仮名 = concat
+    [ "ぁぃぅぇぉ"
+    , "っゎ"
+    ]
+
+
+片仮名, 片仮名濁点, 他の片仮名 :: String
+片仮名 = concat
     [ "アイウエオ"
     , "カキクケコ"
-    , "ガギグゲゴ"
     , "サシスセソ"
-    , "ザジズゼゾ"
     , "タチツテト"
-    , "ダヂヅデド"
     , "ナニヌネノ"
     , "ハヒフヘホ"
-    , "バビブベボ"
-    , "パピプペポ"
     , "マミムメモ"
     , "ヤユヨ"
     , "ラリルレロ"
     , "ワヲ"
+    ]
+
+片仮名濁点 = concat
+    [ "ガギグゲゴ"
+    , "ザジズゼゾ"
+    , "ダヂヅデド"
+    , "バビブベボ"
+    , "パピプペポ"
+    ]
+
+他の片仮名 = concat
+    [ "ァィゥェォ"
+    , "ッヮ"
+    ]
+
+
+他 :: String
+他 = concat
+    [ "ヵヶー"
+    , "、。・"
     ]

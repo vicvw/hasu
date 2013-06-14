@@ -26,7 +26,7 @@ defaultOptions = Options
     { oMain    = Nothing
     , oCommand = Nothing
     , oIgnored = []
-    , oOnce = False
+    , oOnce    = False
     }
 
 
@@ -60,4 +60,4 @@ getOptions = do
                       $ concat errs ++ usageInfo header options
 
     where
-    header = "Usage: kaba [OPTION...] [-- [ARGUMENTS...]]"
+    header = "Usage: kaba [OPTION...] [-- [ARGUMENT...]]"
