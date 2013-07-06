@@ -1,13 +1,10 @@
-module TicTacFoot where
+module TicTacFoot (main) where
 
 
 import Data.List      (intercalate, intersperse, sortBy, unionBy)
 import Data.Ord       (comparing)
 import Data.Function  (on)
 import Control.Monad.State
--- import Control.Arrow  ((&&&))
--- import System.IO
--- import System.Cmd     (system)
 
 
 main :: IO ()
@@ -24,7 +21,7 @@ main = do
 
 
 move :: Position -> Stone -> GameS
-move pos stone = state $ \(Game board gs) ->
+move pos stone = state $ \(Game board _) ->
     if newPlay `elem` board
     then
         (board, Game board (Illegal stone))
