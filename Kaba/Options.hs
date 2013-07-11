@@ -1,6 +1,7 @@
 module Options
     ( getOptions
     , oCommand
+    , oFiles
     , oIgnored
     , oMain
     , oOnce
@@ -16,6 +17,7 @@ import System.Environment (getArgs)
 data Options = Options
     { oMain    :: Maybe String
     , oCommand :: Maybe String
+    , oFiles   :: [String]
     , oIgnored :: [String]
     , oOnce    :: Bool
     } deriving Show
@@ -25,6 +27,7 @@ defaultOptions :: Options
 defaultOptions = Options
     { oMain    = Nothing
     , oCommand = Nothing
+    , oFiles   = []
     , oIgnored = []
     , oOnce    = False
     }
@@ -39,6 +42,10 @@ options =
     , Option "c" ["cmd"]
              (ReqArg (\cmd opts -> opts { oCommand = Just cmd }) "COMMAND")
              "custom command"
+
+    , Option "f" ["files"]
+             (ReqArg (\files opts -> opts { oFiles = splitOn "," files }) "FILE,...")
+             "unwatched files"
 
     , Option "i" ["ignore"]
              (ReqArg (\igns opts -> opts { oIgnored = splitOn "," igns }) "FILE,...")

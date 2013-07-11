@@ -4,7 +4,7 @@ module Dispatch
     ) where
 
 
-import Control.Monad          (forever, unless, void)
+import Control.Monad          (forever, unless, void, when)
 import Control.Concurrent     (threadDelay)
 
 import Data.List              (find)
@@ -49,23 +49,35 @@ java    = unknown
 scala   = unknown
 
 
-watch :: FilePath -> [FilePath] -> Maybe Command -> Handler
-watch dir igns cmd args file = withINotify $ \inotify -> do
-    addWatch inotify [Modify] dir $ handle igns cmd args file
+watch :: FilePath
+      -> ([FilePath], [FilePath])
+      -> Maybe Command
+      -> Handler
+watch dir filesIgns cmd args file = withINotify $ \inotify -> do
+    addWatch inotify [Modify] dir $ handle filesIgns cmd args file
     wait
 
     where
     wait = void . forever . threadDelay $ 10^6
 
 
-handle :: [FilePath] -> Maybe Command -> Arguments -> FilePath -> Event -> IO ()
-handle igns cmd args file (Modified _ path) =
-    unless (isIgnored $ fromJust path) $
+handle :: ([FilePath], [FilePath])
+       -> Maybe Command
+       -> Arguments
+       -> FilePath
+       -> Event
+       -> IO ()
+handle (files, igns) cmd args file (Modified _ mpath) =
+    when (null files || isListed) .
+    unless isIgnored $ do
+        print path
         run cmd args file
 
     where
-    isIgnored f = any (f =~) ignored
-    ignored = ["\\.swp$", "\\.o$", "\\.hi$"] ++ igns
+    isListed  = path `elem` files
+    isIgnored = any (path =~) ignored
+    ignored   = ["\\.sw[po]$", "\\.o$", "\\.hi$"] ++ igns
+    path      = fromJust mpath
 
 
 run :: Maybe Command -> Handler

@@ -2,7 +2,7 @@ module Main where
 
 
 import Dispatch         (run, watch)
-import Options          (getOptions, oCommand, oIgnored, oMain, oOnce)
+import Options          (getOptions, oCommand, oFiles, oIgnored, oMain, oOnce)
 
 import Control.Monad    (when)
 import System.Directory (getCurrentDirectory)
@@ -13,8 +13,8 @@ main = do
     (o, r) <- getOptions
     cwd    <- getCurrentDirectory
 
-    let [mfile, mcmd] = map ($ o) [oMain, oCommand]
-        igns = oIgnored o
+    let [mfile, mcmd] = ($ o) `map` [oMain, oCommand]
+        [files, igns] = ($ o) `map` [oFiles, oIgnored]
         once = oOnce o
 
     -- print o
@@ -23,5 +23,5 @@ main = do
     maybe (ioError . userError $ "no main file")
           (\file -> do
               when once $ run mcmd r file
-              watch cwd igns mcmd r file)
+              watch cwd (files, igns) mcmd r file)
           mfile
