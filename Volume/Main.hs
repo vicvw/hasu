@@ -12,6 +12,7 @@ import System.Environment (getArgs)
 import System.IO.Unsafe   (unsafePerformIO)
 
 
+main :: IO ()
 main = do
     args <- getArgs
     let cmd = head args
@@ -57,7 +58,7 @@ dzenVolume (ScreenSize swidth sheight) = dzen
 
 
 gdbarVolume :: ScreenSize -> Bool -> String
-gdbarVolume (ScreenSize swidth sheight) muted = gdbar . concat $
+gdbarVolume (ScreenSize swidth _) muted = gdbar . concat $
     [ width |*| height
     , color
     , segmented width segs 2

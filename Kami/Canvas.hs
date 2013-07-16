@@ -31,8 +31,8 @@ render (Context (width, _) cvs)
 draw :: Drawable d => d -> Context -> Context
 draw obj (Context dims@(width, height) cvs)
     = Context dims
-    . M.union (points obj)
     . M.filterWithKey (\(Coord x y) _ -> and
           [ x >= 0, x < width
           , y >= 0, y < height ])
+    . M.union (points obj)
     $ cvs

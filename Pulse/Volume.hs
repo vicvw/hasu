@@ -22,7 +22,9 @@ module Pulse.Volume
 
 
 import Control.Monad  (void, unless, when)
+import Data.List      (minimumBy)
 import Data.Maybe     (fromJust, fromMaybe)
+import Data.Ord       (comparing)
 import System.Process (readProcess)
 import Text.ParserCombinators.Parsec
 
@@ -105,13 +107,13 @@ toggleMuteGlobal = toggleMute' True =<< getIndex
 
 
 mute, unmute :: String -> IO ()
-mute   app = flip unless (toggleMute app) =<< isMuted app
-unmute app = flip when   (toggleMute app) =<< isMuted app
+mute   app = (`unless` toggleMute app) =<< isMuted app
+unmute app = (`when`   toggleMute app) =<< isMuted app
 
 
 muteGlobal, unmuteGlobal :: IO ()
-muteGlobal   = flip unless toggleMuteGlobal =<< isMutedGlobal
-unmuteGlobal = flip when   toggleMuteGlobal =<< isMutedGlobal
+muteGlobal   = (`unless` toggleMuteGlobal) =<< isMutedGlobal
+unmuteGlobal = (`when`   toggleMuteGlobal) =<< isMutedGlobal
 
 
 decreaseVolume, increaseVolume :: IO ()
@@ -127,9 +129,13 @@ changeVolume selector = do
     let newv = fromMaybe volume
              . selector
              . fromJust
-             $ lookup volume vmap
+             . (`lookup` vmap)
+             $ closestOn fst volume vmap
 
     setVolume newv
+
+    where
+    closestOn f a = f . minimumBy (comparing $ abs . subtract a . f)
 
 
 setVolume :: Level -> IO ()
@@ -137,7 +143,7 @@ setVolume level = do
     current <- getIndex
     vsteps  <- fmap (subtract 1) getVolumeSteps
 
-    let newv = round $ level / 100 * fromIntegral vsteps :: Integer
+    let newv = round $ level / 100 * fromIntegral vsteps
 
     void $ pacmd ["set-sink-volume", current, show newv]
 

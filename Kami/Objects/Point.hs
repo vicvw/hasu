@@ -1,10 +1,8 @@
-module Shapes.Point
+module Objects.Point
     ( d, f, h
     , point
 
     , Point (..)
-    , Coord (..)
-    , Value (..)
     ) where
 
 
