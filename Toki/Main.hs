@@ -47,10 +47,7 @@ everyQuarter action = forever $ do
         seconds = truncate $ todSec tod
 
     forkIO $ do
-        when (isQuarter minutes) $
-            -- action $ formatTime defaultTimeLocale "%R" local
-            action local
-
+        when (isQuarter minutes) $ action local
         print minutes
 
     if outOfSync seconds
