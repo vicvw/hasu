@@ -1,7 +1,6 @@
 module Dzen.DzenInstances where
 
 
-import Numeric     (showHex)
 import Text.Printf (printf)
 
 
@@ -52,9 +51,9 @@ data DzenOption
 
 instance Show Color where
     show color = case color of
-        (Hex hex)     -> hex
-        (RGB r g b) -> printf "'#%02x%02x%02x'" r g b
-        -- (RGB r g b) -> printf "#%02x%02x%02x" r g b
+        Hex hex   -> hex
+        RGB r g b -> printf "'#%02x%02x%02x'" r g b
+        -- RGB r g b -> printf "#%02x%02x%02x" r g b
 
 
 instance Show Direction where
@@ -96,12 +95,12 @@ instance Show DzenOption where
         (TitleName name)    -> showOption "title-name" $ show name
         (SlaveName name)    -> showOption "slave-name" $ show name
         (Screen n)          -> showOption "xs"         $ show n
-        (UpdateSim update)  -> case update of
-                                   True  -> showEmptyOption "u"
-                                   False -> ""
-        (Dock dock)         -> case dock of
-                                   True  -> showEmptyOption "dock"
-                                   False -> ""
+        (UpdateSim update)  -> if update
+                               then showEmptyOption "u"
+                               else ""
+        (Dock dock)         -> if dock
+                               then showEmptyOption "dock"
+                               else ""
         (Events _)          -> undefined
 
       where
