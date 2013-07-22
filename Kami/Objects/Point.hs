@@ -1,7 +1,5 @@
 module Objects.Point
-    ( d, f, h
-    , point
-
+    ( point
     , Point (..)
     ) where
 
@@ -17,17 +15,6 @@ instance Drawable Point where
 
 point :: (Integer, Integer) -> Value -> Point
 point (x, y) = Point (Coord x y)
-
-
-d, h :: Char -> Value
-d = D
-h = H
-
-
-f :: String -> Value
-f s = if length s == 2
-    then F s
-    else error "f: length string /= 2"
 
 
 instance Eq Point where

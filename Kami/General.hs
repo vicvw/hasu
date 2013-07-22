@@ -4,6 +4,7 @@ module General
     , Drawable  (..)
     , Coord     (..)
     , Value     (..)
+    , d, f, h, w
 
     , chunk
     ) where
@@ -16,23 +17,28 @@ instance Drawable d => Drawable [d] where
     points = M.unions . map points
 
 
+-- instance Drawable Context where
+--     points = canvas
+
+
 class Drawable d where
     points :: d -> Canvas
 
 
 data Context = Context
-     (Integer, Integer)
-     Canvas
+   { dimensions :: (Integer, Integer)
+   , canvas     :: Canvas }
 
 
-type Canvas = (M.Map Coord Value)
+type Canvas = M.Map Coord Value
 
 
 instance Show Value where
     show v = case v of
-        D c     -> [c, c]
-        H c     -> [c, ' ']
-        F s     -> s
+        D c -> [c, c]
+        H c -> [c, ' ']
+        F s -> s
+        W c -> [c]
 
 
 instance Ord Coord where
@@ -50,6 +56,19 @@ data Value
    = D Char
    | F String
    | H Char
+   | W Char
+
+
+d, h :: Char -> Value
+d = D
+h = H
+w = W
+
+
+f :: String -> Value
+f s = if length s == 2
+    then F s
+    else error "f: length string /= 2"
 
 
 chunk :: Integer -> [a] -> [[a]]

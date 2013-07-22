@@ -22,8 +22,8 @@ empty (width, height) v = Context (width, height) $ M.fromList
 render :: Context -> String
 render (Context (width, _) cvs)
     = intercalate "\n"
-    . chunk (width * 2)
-    . concatMap (show . snd)
+    . map (concatMap (show . snd))
+    . chunk width
     . M.toAscList
     $ cvs
 

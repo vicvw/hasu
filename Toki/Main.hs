@@ -26,12 +26,12 @@ notify :: LocalTime -> IO ()
 notify time = do
     let fmt   = formatTime defaultTimeLocale "%H時%M分" time
         diff  = localTimeOfDay time
-        isDay = todHour diff `elem` [8..22]
+        isDay = todHour diff `elem` [8..21]
 
-    forkIO . when isDay $
-        let n  = todMin diff `div` 15
-            n' = if n == 0 then 4 else n
-        in playSound n'
+    -- forkIO . when isDay $
+    --     let n  = todMin diff `div` 15
+    --         n' = if n == 0 then 4 else n
+    --     in playSound n'
 
     display fmt
 
@@ -105,8 +105,10 @@ display time = do
         [ Timeout     5
         , Height      height
         , Width       width
-        , XPosition   $ halve swidth - halve width
-        , YPosition   $ halve sheight - halve height
+        -- , XPosition   $ halve swidth - halve width
+        , XPosition   1715
+        -- , YPosition   $ halve sheight - halve height
+        , YPosition   5
         , Background  $ grey 0
         , Foreground  $ grey 255
         , Font        "Ume Plus P Gothic-20"
