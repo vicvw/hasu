@@ -14,16 +14,16 @@ instance Drawable Point where
 
 
 point :: (Integer, Integer) -> Value -> Point
-point (x, y) = Point (Coord x y)
+point (x, y) = Point $ Coord x y
 
 
 instance Eq Point where
-    (Point c1 _) == (Point c2 _) =
+    Point c1 _ == Point c2 _ =
         c1 == c2
 
 
 instance Ord Point where
-    (Point c1 _) `compare` (Point c2 _) =
+    Point c1 _ `compare` Point c2 _ =
         c1 `compare` c2
 
 
