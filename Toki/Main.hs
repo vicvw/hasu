@@ -24,7 +24,7 @@ main = callibrate $ everyQuarter notify
 
 notify :: LocalTime -> IO ()
 notify time = do
-    let fmt   = formatTime defaultTimeLocale "%H時%M分" time
+    let fmt   = formatTime defaultTimeLocale fmtString time
         diff  = localTimeOfDay time
         isDay = todHour diff `elem` [8..21]
 
@@ -34,6 +34,14 @@ notify time = do
     --     in playSound n'
 
     display fmt
+
+    where
+    fmtString = concat
+        [ "^fn(:size=20:bold)%H"
+        , "^fn()時"
+        , "^fn(:size=20:bold)%M"
+        , "^fn()分"
+        ]
 
 
 everyQuarter :: (LocalTime -> IO ()) -> IO ()
@@ -97,7 +105,7 @@ threadDelaySec = threadDelay . (* 10^6) . fromIntegral
 display :: String -> IO ()
 display time = do
     screen <- screenSize 0
-    runDzen $ "echo " ++ time <|> dzenTime screen
+    runDzen $ "echo '" ++ time ++ "'" <|> dzenTime screen
 
     where
     dzenTime :: ScreenSize -> String
@@ -111,7 +119,7 @@ display time = do
         , YPosition   5
         , Background  $ grey 0
         , Foreground  $ grey 255
-        , Font        "Ume Plus P Gothic-20"
+        , Font        "Ume Plus P Gothic:size=20"
         ]
 
         where
