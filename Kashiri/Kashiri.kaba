@@ -1,0 +1,4 @@
+#!/bin/sh
+
+
+kaba -m 'Main' -c 'clear; ghc Main.hs && ./Main' -f Main.hs
