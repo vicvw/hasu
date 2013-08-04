@@ -9,6 +9,7 @@ import Dzen.Misc
 import Pulse.Volume
 
 import System.Environment (getArgs)
+import System.Exit        (exitSuccess)
 import System.IO.Unsafe   (unsafePerformIO)
 
 
@@ -21,7 +22,9 @@ main = do
         "-" -> decreaseVolume
         "+" -> increaseVolume
         "%" -> toggleMuteGlobal
-        _   -> error "invalid argument"
+        _   -> do
+            print . round =<< getLinearVolume
+            exitSuccess
 
     volume <- getLinearVolume
     muted  <- isMutedGlobal
@@ -43,8 +46,10 @@ dzenVolume :: ScreenSize -> String
 dzenVolume (ScreenSize swidth sheight) = dzen
     [ Timeout     1
     , Height      height
+    -- , Width       width
     , Width       width
     , XPosition   0
+    -- , XPosition   $ swidth `div` 2 - width `div` 2
     , YPosition   $ sheight - height
     , Background  $ grey 0
 
@@ -53,23 +58,28 @@ dzenVolume (ScreenSize swidth sheight) = dzen
     ]
 
     where
-    height = 30
+    height = 20
     width  = swidth
+    -- width  = 324
 
 
 gdbarVolume :: ScreenSize -> Bool -> String
-gdbarVolume (ScreenSize swidth _) muted = gdbar . concat $
+gdbarVolume (ScreenSize _ _) muted = gdbar . concat $
     [ width |*| height
     , color
     , segmented width segs 2
     ]
 
     where
-    height = 20
-    width  = swidth `div` 4
+    height = 15
+    -- width  = swidth `div` 6
+    width  = 320
     color  = if muted
-             then grey 50 `on` grey 25
-             else grey 250 `on` grey 25
+             then grey 100 `on` grey 50
+             else grey 250 `on` grey 50
+    -- color  = if muted
+    --          then grey 150 `on` grey 200
+    --          else grey 0 `on` grey 200
     segs   = case unsafePerformIO getHostname of
                  "kaze"   -> 16
                  "heaven" -> 15

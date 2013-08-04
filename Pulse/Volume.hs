@@ -14,6 +14,7 @@ module Pulse.Volume
     , decreaseVolume
     , increaseVolume
     , linearize
+    , setVolume
 
     , Level
 

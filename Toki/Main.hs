@@ -18,8 +18,8 @@ import System.Process       (readProcess)
 
 
 main :: IO ()
-main = callibrate $ everyQuarter notify
--- main = notify =<< getTime
+-- main = callibrate $ everyQuarter notify
+main = notify =<< getTime
 
 
 notify :: LocalTime -> IO ()
@@ -109,7 +109,7 @@ display time = do
 
     where
     dzenTime :: ScreenSize -> String
-    dzenTime (ScreenSize swidth sheight) = dzen
+    dzenTime (ScreenSize _ _) = dzen
         [ Timeout     5
         , Height      height
         , Width       width
@@ -119,16 +119,18 @@ display time = do
         , YPosition   5
         , Background  $ grey 0
         , Foreground  $ grey 255
-        , Font        "Ume Plus P Gothic:size=20"
+        , Font        "UmePlus P Gothic:size=20"
         ]
 
         where
         height = 100
         width  = 200
-        halve  = (`div` 2)
+        -- halve  = (`div` 2)
 
 
-playSound :: Int -> IO ()
-playSound n = void $ readProcess
-    "mplayer" [ "/usr/share/sounds/freedesktop/stereo/complete.oga"
-              , "-loop", show n ] ""
+-- playSound :: Int -> IO ()
+-- playSound n = void $ readProcess
+--     "mplayer"
+--     [ "/usr/share/sounds/freedesktop/stereo/complete.oga"
+--     , "-loop", show n ]
+    -- ""
