@@ -1,3 +1,0 @@
-#!/bin/bash
-
-kaba -m '' -c 'clear; cd ..; runhaskell Cmus/Main.hs' "$@"

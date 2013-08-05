@@ -11,32 +11,36 @@ import System.Environment (getArgs)
 
 main :: IO ()
 main = do
-    cmd:_  <- getArgs
+    args   <- getArgs
     mquery <- cmusQuery
 
     maybe' mquery
-        (putStrLn $ case cmd of
-            "status"   -> "無"
-            "progress" -> show 0
-            _          -> noArgument
+        (putStrLn $ case args of
+            ["status"]   -> "無"
+            ["progress"] -> show 0
+            _ -> shit
         )
-        $ putStrLn . (case cmd of
-            "all"      -> show
-            "status"   -> showStatus . _status
-            "file"     -> fromJust . _file
-            "artist"   -> fromMaybe "" . _artist
-            "artistc"  -> fromMaybe "" . fmap ("    " ++) . _artist
-            "album"    -> fromMaybe "" . _album
-            "title"    -> fromMaybe "" . _title
-            "titlec"   -> fromMaybe "" . fmap ("    " ++) . _title
-            "progress" -> \query -> show $
+        $ putStrLn . (case args of
+            ["all"]        -> show
+            ["status"]     -> showStatus . _status
+            ["file"]       -> fromJust . _file
+            ["artist", 前] -> maybeEmpty . prefix 前 . _artist
+            ["album", 前]  -> maybeEmpty . prefix 前 . _album
+            ["title", 前]  -> maybeEmpty . prefix 前 . _title
+
+            ["titles", 前] -> \query -> fromMaybe
+                (maybeEmpty . prefix 前 . _title $ query)
+                . prefix 前 . _stream $ query
+
+            ["progress"]   -> \query -> show $
                 if _status query == Stopped
                 then 0
                 else uncurry div
                    . ((* 100) . fromJust . _position &&&
                       fromDuration . fromJust . _duration)
                    $ query
-            _          -> noArgument)
+
+            _ -> shit)
 
     where
     showStatus status = case status of
@@ -44,6 +48,10 @@ main = do
         Paused  -> "休"
         Stopped -> "止"
 
-    noArgument = error "no argument"
+    prefix 前 = fmap (前 ++)
+
+    maybeEmpty = fromMaybe ""
+
+    shit = error "no argument"
 
     maybe' = flip $ flip . maybe

@@ -31,8 +31,12 @@ cmusQuery = (`fmap` cmus Query) $
         title            <- parseTag "title"              anyChar
         date             <- parseTag "date"               anyChar
         genre            <- parseTag "genre"              anyChar
-        trackNumber      <- parseTag "tracknumber"        anyChar
+        discNumber       <- parseTag "discnumber"         digit
+        trackNumber      <- parseTag "tracknumber"        digit
+        albumArtist      <- parseTag "albumartist"        anyChar
         comment          <- parseTag "comment"            anyChar
+
+        stream           <- opt $ parseGenericMany "stream" anyChar
 
         aaaMode          <- parseSet "aaa_mode"           letter
         continue         <- parseSet "continue"           letter
@@ -59,8 +63,12 @@ cmusQuery = (`fmap` cmus Query) $
             , _title            = toMaybe title
             , _date             = toMaybe date
             , _genre            = toMaybe genre
+            , _discNumber       = read `fmap` toMaybe discNumber
             , _trackNumber      = read `fmap` toMaybe trackNumber
+            , _albumArtist      = toMaybe albumArtist
             , _comment          = toMaybe comment
+
+            , _stream           = toMaybe stream
 
             , _aaaMode          = toAAAMode aaaMode
             , _continue         = toBool continue
@@ -160,8 +168,12 @@ data CmusMetadata = CmusMetadata
     , _title            :: Maybe (Tag String)
     , _date             :: Maybe (Tag String)
     , _genre            :: Maybe (Tag String)
+    , _discNumber       :: Maybe (Tag Integer)
     , _trackNumber      :: Maybe (Tag Integer)
+    , _albumArtist      :: Maybe (Tag String)
     , _comment          :: Maybe (Tag String)
+
+    , _stream           :: Maybe String
 
     , _aaaMode          :: Set AAAMode
     , _continue         :: Set Bool
