@@ -21,18 +21,18 @@ main = do
             _ -> shit
         )
         $ putStrLn . (case args of
-            ["all"]        -> show
-            ["status"]     -> showStatus . _status
-            ["file"]       -> fromJust . _file
-            ["artist", 前] -> maybeEmpty . prefix 前 . _artist
-            ["album", 前]  -> maybeEmpty . prefix 前 . _album
-            ["title", 前]  -> maybeEmpty . prefix 前 . _title
+            ["all"]           -> show
+            ["status"]        -> showStatus . _status
+            ["file"]          -> fromJust . _file
+            ["artist", 前]    -> maybeEmpty . prefix 前 . _artist
+            ["album", 前]     -> maybeEmpty . prefix 前 . _album
+            ["title", 前, n]  -> take (read n) . maybeEmpty . prefix 前 . _title
 
-            ["titles", 前] -> \query -> fromMaybe
+            ["titles", 前, n] -> \query -> take (read n) . fromMaybe
                 (maybeEmpty . prefix 前 . _title $ query)
                 . prefix 前 . _stream $ query
 
-            ["progress"]   -> \query -> show $
+            ["progress"]      -> \query -> show $
                 if _status query == Stopped
                 then 0
                 else uncurry div
@@ -52,6 +52,6 @@ main = do
 
     maybeEmpty = fromMaybe ""
 
-    shit = error "no argument"
+    shit = error "悪"
 
     maybe' = flip $ flip . maybe

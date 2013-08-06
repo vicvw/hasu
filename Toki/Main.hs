@@ -18,8 +18,8 @@ import System.Process       (readProcess)
 
 
 main :: IO ()
--- main = callibrate $ everyQuarter notify
-main = notify =<< getTime
+main = callibrate $ everyQuarter notify
+-- main = notify =<< getTime
 
 
 notify :: LocalTime -> IO ()
@@ -109,12 +109,12 @@ display time = do
 
     where
     dzenTime :: ScreenSize -> String
-    dzenTime (ScreenSize _ _) = dzen
+    dzenTime (ScreenSize swidth _) = dzen
         [ Timeout     5
         , Height      height
         , Width       width
         -- , XPosition   $ halve swidth - halve width
-        , XPosition   1715
+        , XPosition   $ swidth - width - 5
         -- , YPosition   $ halve sheight - halve height
         , YPosition   5
         , Background  $ grey 0

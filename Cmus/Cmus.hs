@@ -21,68 +21,74 @@ cmusQuery = (`fmap` cmus Query) $
 
     where
     parseQuery = do
-        status           <- parseGenericMany "status"         letter
-        file             <- opt $ parseGenericMany "file"     anyChar
-        duration         <- opt $ parseGeneric     "duration" $ (string "-1" <|> many1 digit) <* newline
-        position         <- opt $ parseGenericMany "position" digit
+        status              <- parseGenericMany       "status"   letter
+        file                <- opt $ parseGenericMany "file"     anyChar
+        duration            <- opt $ parseGeneric     "duration" $ (string "-1" <|> many1 digit) <* newline
+        position            <- opt $ parseGenericMany "position" digit
 
-        artist           <- parseTag "artist"             anyChar
-        album            <- parseTag "album"              anyChar
-        title            <- parseTag "title"              anyChar
-        date             <- parseTag "date"               anyChar
-        genre            <- parseTag "genre"              anyChar
-        discNumber       <- parseTag "discnumber"         digit
-        trackNumber      <- parseTag "tracknumber"        digit
-        albumArtist      <- parseTag "albumartist"        anyChar
-        comment          <- parseTag "comment"            anyChar
+        artist              <- parseTag "artist"                 anyChar
+        album               <- parseTag "album"                  anyChar
+        title               <- parseTag "title"                  anyChar
+        date                <- parseTag "date"                   anyChar
+        genre               <- parseTag "genre"                  anyChar
+        discNumber          <- parseTag "discnumber"             digit
+        trackNumber         <- parseTag "tracknumber"            digit
+        albumArtist         <- parseTag "albumartist"            anyChar
+        composer            <- parseTag "composer"               anyChar
+        conductor           <- parseTag "conductor"              anyChar
+        comment             <- parseTag "comment"                anyChar
+        replayGainTrackGain <- parseTag "replaygain_track_gain"  anyChar
 
-        stream           <- opt $ parseGenericMany "stream" anyChar
+        stream              <- opt $ parseGenericMany "stream"   anyChar
 
-        aaaMode          <- parseSet "aaa_mode"           letter
-        continue         <- parseSet "continue"           letter
-        playLibrary      <- parseSet "play_library"       letter
-        playSorted       <- parseSet "play_sorted"        letter
-        replayGain       <- parseSet "replaygain"         letter
-        replayGainLimit  <- parseSet "replaygain_limit"   letter
-        replayGainPreAmp <- parseSet "replaygain_preamp"  $ digit <|> char '.'
-        repeat_          <- parseSet "repeat"             letter
-        repeatCurrent    <- parseSet "repeat_current"     letter
-        shuffle          <- parseSet "shuffle"            letter
-        softVolume       <- parseSet "softvol"            letter
-        volumeLeft       <- parseSet "vol_left"           digit
-        volumeRight      <- parseSet "vol_right"          digit
+        aaaMode             <- parseSet "aaa_mode"               letter
+        continue            <- parseSet "continue"               letter
+        playLibrary         <- parseSet "play_library"           letter
+        playSorted          <- parseSet "play_sorted"            letter
+        replayGain          <- parseSet "replaygain"             letter
+        replayGainLimit     <- parseSet "replaygain_limit"       letter
+        replayGainPreAmp    <- parseSet "replaygain_preamp"      $ digit <|> char '.'
+        repeat_             <- parseSet "repeat"                 letter
+        repeatCurrent       <- parseSet "repeat_current"         letter
+        shuffle             <- parseSet "shuffle"                letter
+        softVolume          <- parseSet "softvol"                letter
+        volumeLeft          <- parseSet "vol_left"               digit
+        volumeRight         <- parseSet "vol_right"              digit
 
         return CmusMetadata
-            { _status           = toStatus status
-            , _file             = toMaybe file
-            , _duration         = toDuration `fmap` toMaybe duration
-            , _position         = read `fmap` toMaybe position
+            { _status               = toStatus status
+            , _file                 = toMaybe file
+            , _duration             = toDuration `fmap` toMaybe duration
+            , _position             = read `fmap` toMaybe position
 
-            , _artist           = toMaybe artist
-            , _album            = toMaybe album
-            , _title            = toMaybe title
-            , _date             = toMaybe date
-            , _genre            = toMaybe genre
-            , _discNumber       = read `fmap` toMaybe discNumber
-            , _trackNumber      = read `fmap` toMaybe trackNumber
-            , _albumArtist      = toMaybe albumArtist
-            , _comment          = toMaybe comment
+            , _artist               = toMaybe artist
+            , _album                = toMaybe album
+            , _title                = toMaybe title
+            , _date                 = toMaybe date
+            , _genre                = toMaybe genre
+            , _discNumber           = read `fmap` toMaybe discNumber
+            , _trackNumber          = read `fmap` toMaybe trackNumber
+            , _albumArtist          = toMaybe albumArtist
+            , _composer             = toMaybe composer
+            , _conductor            = toMaybe conductor
+            , _comment              = toMaybe comment
+            , _replayGainTrackGain  = toMaybe replayGainTrackGain
 
-            , _stream           = toMaybe stream
+            , _stream               = toMaybe stream
 
-            , _aaaMode          = toAAAMode aaaMode
-            , _continue         = toBool continue
-            , _playLibrary      = toBool playLibrary
-            , _playSorted       = toBool playSorted
-            , _replayGain       = toBool replayGain
-            , _replayGainLimit  = toBool replayGainLimit
-            , _replayGainPreAmp = read replayGainPreAmp
-            , _repeat           = toBool repeat_
-            , _repeatCurrent    = toBool repeatCurrent
-            , _shuffle          = toBool shuffle
-            , _softVolume       = toBool softVolume
-            , _volumeLeft       = read volumeLeft
-            , _volumeRight      = read volumeRight
+            , _aaaMode              = toAAAMode aaaMode
+            , _continue             = toBool continue
+            , _playLibrary          = toBool playLibrary
+            , _playSorted           = toBool playSorted
+            , _replayGain           = toBool replayGain
+            , _replayGainLimit      = toBool replayGainLimit
+            , _replayGainPreAmp     = read replayGainPreAmp
+            , _repeat               = toBool repeat_
+            , _repeatCurrent        = toBool repeatCurrent
+            , _shuffle              = toBool shuffle
+            , _softVolume           = toBool softVolume
+            , _volumeLeft           = read volumeLeft
+            , _volumeRight          = read volumeRight
             }
 
     opt = option "" . try
@@ -158,36 +164,39 @@ data CmusCommand
 
 
 data CmusMetadata = CmusMetadata
-    { _status           :: CmusStatus
-    , _file             :: Maybe String
-    , _duration         :: Maybe Duration
-    , _position         :: Maybe Integer
+    { _status               :: CmusStatus
+    , _file                 :: Maybe String
+    , _duration             :: Maybe Duration
+    , _position             :: Maybe Integer
 
-    , _artist           :: Maybe (Tag String)
-    , _album            :: Maybe (Tag String)
-    , _title            :: Maybe (Tag String)
-    , _date             :: Maybe (Tag String)
-    , _genre            :: Maybe (Tag String)
-    , _discNumber       :: Maybe (Tag Integer)
-    , _trackNumber      :: Maybe (Tag Integer)
-    , _albumArtist      :: Maybe (Tag String)
-    , _comment          :: Maybe (Tag String)
+    , _artist               :: Maybe (Tag String)
+    , _album                :: Maybe (Tag String)
+    , _title                :: Maybe (Tag String)
+    , _date                 :: Maybe (Tag String)
+    , _genre                :: Maybe (Tag String)
+    , _discNumber           :: Maybe (Tag Integer)
+    , _trackNumber          :: Maybe (Tag Integer)
+    , _albumArtist          :: Maybe (Tag String)
+    , _composer             :: Maybe (Tag String)
+    , _conductor            :: Maybe (Tag String)
+    , _comment              :: Maybe (Tag String)
+    , _replayGainTrackGain  :: Maybe (Tag String)
 
-    , _stream           :: Maybe String
+    , _stream               :: Maybe String
 
-    , _aaaMode          :: Set AAAMode
-    , _continue         :: Set Bool
-    , _playLibrary      :: Set Bool
-    , _playSorted       :: Set Bool
-    , _replayGain       :: Set Bool
-    , _replayGainLimit  :: Set Bool
-    , _replayGainPreAmp :: Set Double
-    , _repeat           :: Set Bool
-    , _repeatCurrent    :: Set Bool
-    , _shuffle          :: Set Bool
-    , _softVolume       :: Set Bool
-    , _volumeLeft       :: Set Integer
-    , _volumeRight      :: Set Integer
+    , _aaaMode              :: Set AAAMode
+    , _continue             :: Set Bool
+    , _playLibrary          :: Set Bool
+    , _playSorted           :: Set Bool
+    , _replayGain           :: Set Bool
+    , _replayGainLimit      :: Set Bool
+    , _replayGainPreAmp     :: Set Double
+    , _repeat               :: Set Bool
+    , _repeatCurrent        :: Set Bool
+    , _shuffle              :: Set Bool
+    , _softVolume           :: Set Bool
+    , _volumeLeft           :: Set Integer
+    , _volumeRight          :: Set Integer
     } deriving (Show)
 
 
