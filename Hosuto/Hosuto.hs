@@ -1,15 +1,10 @@
 module Hosuto
-    ( actionPack
+    ( allX
     , kazeX
     , soraX
-    , allX
 
-    , actionIO
-    , actionX
     , spawnIO
     , spawnX
-    , 風
-    , 空
     ) where
 
 
@@ -67,8 +62,8 @@ getHostname = takeWhile (/= '\n')
 --        `fmap` readProcess "hostname" [] ""
 
 
-kazeX, soraX, allX :: Double -> String -> ActionPack
-allX delay cmd = actionPack
+allX, kazeX, soraX :: Double -> String -> ActionPack
+allX delay cmd = ActionPack
     { 風 = action
     , 空 = action
     }
@@ -84,24 +79,17 @@ soraX delay cmd = (allX delay cmd)
     }
 
 
-actionPack :: ActionPack
-actionPack = ActionPack
-    { 風 = Nothing
-    , 空 = Nothing
-    }
+actionIO :: Double -> IO () -> Action
+actionIO delay = Action delay . ActionIO
+
+actionX :: Double -> String -> Action
+actionX delay = Action delay . ActionX
 
 
 data ActionPack = ActionPack
     { 風 :: Maybe Action
     , 空 :: Maybe Action
     }
-
-
-actionIO :: Double -> IO () -> Action
-actionIO delay = Action delay . ActionIO
-
-actionX :: Double -> String -> Action
-actionX delay = Action delay . ActionX
 
 
 data Action = Action
