@@ -3,17 +3,17 @@ module Main where
 
 import Hosuto
 
-import System.Environment (getArgs)
+-- import System.Environment (getArgs)
 
 
+main :: IO ()
 main = do
-    args <- getArgs
+    -- args <- getArgs
 
-    if length args `mod` 3 /= 0
-    then error "% 3"
-    else do
-        let launchers = map launcherFromList $ chunk 3 args
-        hostname <- getHostname
+    spawnIO test
 
-        -- mapM_ (putStrLn . show) launchers
-        mapM_ run $ filter ((== hostname) . lHostname) launchers
+    where
+    test = actionPack
+        -- { 風 = Just . action 0 $ print "kaze"
+        { 風 = Just . actionIO 0 $ print "kaze"
+        }
