@@ -1,0 +1,1 @@
+/home/v/フハ/Omo/Omo.hs

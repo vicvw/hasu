@@ -6,7 +6,10 @@ import Dzen.Dzen
 import Dzen.Gdbar
 import Dzen.Misc
 
-import Pulse.Volume
+import Omo hiding (main)
+
+import Volume
+
 
 import System.Environment (getArgs)
 import System.Exit        (exitSuccess)
@@ -16,18 +19,17 @@ import System.IO.Unsafe   (unsafePerformIO)
 main :: IO ()
 main = do
     args <- getArgs
-    let cmd = head args
 
-    case cmd of
-        "-" -> decreaseVolume
-        "+" -> increaseVolume
-        "%" -> toggleMuteGlobal
-        _   -> do
-            print . round =<< getLinearVolume
+    case args of
+        ["-"] -> decreaseVolumeOut
+        ["+"] -> increaseVolumeOut
+        ["%"] -> toggleMuteOut
+        _ -> do
+            print . round =<< volumeOutLinear
             exitSuccess
 
-    volume <- getLinearVolume
-    muted  <- isMutedGlobal
+    volume <- volumeOutLinear
+    muted  <- isMutedOut
 
     displayVolumeBar volume muted
 
@@ -80,7 +82,6 @@ gdbarVolume (ScreenSize _ _) muted = gdbar . concat $
     -- color  = if muted
     --          then grey 150 `on` grey 200
     --          else grey 0 `on` grey 200
-    segs   = case unsafePerformIO getHostname of
-                 "kaze"   -> 16
-                 "heaven" -> 15
-                 _        -> error "illegal host"
+    segs = unsafePerformIO . different $ \p -> p
+        `kaze` 16
+        `sora` 15

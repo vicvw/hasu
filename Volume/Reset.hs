@@ -1,13 +1,14 @@
 module Main where
 
 
-import Pulse.Volume   (increaseVolume, setVolume)
+import Volume
+
 
 import Control.Monad  (replicateM_)
 
 
 main :: IO ()
 main = do
-    setVolume 0
+    setVolumeOut 0
 
-    2 `replicateM_` increaseVolume
+    2 `replicateM_` increaseVolumeOut
