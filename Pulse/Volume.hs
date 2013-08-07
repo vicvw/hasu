@@ -1,130 +1,141 @@
-module Pulse.Volume
-    ( getVolume
-    , getLinearVolume
-
-    , isMuted
-    , isMutedGlobal
-    , toggleMute
-    , toggleMuteGlobal
-    , mute
-    , muteGlobal
-    , unmute
-    , unmuteGlobal
-
-    , decreaseVolume
-    , increaseVolume
-    , linearize
-    , setVolume
-
+module Volume
+    ( volumeOut
+    , volumeOutLinear
+    , isMutedOut
+    , isMutedApp
+    , toggleMuteOut
+    , toggleMuteApp
+    , muteOut
+    , muteApp
+    , unmuteOut
+    , unmuteApp
+    , setVolumeOut
+    , decreaseVolumeOut
+    , increaseVolumeOut
     , Level
-
-    , getHostname
     ) where
 
 
+import Omo hiding (main)
+
+
+import Control.Applicative hiding ((<|>), many)
 import Control.Monad  (void, unless, when)
+
 import Data.List      (minimumBy)
 import Data.Maybe     (fromJust, fromMaybe)
 import Data.Ord       (comparing)
+
 import System.Process (readProcess)
+
 import Text.ParserCombinators.Parsec
 
 
-getVolume :: IO Level
-getVolume = parsePacmd "list-sinks" read $ do
-    manyTill anyChar $ char '*'
-    manyTill anyChar . try $ string "volume: 0:"
-    skipMany1 space
-    manyTill digit $ string "%"
+volumeOut :: IO Level
+volumeOut = do
+    current <- indexCurrentOut
+
+    parsePacmd ["list-sinks"] read
+        $ manyTill anyChar (string $ "* index: " ++ current)
+       *> manyTill anyChar (try $ string "volume: 0:")
+       *> skipMany1 space
+       *> many1 digit
 
 
-getLinearVolume :: IO Level
-getLinearVolume = do
-    steps <- hostVolumeSteps
-    linearize steps `fmap` getVolume
-
-
-linearize :: [Level] -> Level -> Level
-linearize steps = fromJust . (`lookup` mapping)
-    where
-    mapping = zip steps
-            $ map (* (100 / fromIntegral (length steps - 1)))
-                  [0..]
-
-
-isMutedIndex :: String -> IO Bool
-isMutedIndex index = parsePacmd "list-sink-inputs" (== "yes") $ do
-    manyTill anyChar . try $ string ("index: " ++ index)
-    manyTill anyChar . try $ string "muted: "
-    many1 letter
-
-
-isMuted :: String -> IO Bool
-isMuted app = parsePacmd "list-sink-inputs" (== "yes") $ do
-    many1 $ try toMuted
-    muted <- many1 letter
-    manyTill anyChar . try $ toBinary
-    return muted
+volumeOutLinear :: IO Level
+volumeOutLinear = hostVolumeSteps >>=
+    (`fmap` volumeOut) . linearize
 
     where
-    toMuted  = manyTill anyChar . try $ string "muted: "
-    toBinary = string $ "application.process.binary = \"" ++ app
+    linearize steps = fromJust . (`lookup` mapping steps)
+
+    mapping steps = zip steps $
+        map (* (100 / fromIntegral (length steps - 1)))
+            [0..]
 
 
-isMutedGlobal :: IO Bool
-isMutedGlobal = parsePacmd "list-sinks" (== "yes") $ do
-    manyTill anyChar $ char '*'
-    manyTill anyChar . try $ string "muted:"
-    skipMany1 space
-    manyTill letter newline
+isMutedOut :: IO Bool
+isMutedOut = do
+    current <- indexCurrentOut
+
+    parsePacmd ["list-sinks"] (== "yes")
+        $ manyTill anyChar (string $ "* index: " ++ current)
+       *> manyTill anyChar (try $ string "muted: ")
+       *> yesNo
 
 
-toggleMute' :: Bool -> String -> IO ()
-toggleMute' global index = do
-    muted <- if global
-               then
-                 isMutedGlobal
-               else
-                 isMutedIndex index
+isMutedApp :: String -> IO Bool
+isMutedApp app = do
+    index <- indexApp app
 
-    let state = if muted
-                  then "0"
-                  else "1"
-
-    void . pacmd $
-        if global
-          then
-            ["set-sink-mute", index, state]
-          else
-            ["set-sink-input-mute", index, state]
+    parsePacmd ["list-sink-inputs"] (== "yes")
+        $ manyTill anyChar (try . string $ "index: " ++ index)
+       *> manyTill anyChar (try $ string "muted: ")
+       *> yesNo
 
 
-toggleMute :: String -> IO ()
-toggleMute app = toggleMute' False =<< getIndexOf app
+yesNo :: Parser String
+yesNo = string "yes" <|> string "no"
 
 
-toggleMuteGlobal :: IO ()
-toggleMuteGlobal = toggleMute' True =<< getIndex
+tillBinary :: String -> Parser String
+tillBinary app = string "application.process.binary = \""
+    *> manyTill anyChar (string app)
 
 
-mute, unmute :: String -> IO ()
-mute   app = (`unless` toggleMute app) =<< isMuted app
-unmute app = (`when`   toggleMute app) =<< isMuted app
+muteOut, unmuteOut :: IO ()
+muteOut   = changeMuteOut unless
+unmuteOut = changeMuteOut when
 
 
-muteGlobal, unmuteGlobal :: IO ()
-muteGlobal   = (`unless` toggleMuteGlobal) =<< isMutedGlobal
-unmuteGlobal = (`when`   toggleMuteGlobal) =<< isMutedGlobal
+changeMuteOut :: (Bool -> IO () -> IO a) -> IO a
+changeMuteOut cond = isMutedOut >>=
+    (`cond` toggleMuteOut)
 
 
-decreaseVolume, increaseVolume :: IO ()
-decreaseVolume = changeVolume fst
-increaseVolume = changeVolume snd
+toggleMuteOut :: IO ()
+toggleMuteOut = toggleMute
+    indexCurrentOut
+    isMutedOut
+    "set-sink-mute"
 
 
-changeVolume :: ((Maybe Level, Maybe Level) -> Maybe Level) -> IO ()
-changeVolume selector = do
-    volume <- getVolume
+muteApp, unmuteApp :: String -> IO ()
+muteApp   = changeMuteApp unless
+unmuteApp = changeMuteApp when
+
+
+changeMuteApp :: (Bool -> IO () -> IO a) -> String -> IO a
+changeMuteApp cond app = isMutedApp app >>=
+    (`cond` toggleMuteApp app)
+
+
+toggleMuteApp :: String -> IO ()
+toggleMuteApp app = toggleMute
+    (indexApp app)
+    (isMutedApp app)
+    "set-sink-input-mute"
+
+
+toggleMute :: IO String -> IO Bool -> String -> IO ()
+toggleMute indexF mutedF pacmdArg = do
+    index <- indexF
+    muted <- mutedF
+
+    execPacmd . ([pacmdArg, index] ++) $
+        if muted
+        then ["no"]
+        else ["yes"]
+
+
+decreaseVolumeOut, increaseVolumeOut :: IO ()
+decreaseVolumeOut = changeVolumeOut fst
+increaseVolumeOut = changeVolumeOut snd
+
+
+changeVolumeOut :: ((Maybe Level, Maybe Level) -> Maybe Level) -> IO ()
+changeVolumeOut selector = do
+    volume <- volumeOut
     vmap   <- volumeMap
 
     let newv = fromMaybe volume
@@ -133,20 +144,20 @@ changeVolume selector = do
              . (`lookup` vmap)
              $ closestOn fst volume vmap
 
-    setVolume newv
+    setVolumeOut newv
 
     where
     closestOn f a = f . minimumBy (comparing $ abs . subtract a . f)
 
 
-setVolume :: Level -> IO ()
-setVolume level = do
-    current <- getIndex
-    vsteps  <- fmap (subtract 1) getVolumeSteps
+setVolumeOut :: Level -> IO ()
+setVolumeOut level = do
+    current <- indexCurrentOut
+    vsteps  <- subtract 1 `fmap` volumeSteps
 
     let newv = round $ level / 100 * fromIntegral vsteps
 
-    void $ pacmd ["set-sink-volume", current, show newv]
+    execPacmd ["set-sink-volume", current, show newv]
 
 
 volumeMap :: IO [(Level, (Maybe Level, Maybe Level))]
@@ -155,82 +166,65 @@ volumeMap = do
 
     let steps' = map return steps
 
-    return . zip steps
-           . zip (Nothing : steps')
-           $ tail steps' ++ [Nothing]
+    return
+        . zip steps
+        . zip (Nothing : steps')
+        $ tail steps' ++ [Nothing]
 
 
 hostVolumeSteps :: IO [Level]
-hostVolumeSteps = do
-    host <- getHostname
-
-    return $ case host of
-        "kaze"   -> kazeSteps
-        "heaven" -> heavenSteps
-        _        -> error "illegal host"
-
-
-kazeSteps, heavenSteps :: [Level]
-kazeSteps = [ 0, 18, 20, 22, 25, 28, 32, 35, 40
-            , 45, 50, 56, 63, 71, 79, 89, 100 ]
-
-heavenSteps = [ 0, 1, 3, 5, 7, 10, 13, 18, 23
-              , 29, 36, 45, 56, 69, 85, 100]
+hostVolumeSteps = different $ \p -> p
+    `kaze`
+        [ 00, 18, 20, 22, 25
+        , 28, 32, 35, 40, 45
+        , 50, 56, 63, 71, 79
+        , 89, 100 ]
+    `sora`
+        [ 00, 01, 03, 05, 07
+        , 10, 13, 18, 23, 29
+        , 36, 45, 56, 69, 85
+        , 100 ]
 
 
--- getIndex :: IO String
--- getIndex = parsePacmd "list-sinks" id $ do
---     manyTill anyChar $ char '*'
---     manyTill anyChar . try $ string "name:"
---     manyTill space $ char '<'
---     manyTill anyChar $ char '>'
+indexCurrentOut :: IO String
+indexCurrentOut = parsePacmd ["list-sinks"] id
+    $ manyTill anyChar (string "* index: ")
+   *> many1 digit
 
 
-getIndex :: IO String
-getIndex = parsePacmd "list-sinks" id $ do
-    manyTill anyChar $ string "* index: "
-    many1 digit
-
-
-getIndexOf :: String -> IO String
-getIndexOf app = parsePacmd "list-sink-inputs" id $ do
-    many1 $ try toIndex
-    index <- many1 digit
-    manyTill anyChar . try $ toBinary
-    return index
+indexApp :: String -> IO String
+indexApp app = parsePacmd ["list-sink-inputs"] id
+    $ many (try tillIndex)
+   *> many1 digit
+   <* manyTill anyChar (try $ tillBinary app)
 
     where
-    toIndex = manyTill anyChar . try $ string "index: "
-    toBinary  = do
-        string "application.process.binary = \""
-        string app
-        char '"'
+    tillIndex  = manyTill anyChar . try $ string "index: "
 
 
-getVolumeSteps :: IO Integer
-getVolumeSteps = parsePacmd "list-sinks" read $ do
-    manyTill anyChar $ char '*'
-    manyTill anyChar . try $ string "volume steps:"
-    skipMany1 space
-    manyTill digit newline
+volumeSteps :: IO Integer
+volumeSteps = parsePacmd ["list-sinks"] read
+    $ manyTill anyChar (char '*')
+   *> manyTill anyChar (try $ string "volume steps:")
+   *> skipMany1 space
+   *> many1 digit
 
 
-pacmd :: [String] -> IO String
-pacmd args = readProcess "pacmd" args ""
+parsePacmd :: [String] -> (a -> b) -> Parser a -> IO b
+parsePacmd args succeeded parser =
+    (`fmap` readPacmd args) $
+        either
+            (error . show)
+            succeeded
+            . parse parser (head args)
 
 
-parsePacmd :: String -> (a -> b) -> GenParser Char () a -> IO b
-parsePacmd arg succeeded parser =
-    fmap (either failed succeeded
-               . parse parser "something")
-         (pacmd [arg])
-
-    where
-    failed = const $ error "poop"
+readPacmd :: [String] -> IO String
+readPacmd args = readProcess "pacmd" args ""
 
 
-getHostname :: IO String
-getHostname = fmap (takeWhile (/= '\n')) $ readProcess "hostname" [] ""
+execPacmd :: [String] -> IO ()
+execPacmd = void . readPacmd
 
 
 type Level = Double
