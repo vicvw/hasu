@@ -16,7 +16,7 @@ module Volume
     ) where
 
 
-import Omo hiding (main)
+import Omo            (different, 風, 空)
 
 
 import Control.Applicative hiding ((<|>), many)
@@ -173,13 +173,13 @@ volumeMap = do
 
 
 hostVolumeSteps :: IO [Level]
-hostVolumeSteps = different $ \p -> p
-    `kaze`
+hostVolumeSteps = different (error "unknown host")
+    $ 風
         [ 00, 18, 20, 22, 25
         , 28, 32, 35, 40, 45
         , 50, 56, 63, 71, 79
         , 89, 100 ]
-    `sora`
+    . 空
         [ 00, 01, 03, 05, 07
         , 10, 13, 18, 23, 29
         , 36, 45, 56, 69, 85

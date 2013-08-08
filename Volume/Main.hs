@@ -6,7 +6,7 @@ import Dzen.Dzen
 import Dzen.Gdbar
 import Dzen.Misc
 
-import Omo hiding (main)
+import Omo  (different, 風, 空)
 
 import Volume
 
@@ -82,6 +82,6 @@ gdbarVolume (ScreenSize _ _) muted = gdbar . concat $
     -- color  = if muted
     --          then grey 150 `on` grey 200
     --          else grey 0 `on` grey 200
-    segs = unsafePerformIO . different $ \p -> p
-        `kaze` 16
-        `sora` 15
+    segs = unsafePerformIO . different (error "unknown host")
+        $ 風 16
+        . 空 15
