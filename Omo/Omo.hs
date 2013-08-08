@@ -8,7 +8,7 @@ module Omo
     ) where
 
 
-import Data.Maybe     (fromMaybe)
+import Data.Maybe (fromMaybe)
 
 
 different :: a -> (Diff a -> Diff a) -> IO a
@@ -16,7 +16,7 @@ different failed diff = do
     host <- getHostname
 
     return
-        . fromMaybe (error "no definition")
+        . fromMaybe failed
         . ($ diff empty)
         $ case host of
         "kaze" -> kaze
