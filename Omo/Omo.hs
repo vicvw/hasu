@@ -4,7 +4,7 @@ module Omo
     , 風
     , 空
     , Diff
-    , DiffTrans
+    , DiffT
     ) where
 
 
@@ -27,7 +27,7 @@ different failed diff = do
            `fmap` readFile "/etc/hostname"
 
 
-全, 風, 空 :: a -> DiffTrans a
+全, 風, 空 :: a -> DiffT a
 全 x      = 風 x . 空 x
 風 x diff = diff { kaze = Just x }
 空 x diff = diff { sora = Just x }
@@ -46,4 +46,4 @@ data Diff a = Diff
     } deriving (Show)
 
 
-type DiffTrans a = Diff a -> Diff a
+type DiffT a = Diff a -> Diff a

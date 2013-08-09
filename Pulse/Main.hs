@@ -5,4 +5,4 @@ import Volume
 
 
 main :: IO ()
-main = print =<< isMutedApp "cmus"
+main = print =<< volumeOut
