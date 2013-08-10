@@ -1,0 +1,5 @@
+#!/bin/bash
+# vim: set ft=sh
+
+
+河馬 -m '' -c "clear; ghc -O2 FromArgs.hs -o omo-run && strip omo-run" "$@"
