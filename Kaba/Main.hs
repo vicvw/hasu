@@ -1,11 +1,14 @@
-module Main where
+module Main (main) where
 
 
-import Dispatch         (run, watch)
-import Options          (getOptions, oCommand, oFiles, oIgnored, oMain, oOnce)
+import Dispatch
+import Options
 
-import Control.Monad    (when)
-import System.Directory (getCurrentDirectory)
+
+import Control.Applicative  ((<$>), (<|>))
+import Control.Monad        (when)
+import Data.Maybe           (fromMaybe)
+import System.Directory     (getCurrentDirectory)
 
 
 main :: IO ()
@@ -13,15 +16,17 @@ main = do
     (o, r) <- getOptions
     cwd    <- getCurrentDirectory
 
-    let [mfile, mcmd] = ($ o) `map` [oMain, oCommand]
-        [files, igns] = ($ o) `map` [oFiles, oIgnored]
+    let [mfile, mcmd] = ($ o) <$> [oMain, oCommand]
+        [files, igns] = ($ o) <$> [oFiles, oIgnored]
+
         once = oOnce o
 
-    -- print o
-    putStrLn "元\n"
+        file = fromMaybe "" mfile
 
-    maybe (ioError . userError $ "no main file")
-          (\file -> do
-              when once $ run mcmd r file
-              watch cwd (files, igns) mcmd r file)
-          mfile
+    flip (flip . maybe)
+        (mfile <|> mcmd)
+        (error "no main or command")
+        . const $ do
+            putStrLn "元\n"
+            when once $ run mcmd r file
+            watch cwd (files, igns) mcmd r file

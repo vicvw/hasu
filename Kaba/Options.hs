@@ -45,7 +45,7 @@ options =
 
     , Option "f" ["files"]
              (ReqArg (\files opts -> opts { oFiles = splitOn "," files }) "FILE,...")
-             "unwatched files"
+             "watched files"
 
     , Option "i" ["ignore"]
              (ReqArg (\igns opts -> opts { oIgnored = splitOn "," igns }) "FILE,...")
@@ -53,7 +53,7 @@ options =
 
     , Option "1" ["once"]
              (NoArg (\opts -> opts { oOnce = True }))
-             "run once at start"
+             "run at least once"
     ]
 
 

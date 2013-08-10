@@ -70,7 +70,7 @@ handle :: ([FilePath], [FilePath])
 handle (files, igns) cmd args file (Modified _ mpath) =
     when (null files || isListed) .
     unless isIgnored $ do
-        print path
+        -- print path
         run cmd args file
 
     where
@@ -102,14 +102,14 @@ dispatch file
 
 custom :: Command -> Handler
 custom cmd args file = do
-    void . system $ printf "%s %s %s" cmd file (unwords args)
+    void . system $ printf cmd file (unwords args)
     putStrLn "\n完"
 
 
 generic :: Command -> Handler
 generic cmd args file = do
     void . system $ "clear"
-    custom cmd args file
+    custom (printf "%s %%s %%s" cmd) args file
 
 
 unknown :: Handler
