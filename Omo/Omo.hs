@@ -6,7 +6,8 @@ module Omo
     ) where
 
 
-import Data.Maybe (fromMaybe)
+import Control.Applicative  ((<$>))
+import Data.Maybe           (fromMaybe)
 
 
 different :: a -> (Diff a -> Diff a) -> IO a
@@ -22,25 +23,19 @@ different failed diff = do
 
     where
     getHostname = takeWhile (/= '\n')
-           `fmap` readFile "/etc/hostname"
+              <$> readFile "/etc/hostname"
+
+    empty = Diff Nothing Nothing
 
 
 全, 風, 空 :: a -> DiffT a
-全 x      = 風 x . 空 x
+全 x      = foldl1 (.) . map ($ x) $ [風, 空]
 風 x diff = diff { kaze = Just x }
 空 x diff = diff { sora = Just x }
 
 
-empty :: Diff a
-empty = Diff
-    { kaze = Nothing
-    , sora = Nothing
-    }
-
-
 data Diff a = Diff
-    { kaze :: Maybe a
-    , sora :: Maybe a
+    { kaze, sora :: Maybe a
     } deriving (Show)
 
 

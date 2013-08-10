@@ -7,7 +7,7 @@ module Omo.IO
 import Omo
 
 
-import Control.Applicative  ((<$>), (*>))
+import Control.Applicative  ((<$>))
 import Control.Concurrent   (threadDelay)
 import Control.Monad        (join, void)
 import Data.List.Split      (splitOn)
@@ -42,4 +42,4 @@ fromArgs
 systemDelay :: Int -> String -> IO ()
 systemDelay delay cmd
     = threadDelay (delay * 10^6)
-   *> void (system cmd)
+   >> void (system cmd)
