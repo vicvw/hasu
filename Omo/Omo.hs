@@ -1,8 +1,6 @@
 module Omo
     ( different
-    , 全
-    , 風
-    , 空
+    , 全, 風, 空
     , Diff
     , DiffT
     ) where

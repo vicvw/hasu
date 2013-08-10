@@ -4,8 +4,8 @@ module Main (main) where
 import Omo
 
 
-import Control.Monad      (void)
-import System.Cmd         (system)
+import Control.Monad  (void)
+import System.Cmd     (system)
 
 
 main :: IO ()

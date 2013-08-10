@@ -2,4 +2,4 @@
 # vim: set ft=sh
 
 
-河馬 -m 'Main.hs' "$@"
+河馬 -m Main.hs "$@"
