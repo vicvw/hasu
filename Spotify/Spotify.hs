@@ -21,10 +21,11 @@ import Data.Word      (Word64)
 getMetadata :: IO Metadata
 getMetadata = do
     client <- connectSession
-    reply  <- call_ client (methodCall "/"
-                                       "org.freedesktop.MediaPlayer2"
-                                       "GetMetadata")
-                  { methodCallDestination = Just "com.spotify.qt" }
+    reply  <- call_ client
+                    (methodCall "/"
+                                "org.freedesktop.MediaPlayer2"
+                                "GetMetadata")
+                    { methodCallDestination = Just "com.spotify.qt" }
 
     let meta :: [(String, Variant)]
         meta = map ((fromJust . fromVariant) ***

@@ -1,5 +1,11 @@
 module Main (main) where
 
 
+import qualified Cmus
+
+
+-- fix kaba
+
+
 main :: IO ()
-main = undefined
+main = print =<< Cmus.isRunning

@@ -12,7 +12,7 @@ import System.Environment (getArgs)
 main :: IO ()
 main = do
     args   <- getArgs
-    mquery <- cmusQuery
+    mquery <- query
 
     maybe' mquery
         (putStrLn $ case args of

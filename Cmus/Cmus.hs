@@ -1,21 +1,43 @@
 module Cmus
-    ( cmusQuery
+    ( isRunning
+    , query
+    , play
+    , toggle
+    , stop
+    , previous
+    , next
     , fromDuration
     , CmusMetadata (..)
     , CmusStatus (..)
     ) where
 
 
-import Control.Applicative hiding ((<|>))
-import Control.Exception  (catch, SomeException)
-
 import Text.ParserCombinators.Parsec
 
-import System.Process     (readProcess)
+import Control.Applicative  ((<$>), (<*), (*>))
+import Control.Monad        (void, when)
+-- import Control.Exception    (catch, SomeException)
+
+import System.Exit          (ExitCode (..))
+import System.Process       (readProcess, system)
 
 
-cmusQuery :: IO (Maybe CmusMetadata)
-cmusQuery = (`fmap` cmus Query) $
+play, toggle, stop, previous, next :: IO ()
+play     = whenRunning Play
+toggle   = whenRunning Toggle
+stop     = whenRunning Stop
+previous = whenRunning Previous
+next     = whenRunning Next
+
+
+whenRunning :: CmusCommand -> IO ()
+whenRunning cmd = do
+    running <- isRunning
+    when running . void $ cmus cmd
+
+
+query :: IO (Maybe CmusMetadata)
+query = (<$> cmus Query) $
     fmap (either (error . show) id
                  . parse parseQuery "cmus-remote -Q")
 
@@ -137,30 +159,48 @@ cmusQuery = (`fmap` cmus Query) $
         "album"  -> Album
 
     toBool str = case str of
-        "true"     -> True
-        "false"    -> False
+        "true"  -> True
+        "false" -> False
 
         "enabled"  -> True
         "disabled" -> False
 
 
+isRunning :: IO Bool
+isRunning = do
+    code <- system "cmus-remote -Q"
+
+    return $ case code of
+        ExitSuccess   -> True
+        ExitFailure _ -> False
+
+
 cmus :: CmusCommand -> IO (Maybe String)
-cmus cmd =
-    fmap return (readProcess
-        "cmus-remote"
-        [show cmd]
-        "")
-    `catch`
-    (return . const Nothing :: SomeException -> IO (Maybe String))
+cmus cmd = do
+    running <- isRunning
+
+    if running
+    then Just <$> readProcess "cmus-remote" [show cmd] ""
+    else return Nothing
 
 
 instance Show CmusCommand where
     show cmd = case cmd of
-        Query -> "-Q"
+        Query    -> "-Q"
+        Play     -> "--play"
+        Toggle   -> "--pause"
+        Stop     -> "--stop"
+        Previous -> "--prev"
+        Next     -> "--next"
 
 
 data CmusCommand
     = Query
+    | Play
+    | Toggle
+    | Stop
+    | Previous
+    | Next
 
 
 data CmusMetadata = CmusMetadata
