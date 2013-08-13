@@ -16,10 +16,9 @@ import Text.ParserCombinators.Parsec
 
 import Control.Applicative  ((<$>), (<*), (*>))
 import Control.Monad        (void, when)
--- import Control.Exception    (catch, SomeException)
 
 import System.Exit          (ExitCode (..))
-import System.Process       (readProcess, system)
+import System.Process       (readProcess, readProcessWithExitCode)
 
 
 play, toggle, stop, previous, next :: IO ()
@@ -168,7 +167,7 @@ query = (<$> cmus Query) $
 
 isRunning :: IO Bool
 isRunning = do
-    code <- system "cmus-remote -Q"
+    (code, _, _) <- readProcessWithExitCode "cmus-remote" ["-Q"] ""
 
     return $ case code of
         ExitSuccess   -> True
