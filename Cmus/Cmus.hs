@@ -42,56 +42,60 @@ query = (<$> cmus Query) $
 
     where
     parseQuery = do
-        status              <- parseGenericMany       "status"   letter
-        file                <- opt $ parseGenericMany "file"     anyChar
-        duration            <- opt $ parseGeneric     "duration" $ (string "-1" <|> many1 digit) <* newline
-        position            <- opt $ parseGenericMany "position" digit
+        status              <- parseGenericMany       "status"    letter
+        file                <- opt . parseGenericMany "file"      $ anyChar
+        duration            <- opt . parseGeneric     "duration"  $ (string "-1" <|> many1 digit) <* newline
+        position            <- opt . parseGenericMany "position"  $ digit
 
-        artist              <- parseTag "artist"                 anyChar
-        album               <- parseTag "album"                  anyChar
-        title               <- parseTag "title"                  anyChar
-        date                <- parseTag "date"                   anyChar
-        genre               <- parseTag "genre"                  anyChar
-        discNumber          <- parseTag "discnumber"             digit
-        trackNumber         <- parseTag "tracknumber"            digit
-        albumArtist         <- parseTag "albumartist"            anyChar
-        composer            <- parseTag "composer"               anyChar
-        conductor           <- parseTag "conductor"              anyChar
-        comment             <- parseTag "comment"                anyChar
-        replayGainTrackGain <- parseTag "replaygain_track_gain"  anyChar
+        artist              <- parseTag "artist"                  anyChar
+        album               <- parseTag "album"                   anyChar
+        title               <- parseTag "title"                   anyChar
+        date                <- parseTag "date"                    anyChar
+        genre               <- parseTag "genre"                   anyChar
+        discNumber          <- parseTag "discnumber"              digit
+        trackNumber         <- parseTag "tracknumber"             digit
+        albumArtist         <- parseTag "albumartist"             anyChar
+        composer            <- parseTag "composer"                anyChar
+        conductor           <- parseTag "conductor"               anyChar
+        label_              <- parseTag "label"                   anyChar
+        publisher           <- parseTag "publisher"               anyChar
+        comment             <- parseTag "comment"                 anyChar
+        replayGainTrackGain <- parseTag "replaygain_track_gain"   anyChar
 
-        stream              <- opt $ parseGenericMany "stream"   anyChar
+        stream              <- opt . parseGenericMany "stream"    $ anyChar
 
-        aaaMode             <- parseSet "aaa_mode"               letter
-        continue            <- parseSet "continue"               letter
-        playLibrary         <- parseSet "play_library"           letter
-        playSorted          <- parseSet "play_sorted"            letter
-        replayGain          <- parseSet "replaygain"             letter
-        replayGainLimit     <- parseSet "replaygain_limit"       letter
-        replayGainPreAmp    <- parseSet "replaygain_preamp"      $ digit <|> char '.'
-        repeat_             <- parseSet "repeat"                 letter
-        repeatCurrent       <- parseSet "repeat_current"         letter
-        shuffle             <- parseSet "shuffle"                letter
-        softVolume          <- parseSet "softvol"                letter
-        volumeLeft          <- parseSet "vol_left"               digit
-        volumeRight         <- parseSet "vol_right"              digit
+        aaaMode             <- parseSet "aaa_mode"                letter
+        continue            <- parseSet "continue"                letter
+        playLibrary         <- parseSet "play_library"            letter
+        playSorted          <- parseSet "play_sorted"             letter
+        replayGain          <- parseSet "replaygain"              letter
+        replayGainLimit     <- parseSet "replaygain_limit"        letter
+        replayGainPreAmp    <- parseSet "replaygain_preamp"       $ digit <|> char '.'
+        repeat_             <- parseSet "repeat"                  letter
+        repeatCurrent       <- parseSet "repeat_current"          letter
+        shuffle             <- parseSet "shuffle"                 letter
+        softVolume          <- parseSet "softvol"                 letter
+        volumeLeft          <- parseSet "vol_left"                digit
+        volumeRight         <- parseSet "vol_right"               digit
 
         return CmusMetadata
             { _status               = toStatus status
             , _file                 = toMaybe file
-            , _duration             = toDuration `fmap` toMaybe duration
-            , _position             = read `fmap` toMaybe position
+            , _duration             = toDuration <$> toMaybe duration
+            , _position             = read <$> toMaybe position
 
             , _artist               = toMaybe artist
             , _album                = toMaybe album
             , _title                = toMaybe title
             , _date                 = toMaybe date
             , _genre                = toMaybe genre
-            , _discNumber           = read `fmap` toMaybe discNumber
-            , _trackNumber          = read `fmap` toMaybe trackNumber
+            , _discNumber           = read <$> toMaybe discNumber
+            , _trackNumber          = read <$> toMaybe trackNumber
             , _albumArtist          = toMaybe albumArtist
             , _composer             = toMaybe composer
             , _conductor            = toMaybe conductor
+            , _label                = toMaybe label_
+            , _publisher            = toMaybe publisher
             , _comment              = toMaybe comment
             , _replayGainTrackGain  = toMaybe replayGainTrackGain
 
@@ -218,6 +222,8 @@ data CmusMetadata = CmusMetadata
     , _albumArtist          :: Maybe (Tag String)
     , _composer             :: Maybe (Tag String)
     , _conductor            :: Maybe (Tag String)
+    , _label                :: Maybe (Tag String)
+    , _publisher            :: Maybe (Tag String)
     , _comment              :: Maybe (Tag String)
     , _replayGainTrackGain  :: Maybe (Tag String)
 

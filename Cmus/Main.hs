@@ -28,19 +28,19 @@ main = do
             ["album", 前]     -> maybeEmpty . prefix 前 . _album
             ["title", 前, n]  -> take (read n) . maybeEmpty . prefix 前 . _title
 
-            ["titles", 前, n] -> \query -> take (read n) . fromMaybe
-                (maybeEmpty . prefix 前 . _title $ query)
-                . prefix 前 . _stream $ query
+            ["titles", 前, n] -> \q -> take (read n) . fromMaybe
+                (maybeEmpty . prefix 前 . _title $ q)
+                . prefix 前 . _stream $ q
 
-            ["progress"]      -> \query -> show $
-                if _status query == Stopped
+            ["progress"]      -> \q -> show $
+                if _status q == Stopped
                 then 0
                 else uncurry div
                    . ((* 100) . fromJust . _position &&&
                       fromDuration . fromJust . _duration)
-                   $ query
+                   $ q
 
-            _ -> shit)
+            _ -> const shit)
 
     where
     showStatus status = case status of
@@ -52,6 +52,6 @@ main = do
 
     maybeEmpty = fromMaybe ""
 
-    shit = error "悪"
+    shit = "悪"
 
     maybe' = flip $ flip . maybe
