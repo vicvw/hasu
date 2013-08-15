@@ -1,64 +1,48 @@
 module Main (main) where
 
 
-import qualified Cmus
+import qualified Cmus as C
+import qualified Vlc  as V
 
 
 import Control.Applicative  ((<$>))
 import Control.Monad        (filterM)
-import Data.Maybe           (listToMaybe)
 import System.Environment   (getArgs)
 
 
 main :: IO ()
 main = do
-    arg <- listToMaybe <$> getArgs
-    let cmd = maybe (error "no argument") dispatch arg
+    args <- getArgs
 
-    mapM_ cmd =<< running
+    case args of
+        ("q" : rest)  -> mapM_ (($ rest) . _handleQuery)   =<< running
+        ("c" : rest)  -> mapM_ (($ rest) . _handleControl) =<< running
+        _             -> putStrLn "悪"
 
     where
-    running = filterM (fmap (== True) . _isRunning) players
-    players = [cmus, spotify]
-
-
-dispatch :: String -> MediaPlayer -> IO ()
-dispatch cmd = case cmd of
-    "play"   -> _play
-    "toggle" -> _toggle
-    "stop"   -> _stop
-    "prev"   -> _previous
-    "next"   -> _next
-    _        -> error "illegal command"
+    running = take 1 <$> filterM (fmap (== True) . _isRunning) players
+    players = [cmus, vlc]
 
 
 cmus :: MediaPlayer
 cmus = MediaPlayer
-    { _isRunning = Cmus.isRunning
-    , _play      = Cmus.play
-    , _toggle    = Cmus.toggle
-    , _stop      = Cmus.stop
-    , _previous  = Cmus.previous
-    , _next      = Cmus.next
+    { _isRunning      = C.isRunning
+    , _handleQuery    = C.handleQuery
+    , _handleControl  = C.handleControl
     }
 
 
-spotify :: MediaPlayer
-spotify = MediaPlayer
-    { _isRunning = return False
-    , _play      = return ()
-    , _toggle    = return ()
-    , _stop      = return ()
-    , _previous  = return ()
-    , _next      = return ()
+vlc :: MediaPlayer
+vlc = MediaPlayer
+    { _isRunning      = V.isRunning
+    , _handleQuery    = V.handleQuery
+    , _handleControl  = V.handleControl
     }
 
 
 data MediaPlayer = MediaPlayer
-    { _isRunning :: IO Bool
-    , _play      :: IO ()
-    , _toggle    :: IO ()
-    , _stop      :: IO ()
-    , _previous  :: IO ()
-    , _next      :: IO ()
+    { _isRunning      :: IO Bool
+    -- , _isPlaying      :: IO Bool
+    , _handleQuery    :: [String] -> IO ()
+    , _handleControl  :: [String] -> IO ()
     }

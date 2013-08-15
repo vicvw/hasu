@@ -40,7 +40,7 @@ main = do
                       fromDuration . fromJust . _duration)
                    $ q
 
-            _ -> const shit)
+            _ -> shit)
 
     where
     showStatus status = case status of
@@ -52,6 +52,6 @@ main = do
 
     maybeEmpty = fromMaybe ""
 
-    shit = "悪"
+    shit = error "悪"
 
     maybe' = flip $ flip . maybe

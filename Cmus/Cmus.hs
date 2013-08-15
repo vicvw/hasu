@@ -1,5 +1,8 @@
 module Cmus
     ( isRunning
+    , handleQuery
+    , handleControl
+
     , query
     , play
     , toggle
@@ -7,18 +10,63 @@ module Cmus
     , previous
     , next
     , fromDuration
-    , CmusMetadata (..)
-    , CmusStatus (..)
+
+    , Metadata (..)
+    , Status (..)
     ) where
 
 
 import Text.ParserCombinators.Parsec
 
+import Control.Arrow        ((&&&), (>>>))
 import Control.Applicative  ((<$>), (<*), (*>))
 import Control.Monad        (void, when)
 
+import Data.Maybe           (fromJust, fromMaybe)
+
 import System.Exit          (ExitCode (..))
 import System.Process       (readProcess, readProcessWithExitCode)
+
+
+handleQuery :: [String] -> IO ()
+handleQuery args = (putStrLn .) >>> (=<< fromJust <$> query) $ case args of
+    ["all"]       -> show
+    ["status"]    -> showStatus . _status
+    ["url"]       -> fromJust . _file
+    ["title", 前] -> maybeEmpty . prefix 前 . _title
+    ["now", 前]   -> \q -> fromMaybe
+        (maybeEmpty . prefix 前 . _title $ q)
+        . prefix 前 . _stream $ q
+
+    ["progress"]  -> \q -> show $
+        if _status q == Stopped
+        then 0
+        else uncurry div
+           . ((* 100) . fromJust . _position &&&
+              fromDuration . fromJust . _duration)
+           $ q
+
+    _ -> const "悪"
+
+    where
+    showStatus status = case status of
+        Playing -> "再"
+        Paused  -> "休"
+        Stopped -> "止"
+
+    prefix 前 = fmap (前 ++)
+
+    maybeEmpty = fromMaybe ""
+
+
+handleControl :: [String] -> IO ()
+handleControl args = case args of
+    ["play"]   -> play
+    ["toggle"] -> toggle
+    ["stop"]   -> stop
+    ["prev"]   -> previous
+    ["next"]   -> next
+    _          -> error "illegal command"
 
 
 play, toggle, stop, previous, next :: IO ()
@@ -35,7 +83,7 @@ whenRunning cmd = do
     when running . void $ cmus cmd
 
 
-query :: IO (Maybe CmusMetadata)
+query :: IO (Maybe Metadata)
 query = (<$> cmus Query) $
     fmap (either (error . show) id
                  . parse parseQuery "cmus-remote -Q")
@@ -78,7 +126,7 @@ query = (<$> cmus Query) $
         volumeLeft          <- parseSet "vol_left"                digit
         volumeRight         <- parseSet "vol_right"               digit
 
-        return CmusMetadata
+        return Metadata
             { _status               = toStatus status
             , _file                 = toMaybe file
             , _duration             = toDuration <$> toMaybe duration
@@ -206,8 +254,8 @@ data CmusCommand
     | Next
 
 
-data CmusMetadata = CmusMetadata
-    { _status               :: CmusStatus
+data Metadata = Metadata
+    { _status               :: Status
     , _file                 :: Maybe String
     , _duration             :: Maybe Duration
     , _position             :: Maybe Integer
@@ -249,7 +297,7 @@ type Tag a = a
 type Set a = a
 
 
-data CmusStatus
+data Status
     = Playing
     | Paused
     | Stopped
