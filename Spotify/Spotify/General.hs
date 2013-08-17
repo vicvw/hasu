@@ -18,8 +18,8 @@ import Control.Exception    (catch)
 isRunning :: IO Bool
 isRunning = withSession $ \client -> flip catch
     (const $ return False :: ClientError -> IO Bool)
-    . const (return True) $ call_ client
-        (methodCall
+    . either (const $ return False) (const $ return True)
+        =<< call client (methodCall
             "/org/mpris/MediaPlayer2"
             "org.freedesktop.DBus.Properties"
             "Get")

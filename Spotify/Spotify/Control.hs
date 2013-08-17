@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Spotify.Control
-    ( play
+    ( handleControl
+    , play
     , toggle
     , stop
     , previous
@@ -16,6 +17,16 @@ import DBus
 import DBus.Client
 
 import Control.Monad  (void)
+
+
+handleControl :: [String] -> IO ()
+handleControl args = case args of
+    ["play"]   -> play
+    ["toggle"] -> toggle
+    ["stop"]   -> stop
+    ["prev"]   -> previous
+    ["next"]   -> next
+    _          -> error "悪"
 
 
 play, toggle, stop, previous, next :: IO ()

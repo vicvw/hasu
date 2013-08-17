@@ -1,0 +1,4 @@
+#!/bin/bash
+
+
+ghc -O2 -main-is Spotify.Monitor.muteAds Spotify/Monitor.hs -o mute-ads && strip mute-ads

@@ -1,8 +1,7 @@
 module Main where
 
 
-import Spotify
-import Monitor
+import Spotify.General
 
 
 main :: IO ()
@@ -14,7 +13,4 @@ main = do
     --     [ print . _artist
     --     , print . _title ]
 
-    muteAds
-
-    -- toggle
-    -- return ()
+    print =<< isRunning

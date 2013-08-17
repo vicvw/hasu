@@ -1,4 +1,4 @@
-module Monitor
+module Spotify.Monitor
     ( muteAds
     ) where
 
@@ -11,10 +11,11 @@ import Volume
 
 import Control.Applicative  ((<$>))
 import Control.Concurrent   (threadDelay)
-import Control.Monad        (join)
+import Control.Monad        (join, unless, void)
 import Data.Function        (fix)
 import Data.List            (find, isInfixOf, isPrefixOf)
-import System.Process       (readProcess)
+import System.Posix.Process (forkProcess)
+import System.Process       (readProcess, system)
 
 
 muteAds :: IO ()
@@ -32,18 +33,21 @@ muteAds = flip fix False $ \loop wasAd -> do
 
             if isAd title icon
             then do
-                print True
+                -- print True
                 muteApp name
+
+                unless wasAd .
+                    void . forkProcess . void $ system "notify-send '広告'"
 
                 loop True
 
             else do
-                print False
+                -- print False
                 unmuteApp name
 
                 if wasAd
                 then do
-                    threadDelay $ 10^6
+                    threadDelay . floor $ 1.5 * 10^6
                     loop False
                 else
                     loop wasAd

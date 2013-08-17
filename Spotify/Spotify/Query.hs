@@ -23,12 +23,13 @@ import Data.Word      (Word64)
 
 query :: IO (Maybe Metadata)
 query = whenRunning . withSession $ \client -> do
-    reply  <- call_ client (methodCall
-                "/"
-                "org.freedesktop.MediaPlayer2"
-                "GetMetadata")
-                { methodCallDestination =
-                    Just "com.spotify.qt" }
+    reply <- call_ client
+        (methodCall
+            "/"
+            "org.freedesktop.MediaPlayer2"
+            "GetMetadata")
+        { methodCallDestination =
+            Just "com.spotify.qt" }
 
     let meta :: [(String, Variant)]
         meta = map (fromVariant' *** fromVariant')

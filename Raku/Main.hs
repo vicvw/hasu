@@ -1,8 +1,9 @@
 module Main (main) where
 
 
-import qualified Cmus as C
-import qualified Vlc  as V
+import qualified Cmus    as C
+import qualified Spotify as S
+import qualified Vlc     as V
 
 
 import Control.Applicative  ((<$>))
@@ -21,10 +22,10 @@ main = do
 
     where
     running = take 1 <$> filterM (fmap (== True) . _isRunning) players
-    players = [cmus, vlc]
+    players = [cmus, spotify, vlc]
 
 
-cmus :: MediaPlayer
+cmus, spotify, vlc :: MediaPlayer
 cmus = MediaPlayer
     { _isRunning      = C.isRunning
     , _handleQuery    = C.handleQuery
@@ -32,7 +33,13 @@ cmus = MediaPlayer
     }
 
 
-vlc :: MediaPlayer
+spotify = MediaPlayer
+    { _isRunning      = S.isRunning
+    , _handleQuery    = const $ return ()
+    , _handleControl  = S.handleControl
+    }
+
+
 vlc = MediaPlayer
     { _isRunning      = V.isRunning
     , _handleQuery    = V.handleQuery
