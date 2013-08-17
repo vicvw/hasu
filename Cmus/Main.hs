@@ -1,7 +1,7 @@
 module Main (main) where
 
 
-import Cmus
+import Cmus.Query
 
 
 import Control.Arrow      ((&&&))
@@ -48,10 +48,7 @@ main = do
         Paused  -> "休"
         Stopped -> "止"
 
-    prefix 前 = fmap (前 ++)
-
+    prefix 前  = fmap (前 ++)
     maybeEmpty = fromMaybe ""
-
-    shit = error "悪"
-
-    maybe' = flip $ flip . maybe
+    shit       = error "悪"
+    maybe'     = flip $ flip . maybe

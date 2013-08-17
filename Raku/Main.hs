@@ -42,7 +42,6 @@ vlc = MediaPlayer
 
 data MediaPlayer = MediaPlayer
     { _isRunning      :: IO Bool
-    -- , _isPlaying      :: IO Bool
     , _handleQuery    :: [String] -> IO ()
     , _handleControl  :: [String] -> IO ()
     }
