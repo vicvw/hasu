@@ -33,7 +33,7 @@ muteAds = flip fix False $ \loop wasAd -> do
 
             if isAd title icon
             then do
-                -- print True
+                print True
                 muteApp name
 
                 unless wasAd .
@@ -42,7 +42,7 @@ muteAds = flip fix False $ \loop wasAd -> do
                 loop True
 
             else do
-                -- print False
+                print False
                 unmuteApp name
 
                 if wasAd

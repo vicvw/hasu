@@ -11,7 +11,7 @@ import Spotify.General
 
 
 import DBus
-import DBus.Client    (call_, connectSession)
+import DBus.Client    (call_)
 
 import Control.Arrow  ((***))
 
@@ -62,16 +62,18 @@ query = whenRunning . withSession $ \client -> do
         $ meta
 
 
-status :: IO Status
-status = do
-    client <- connectSession
-    reply  <- call_ client (methodCall "/org/mpris/MediaPlayer2"
-                                       "org.freedesktop.DBus.Properties"
-                                       "Get")
-                  { methodCallDestination = Just "org.mpris.MediaPlayer2.spotify"
-                  , methodCallBody        = [ toVariant ("org.mpris.MediaPlayer2.Player" :: String)
-                                            , toVariant ("Status" :: String)
-                                            ] }
+status :: IO (Maybe Status)
+status = whenRunning . withSession $ \client -> do
+    reply <- call_ client
+        (methodCall
+            "/org/mpris/MediaPlayer2"
+            "org.freedesktop.DBus.Properties"
+            "Get")
+        { methodCallDestination =
+            Just "org.mpris.MediaPlayer2.spotify"
+        , methodCallBody =
+            [ toVariant ("org.mpris.MediaPlayer2.Player" :: String)
+            , toVariant ("PlaybackStatus"                :: String) ] }
 
     let status_ :: String
         status_ = fromVariant'

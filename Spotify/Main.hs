@@ -1,16 +1,15 @@
-module Main where
+module Main (main) where
 
 
-import Spotify.General
+import Spotify
 
 
 main :: IO ()
 main = do
-    -- meta <- query
-    -- print meta
+    print =<< isRunning
+    print =<< status
+    print =<< query
 
     -- mapM_ ($ meta)
     --     [ print . _artist
     --     , print . _title ]
-
-    print =<< isRunning
