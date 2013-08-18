@@ -19,8 +19,9 @@ main = do
 
     (running >>=) $ listToMaybe >>> maybe
         (case args of
-            ["q", "status"] -> putStrLn "無"
-            _               -> putStrLn "")
+            ["q", "status"]   -> putStrLn "無"
+            ["q", "progress"] -> putStrLn "0"
+            _                 -> putStrLn "")
         (case args of
             ("q" : rest)  -> ($ rest) . _handleQuery
             ("c" : rest)  -> ($ rest) . _handleControl

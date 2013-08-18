@@ -4,49 +4,21 @@ module Dispatch
     ) where
 
 
+import General
+import Handlers
+
+
+import System.INotify
+
 import Control.Monad          (forever, unless, void, when)
 import Control.Concurrent     (threadDelay)
 
 import Data.List              (find)
 import Data.Maybe             (fromJust)
 
-import System.Cmd             (system)
 import System.FilePath.Posix  (takeExtension)
-import System.INotify         (addWatch, withINotify, Event (Modified), EventVariety (Modify))
 
-import Text.Printf            (printf)
 import Text.Regex.PCRE        ((=~))
-
-
-extensionMap :: [([String], Handler)]
-extensionMap =
-    [ ["sh", "run"]  --> bash
-    , ["c"]          --> c
-    , ["^$", "txt"]  --> cat
-    , ["c++", "cpp"] --> cpp
-    , ["^s$"]        --> dlx
-    , ["hs"]         --> haskell
-    , ["java"]       --> java
-    , ["py"]         --> python
-    , ["rb"]         --> ruby
-    , ["scala"]      --> scala
-    , ["."]          --> unknown
-    ]
-
-
-bash, c, cat, cpp, dlx, haskell, java, python, ruby, scala :: Handler
-
-bash    = generic "bash"
-cat     = generic "cat"
-dlx     = generic "dlx"
-haskell = generic "runhaskell"
-python  = generic "python"
-ruby    = generic "ruby"
-
-c       = unknown
-cpp     = unknown
-java    = unknown
-scala   = unknown
 
 
 watch :: FilePath
@@ -76,7 +48,7 @@ handle (files, igns) cmd args file (Modified _ mpath) =
     where
     isListed  = path `elem` files
     isIgnored = any (path =~) ignored
-    ignored   = ["\\.sw[po]$", "\\.o$", "\\.hi$"] ++ igns
+    ignored   = ["\\.sw[po]$", "\\.o$", "\\.hi$"] ++ map (++ "$") igns
     path      = fromJust mpath
 
 
@@ -92,34 +64,9 @@ dispatch file
     = fromJust
     $ lookup'
         (takeExtension file)
-        extensionMap
+        handlers
 
     where
     lookup' ext
         = fmap snd
         . find (any (ext =~) . fst)
-
-
-custom :: Command -> Handler
-custom cmd args file = do
-    void . system $ printf cmd file (unwords args)
-    putStrLn "\n完"
-
-
-generic :: Command -> Handler
-generic cmd args file = do
-    void . system $ "clear"
-    custom (printf "%s %%s %%s" cmd) args file
-
-
-unknown :: Handler
-unknown _ file = putStrLn $ printf "cannot handle: %s" file
-
-
-(-->) :: a -> b -> (a, b)
-(-->) = (,)
-
-
-type Arguments = [String]
-type Command   = String
-type Handler   = Arguments -> FilePath -> IO ()
