@@ -20,15 +20,16 @@ import Data.Maybe           (fromJust, fromMaybe)
 
 handleQuery :: [String] -> IO ()
 handleQuery args = (putStrLn .) >>> (=<< fromJust <$> query) $ case args of
-    ["all"]       -> show
-    ["status"]    -> showStatus . _status
-    ["url"]       -> fromJust . _file
-    ["title", 前] -> maybeEmpty . prefix 前 . _title
-    ["now", 前]   -> \q -> fromMaybe
+    ["all"]         -> show
+    ["status"]      -> showStatus . _status
+    ["url"]         -> fromJust . _file
+    ["artist", 前]  -> maybeEmpty . prefix 前 . _artist
+    ["title", 前]   -> maybeEmpty . prefix 前 . _title
+    ["now", 前]     -> \q -> fromMaybe
         (maybeEmpty . prefix 前 . _title $ q)
         . prefix 前 . _stream $ q
 
-    ["progress"]  -> \q -> show $
+    ["progress"]    -> \q -> show $
         if _status q == Stopped
         then 0
         else uncurry div

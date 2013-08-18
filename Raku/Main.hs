@@ -35,7 +35,7 @@ cmus = MediaPlayer
 
 spotify = MediaPlayer
     { _isRunning      = S.isRunning
-    , _handleQuery    = const $ return ()
+    , _handleQuery    = S.handleQuery
     , _handleControl  = S.handleControl
     }
 
