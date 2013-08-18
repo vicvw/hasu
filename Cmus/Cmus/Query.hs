@@ -46,8 +46,9 @@ handleQuery args = (putStrLn .) >>> (=<< fromJust <$> query) $ case args of
         Stopped -> "止"
 
     prefix 前 = fmap (前 ++)
-
     maybeEmpty = fromMaybe ""
+
+
 query :: IO (Maybe Metadata)
 query = (<$> cmus Query) $
     fmap (either (error . show) id

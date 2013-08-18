@@ -7,7 +7,9 @@ import qualified Vlc     as V
 
 
 import Control.Applicative  ((<$>))
+import Control.Arrow        ((>>>))
 import Control.Monad        (filterM)
+import Data.Maybe
 import System.Environment   (getArgs)
 
 
@@ -15,10 +17,14 @@ main :: IO ()
 main = do
     args <- getArgs
 
-    case args of
-        ("q" : rest)  -> mapM_ (($ rest) . _handleQuery)   =<< running
-        ("c" : rest)  -> mapM_ (($ rest) . _handleControl) =<< running
-        _             -> putStrLn "悪"
+    (running >>=) $ listToMaybe >>> maybe
+        (case args of
+            ["q", "status"] -> putStrLn "無"
+            _               -> putStrLn "")
+        (case args of
+            ("q" : rest)  -> ($ rest) . _handleQuery
+            ("c" : rest)  -> ($ rest) . _handleControl
+            _             -> const $ putStrLn "悪")
 
     where
     running = take 1 <$> filterM (fmap (== True) . _isRunning) players

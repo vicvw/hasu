@@ -31,7 +31,7 @@ handleQuery args = (putStrLn .) >>> (=<< fromJust <$> query) $ case args of
     ["artist", 前]  -> (前 ++) . head . _artist
     ["title", 前]   -> (前 ++) . _title
     ["now", 前]     -> (前 ++) . _title
-    ["progress"]    -> show . uncurry div . (_position &&& _length)
+    ["progress"]    -> show . uncurry div . ((* 100) . _position &&& _length)
     _               -> const "悪"
 
     where
