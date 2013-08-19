@@ -16,8 +16,8 @@ xte :: [String] -> IO ()
 xte args = void $ readProcess "xte" args ""
 
 
+doEverySec s = doEvery    $ s * 10^6
+doEveryMin m = doEverySec $ m * 60
+
 doEvery, doEverySec, doEveryMin :: Int -> IO () -> IO ()
 doEvery μ action = forever $ action >> threadDelay μ
-
-doEverySec s = doEvery (s * 10^6)
-doEveryMin m = doEverySec (m * 60)

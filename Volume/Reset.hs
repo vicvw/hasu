@@ -11,4 +11,4 @@ main :: IO ()
 main = do
     setVolumeOut 0
 
-    2 `replicateM_` increaseVolumeOut
+    replicateM_ 2 increaseVolumeOut

@@ -24,10 +24,11 @@ handleQuery args = (putStrLn .) >>> (=<< fromJust <$> query) $ case args of
     ["status"]      -> showStatus . _status
     ["url"]         -> fromJust . _file
     ["artist", 前]  -> maybeEmpty . prefix 前 . _artist
-    ["title", 前]   -> maybeEmpty . prefix 前 . _title
-    ["now", 前]     -> \q -> fromMaybe
-        (maybeEmpty . prefix 前 . _title $ q)
-        . prefix 前 . _stream $ q
+
+    ["title", 前]   -> uncurry fromMaybe .
+        (maybeEmpty . prefix 前 . _title
+         &&&
+         prefix 前 . _stream)
 
     ["progress"]    -> \q -> show $
         if _status q == Stopped
