@@ -1,6 +1,6 @@
 module Omo
     ( different
-    , 全, 風, 空
+    , 無, 全, 風, 空
     , Diff
     , DiffT
     ) where
@@ -10,23 +10,23 @@ import Control.Applicative  ((<$>))
 import Data.Maybe           (fromMaybe)
 
 
-different :: a -> (Diff a -> Diff a) -> IO a
-different failed diff = do
-    host <- getHostname
-
-    return
-        . fromMaybe failed
-        . ($ diff empty)
-        $ case host of
-        "kaze" -> kaze
-        "sora" -> sora
+different :: a -> (DiffT a) -> IO a
+different failed diff = (<$> hostname)
+    $ \host -> fromMaybe failed
+    . ($ diff empty)
+    $ case host of
+    "kaze" -> kaze
+    "sora" -> sora
 
     where
-    getHostname = takeWhile (/= '\n')
-              <$> readFile "/etc/hostname"
+    hostname = takeWhile (/= '\n')
+           <$> readFile "/etc/hostname"
 
-    empty = Diff Nothing Nothing
+    empty = 無 undefined
 
+
+無 :: DiffT a
+無 = const $ Diff Nothing Nothing
 
 全, 風, 空 :: a -> DiffT a
 全 x      = foldl1 (.) . map ($ x) $ [風, 空]

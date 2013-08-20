@@ -2,16 +2,10 @@ module Main (main) where
 
 
 import Omo
-
-
-import Control.Monad  (void)
-import System.Cmd     (system)
+import Omo.IO
 
 
 main :: IO ()
-main = void . system =<< test
-
-    where
-    test = different ""
-        $ 風 "echo blub"
-        . 空 ""
+main = differentIO
+    $ 風 (putStrLn "kaze")
+    . 空 (putStrLn "sora")
