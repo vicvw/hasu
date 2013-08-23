@@ -20,8 +20,10 @@ import Omo            (different, 風, 空)
 
 
 import Control.Applicative hiding ((<|>), many)
+import Control.Arrow  ((&&&))
 import Control.Monad  (void, unless, when)
 
+import Data.Char      (toLower)
 import Data.List      (minimumBy)
 import Data.Maybe     (fromJust, fromMaybe)
 import Data.Ord       (comparing)
@@ -44,7 +46,7 @@ volumeOut = do
 
 volumeOutLinear :: IO Level
 volumeOutLinear = hostVolumeSteps >>=
-    (`fmap` volumeOut) . linearize
+    (<$> volumeOut) . linearize
 
     where
     linearize steps = fromJust . (`lookup` mapping steps)
@@ -64,23 +66,28 @@ isMutedOut = do
        *> yesNo
 
 
-isMutedApp :: String -> IO Bool
-isMutedApp app = do
-    index <- indexApp app
-
-    parsePacmd ["list-sink-inputs"] (== "yes")
+isMutedApp :: String -> IO (Maybe Bool)
+isMutedApp app = indexApp app >>= maybe
+    (return Nothing)
+    (\index ->
+    parsePacmd ["list-sink-inputs"] (Just . (== "yes"))
         $ manyTill anyChar (try . string $ "index: " ++ index)
        *> manyTill anyChar (try $ string "muted: ")
-       *> yesNo
+       *> yesNo)
 
 
 yesNo :: Parser String
 yesNo = string "yes" <|> string "no"
 
 
-tillBinary :: String -> Parser String
-tillBinary app = string "application.process.binary = \""
-    *> manyTill anyChar (string app)
+tillApp :: String -> Parser String
+tillApp app = try . manyTill anyChar $ stringI app
+
+-- tillApp app = try $ string "application.process.binary = \""
+--     *> manyTill anyChar (stringI app)
+
+    where
+    stringI = mapM (uncurry (<|>) . (char &&& char . toLower))
 
 
 muteOut, unmuteOut :: IO ()
@@ -105,16 +112,19 @@ muteApp   = changeMuteApp unless
 unmuteApp = changeMuteApp when
 
 
-changeMuteApp :: (Bool -> IO () -> IO a) -> String -> IO a
-changeMuteApp cond app = isMutedApp app >>=
+changeMuteApp :: (Bool -> IO () -> IO ()) -> String -> IO ()
+changeMuteApp cond app = isMutedApp app >>= maybe
+    (return ())
     (`cond` toggleMuteApp app)
 
 
 toggleMuteApp :: String -> IO ()
-toggleMuteApp app = toggleMute
-    (indexApp app)
-    (isMutedApp app)
-    "set-sink-input-mute"
+toggleMuteApp app = indexApp app >>= maybe
+    (return ())
+    (const $ toggleMute
+        (fromJust <$> indexApp app)
+        (fromJust <$> isMutedApp app)
+        "set-sink-input-mute")
 
 
 toggleMute :: IO String -> IO Bool -> String -> IO ()
@@ -153,7 +163,7 @@ changeVolumeOut selector = do
 setVolumeOut :: Level -> IO ()
 setVolumeOut level = do
     current <- indexCurrentOut
-    vsteps  <- subtract 1 `fmap` volumeSteps
+    vsteps  <- subtract 1 <$> volumeSteps
 
     let newv = round $ level / 100 * fromIntegral vsteps
 
@@ -192,11 +202,13 @@ indexCurrentOut = parsePacmd ["list-sinks"] id
    *> many1 digit
 
 
-indexApp :: String -> IO String
-indexApp app = parsePacmd ["list-sink-inputs"] id
+indexApp :: String -> IO (Maybe String)
+indexApp app = parsePacmdFail ["list-sink-inputs"]
+    (const Nothing)
+    Just
     $ many (try tillIndex)
    *> many1 digit
-   <* manyTill anyChar (try $ tillBinary app)
+   <* manyTill anyChar (tillApp app)
 
     where
     tillIndex  = manyTill anyChar . try $ string "index: "
@@ -211,12 +223,15 @@ volumeSteps = parsePacmd ["list-sinks"] read
 
 
 parsePacmd :: [String] -> (a -> b) -> Parser a -> IO b
-parsePacmd args succeeded parser =
-    (`fmap` readPacmd args) $
-        either
-            (error . show)
-            succeeded
-            . parse parser (head args)
+parsePacmd args = parsePacmdFail args $ error . show
+
+
+parsePacmdFail :: [String] -> (ParseError -> b) -> (a -> b) -> Parser a -> IO b
+parsePacmdFail args failed succeeded parser =
+    (<$> readPacmd args) $ either
+        failed
+        succeeded
+        . parse parser (head args)
 
 
 readPacmd :: [String] -> IO String
