@@ -65,15 +65,20 @@ query = (<$> cmus Query) $
         artist              <- parseTag "artist"                  anyChar
         album               <- parseTag "album"                   anyChar
         title               <- parseTag "title"                   anyChar
-        date                <- parseTag "date"                    anyChar
+        date                <- parseTag "date"                    digit
+        _                   <- parseTag "originaldate"            digit
         genre               <- parseTag "genre"                   anyChar
         discNumber          <- parseTag "discnumber"              digit
         trackNumber         <- parseTag "tracknumber"             digit
         albumArtist         <- parseTag "albumartist"             anyChar
+        _                   <- parseTag "artistsort"              anyChar
+        _                   <- parseTag "albumartistsort"         anyChar
         composer            <- parseTag "composer"                anyChar
         conductor           <- parseTag "conductor"               anyChar
         label_              <- parseTag "label"                   anyChar
         publisher           <- parseTag "publisher"               anyChar
+        _                   <- parseTag "musicbrainz_trackid"     anyChar
+        _                   <- parseTag "media"                   anyChar
         comment             <- parseTag "comment"                 anyChar
         replayGainTrackGain <- parseTag "replaygain_track_gain"   anyChar
 
