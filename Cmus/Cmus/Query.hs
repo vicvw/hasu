@@ -1,6 +1,5 @@
 module Cmus.Query
-    ( handleQuery
-    , query
+    ( query
     , fromDuration
     , Metadata (..)
     , Status (..)
@@ -12,42 +11,7 @@ import Cmus.General
 
 import Text.ParserCombinators.Parsec
 
-import Control.Arrow        ((&&&), (>>>))
 import Control.Applicative  ((<$>), (<*), (*>))
-
-import Data.Maybe           (fromJust, fromMaybe)
-
-
-handleQuery :: [String] -> IO ()
-handleQuery args = (putStrLn .) >>> (=<< fromJust <$> query) $ case args of
-    ["all"]         -> show
-    ["status"]      -> showStatus . _status
-    ["url"]         -> fromJust . _file
-    ["artist", 前]  -> maybeEmpty . prefix 前 . _artist
-
-    ["title", 前]   -> uncurry fromMaybe .
-        (maybeEmpty . prefix 前 . _title
-         &&&
-         prefix 前 . _stream)
-
-    ["progress"]    -> \q -> show $
-        if _status q == Stopped
-        then 0
-        else uncurry div
-           . ((* 100) . fromJust . _position &&&
-              fromDuration . fromJust . _duration)
-           $ q
-
-    _ -> const "悪"
-
-    where
-    showStatus status = case status of
-        Playing -> "再"
-        Paused  -> "休"
-        Stopped -> "止"
-
-    prefix 前 = fmap (前 ++)
-    maybeEmpty = fromMaybe ""
 
 
 query :: IO (Maybe Metadata)

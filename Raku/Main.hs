@@ -1,14 +1,16 @@
 module Main (main) where
 
 
-import qualified Cmus    as C
-import qualified Spotify as S
-import qualified Vlc     as V
+-- import qualified Spotify as S
+-- import qualified Vlc     as V
+
+import MediaPlayer.Interface
+import MediaPlayer.Cmus
 
 
 import Control.Applicative  ((<$>))
-import Control.Arrow        ((>>>))
-import Control.Monad        (filterM)
+-- import Control.Arrow        ((>>>))
+import Control.Monad        ((<=<), filterM)
 import Data.Maybe
 import System.Environment   (getArgs)
 
@@ -17,45 +19,44 @@ main :: IO ()
 main = do
     args <- getArgs
 
-    (running >>=) $ listToMaybe >>> maybe
+    (running >>=) $ maybe
         (case args of
             ["q", "status"]   -> putStrLn "無"
             ["q", "progress"] -> putStrLn "0"
             _                 -> putStrLn "")
+
         (case args of
-            ("q" : rest)  -> ($ rest) . _handleQuery
-            ("c" : rest)  -> ($ rest) . _handleControl
-            _             -> const $ putStrLn "悪")
+            ("q" : cmd) -> case cmd of
+                ["status"]    -> putStrLn <=< _status
+                ["progress"]  -> putStrLn <=< _progress
+                ["artist", p] -> putStrLn <=< ($ p) . _artist
+                ["album",  p] -> putStrLn <=< ($ p) . _album
+                ["title",  p] -> putStrLn <=< ($ p) . _title
+
+            ("c" : cmd) -> case cmd of
+                ["play"]      -> _play
+                ["toggle"]    -> _toggle
+                ["stop"]      -> _stop
+                ["prev"]      -> _previous
+                ["next"]      -> _next
+
+            _ -> const $ putStrLn "悪")
 
     where
-    running = take 1 <$> filterM (fmap (== True) . _isRunning) players
-    players = [cmus, spotify, vlc]
+    running = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
+    -- players = [vlc, spotify, cmus]
+    players = [cmus]
 
 
-cmus, spotify, vlc :: MediaPlayer
-cmus = MediaPlayer
-    { _isRunning      = C.isRunning
-    , _handleQuery    = C.handleQuery
-    , _handleControl  = C.handleControl
-    }
+-- spotify = MediaPlayer
+--     { _isRunning      = S.isRunning
+--     , _handleQuery    = S.handleQuery
+--     , _handleControl  = S.handleControl
+--     }
 
 
-spotify = MediaPlayer
-    { _isRunning      = S.isRunning
-    , _handleQuery    = S.handleQuery
-    , _handleControl  = S.handleControl
-    }
-
-
-vlc = MediaPlayer
-    { _isRunning      = V.isRunning
-    , _handleQuery    = V.handleQuery
-    , _handleControl  = V.handleControl
-    }
-
-
-data MediaPlayer = MediaPlayer
-    { _isRunning      :: IO Bool
-    , _handleQuery    :: [String] -> IO ()
-    , _handleControl  :: [String] -> IO ()
-    }
+-- vlc = MediaPlayer
+--     { _isRunning      = V.isRunning
+--     , _handleQuery    = V.handleQuery
+--     , _handleControl  = V.handleControl
+--     }

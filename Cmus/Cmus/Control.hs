@@ -1,6 +1,5 @@
 module Cmus.Control
-    ( handleControl
-    , play
+    ( play
     , toggle
     , stop
     , previous
@@ -12,16 +11,6 @@ import Cmus.General
 
 
 import Control.Monad  (void, when)
-
-
-handleControl :: [String] -> IO ()
-handleControl args = case args of
-    ["play"]   -> play
-    ["toggle"] -> toggle
-    ["stop"]   -> stop
-    ["prev"]   -> previous
-    ["next"]   -> next
-    _          -> error "悪"
 
 
 play, toggle, stop, previous, next :: IO ()
