@@ -44,9 +44,10 @@ java args file = do
     putStrLn "中"
     code <- system $ printf "javac %s" file
 
-    clear
     case code of
-        ExitSuccess   -> void . system $ printf "java %s %s" (takeBaseName file) (unwords args)
+        ExitSuccess   -> do
+            clear
+            void . system $ printf "java %s %s" (takeBaseName file) (unwords args)
         ExitFailure _ -> return ()
 
 c     = unknown
