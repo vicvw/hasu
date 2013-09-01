@@ -2,10 +2,10 @@ module Main (main) where
 
 
 -- import qualified Spotify as S
--- import qualified Vlc     as V
 
 import MediaPlayer.Interface
 import MediaPlayer.Cmus
+import MediaPlayer.Vlc
 
 
 import Control.Applicative  ((<$>))
@@ -45,7 +45,7 @@ main = do
     where
     running = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
     -- players = [vlc, spotify, cmus]
-    players = [cmus]
+    players = [vlc, cmus]
 
 
 -- spotify = MediaPlayer
