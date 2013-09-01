@@ -1,8 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Vlc.Control
-    ( handleControl
-    , play
+    ( play
     , toggle
     , stop
     , previous
@@ -17,16 +16,6 @@ import DBus
 import DBus.Client
 
 import Control.Monad        (void)
-
-
-handleControl :: [String] -> IO ()
-handleControl args = case args of
-    ["play"]   -> play
-    ["toggle"] -> toggle
-    ["stop"]   -> stop
-    ["prev"]   -> previous
-    ["next"]   -> next
-    _          -> error "illegal command"
 
 
 play, toggle, stop, previous, next :: IO ()

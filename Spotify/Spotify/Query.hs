@@ -5,6 +5,7 @@ module Spotify.Query
     , query
     , status
     , Metadata (..)
+    , Status (..)
     ) where
 
 

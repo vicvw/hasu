@@ -1,17 +1,15 @@
 module Main (main) where
 
 
--- import qualified Spotify as S
-
 import MediaPlayer.Interface
 import MediaPlayer.Cmus
+import MediaPlayer.Spotify
 import MediaPlayer.Vlc
 
 
 import Control.Applicative  ((<$>))
--- import Control.Arrow        ((>>>))
 import Control.Monad        ((<=<), filterM)
-import Data.Maybe
+import Data.Maybe           (listToMaybe)
 import System.Environment   (getArgs)
 
 
@@ -44,19 +42,4 @@ main = do
 
     where
     running = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
-    -- players = [vlc, spotify, cmus]
-    players = [vlc, cmus]
-
-
--- spotify = MediaPlayer
---     { _isRunning      = S.isRunning
---     , _handleQuery    = S.handleQuery
---     , _handleControl  = S.handleControl
---     }
-
-
--- vlc = MediaPlayer
---     { _isRunning      = V.isRunning
---     , _handleQuery    = V.handleQuery
---     , _handleControl  = V.handleControl
---     }
+    players = [vlc, spotify, cmus]
