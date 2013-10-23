@@ -35,6 +35,7 @@ query = (<$> cmus Query) $
         discNumber          <- parseTag "discnumber"              digit
         trackNumber         <- parseTag "tracknumber"             digit
         albumArtist         <- parseTag "albumartist"             anyChar
+        _                   <- parseTag "compilation"             digit
         _                   <- parseTag "artistsort"              anyChar
         _                   <- parseTag "albumartistsort"         anyChar
         composer            <- parseTag "composer"                anyChar

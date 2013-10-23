@@ -9,6 +9,7 @@ module Dropbox
     ) where
 
 
+import Control.Applicative    ((<$>))
 import Control.Exception.Base (bracket)
 import Control.Monad          (filterM)
 
@@ -53,12 +54,12 @@ getFilestatusManyP :: String -> IO [(FilePath, Filestatus)]
 getFilestatusManyP path = mapM getFilestatusP =<< ls
     where
     ls = mapM (toDropboxPathRel path) =<<
-              fmap (filter (not . (`elem` [".", ".."])))
-                   (getDirectoryContents =<< toDropboxPath path)
+            filter (not . (`elem` [".", ".."])) <$>
+                (getDirectoryContents =<< toDropboxPath path)
 
 
 getFilestatusP :: FilePath -> IO (FilePath, Filestatus)
-getFilestatusP path = (,) path `fmap` getFilestatus path
+getFilestatusP path = (,) path <$> getFilestatus path
 
 
 getFilestatus :: FilePath -> IO Filestatus
@@ -106,7 +107,7 @@ withDropbox after f = do
 
     bracket (conn dbSocket) sClose $ \sock -> do
         f sock
-        after `fmap` recvUntil sock "done"
+        after <$> recvUntil sock "done"
 
     where
     conn addr = do
@@ -114,7 +115,7 @@ withDropbox after f = do
         connect sock $ SockAddrUnix addr
         return sock
 
-    recvUntil sock line = unlines `fmap` recvUntil' []
+    recvUntil sock line = unlines <$> recvUntil' []
         where
         recvUntil' acc = do
             l <- recvLine
