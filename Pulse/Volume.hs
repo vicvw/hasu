@@ -39,7 +39,8 @@ volumeOut = do
 
     parsePacmd ["list-sinks"] read
         $ manyTill anyChar (string $ "* index: " ++ current)
-       *> manyTill anyChar (try $ string "volume: 0:")
+       *> manyTill anyChar (try $ string "volume:")
+       *> manyTill anyChar (char '/')
        *> skipMany1 space
        *> many1 digit
 

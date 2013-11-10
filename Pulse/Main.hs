@@ -5,4 +5,4 @@ import Volume
 
 
 main :: IO ()
-main = print =<< isMutedApp "spotify"
+main = print =<< volumeOutLinear
