@@ -6,7 +6,7 @@ import Dzen.Dzen
 import Dzen.Gdbar
 import Dzen.Misc
 
-import Omo  (different, 風, 空)
+import Omo  (different, onHost, 風, 空)
 
 import Volume
 
@@ -85,3 +85,6 @@ gdbarVolume (ScreenSize _ _) muted = gdbar . concat $
     segs = unsafePerformIO . different (error "unknown host")
         $ 風 16
         . 空 15
+
+        . onHost "aristoteles" 16
+        . onHost "heraklit" 15
