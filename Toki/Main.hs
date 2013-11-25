@@ -18,8 +18,8 @@ import System.Process       (readProcess)
 
 
 main :: IO ()
-main = callibrate $ everyQuarter notify
--- main = notify =<< getTime
+-- main = callibrate $ everyQuarter notify
+main = notify =<< getTime
 
 
 notify :: LocalTime -> IO ()
@@ -119,8 +119,8 @@ display time = do
         , YPosition   5
         , Background  $ grey 0
         , Foreground  $ grey 255
-        -- , Font        "UmePlus P Gothic:size=20"
-        , Font        "WenQuanYi Micro Hei:size=12"
+        , Font        "UmePlus P Gothic:size=12"
+        -- , Font        "WenQuanYi Micro Hei:size=12"
         ]
 
         where
