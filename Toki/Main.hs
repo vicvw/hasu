@@ -37,9 +37,9 @@ notify time = do
 
     where
     fmtString = concat
-        [ "^fn(:size=20:bold)%H"
+        [ "^fn(:size=12:bold)%H"
         , "^fn()時"
-        , "^fn(:size=20:bold)%M"
+        , "^fn(:size=12:bold)%M"
         , "^fn()分"
         ]
 
@@ -119,12 +119,15 @@ display time = do
         , YPosition   5
         , Background  $ grey 0
         , Foreground  $ grey 255
-        , Font        "UmePlus P Gothic:size=20"
+        -- , Font        "UmePlus P Gothic:size=20"
+        , Font        "WenQuanYi Micro Hei:size=12"
         ]
 
         where
-        height = 100
-        width  = 200
+        -- height = 100
+        height = 35
+        -- width  = 200
+        width  = 100
         -- halve  = (`div` 2)
 
 
