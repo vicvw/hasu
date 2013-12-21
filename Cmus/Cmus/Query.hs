@@ -15,131 +15,56 @@ import Control.Applicative  ((<$>), (<*), (*>))
 
 
 query :: IO (Maybe Metadata)
-query = (<$> cmus Query) $
-    fmap (either (error . show) id
-                 . parse parseQuery "cmus-remote -Q")
+query = (<$> cmus Query) $ \mq -> (<$> mq) $ \q -> Metadata
+    { _status           = toStatus   . parseQuery      q "status"                 $ many1 letter
+    , _file             =              parseQueryMaybe q "file"                   $ many1 anyChar
+    , _duration         = fmap toDur . parseQueryMaybe q "duration"               $ string "-1" <|> many1 digit
+    , _position         = fmap read  . parseQueryMaybe q "position"               $ many1 digit
+
+    , _artist           =              parseQueryMaybe q "tag artist"             $ many anyChar
+    , _album            =              parseQueryMaybe q "tag album"              $ many anyChar
+    , _title            =              parseQueryMaybe q "tag title"              $ many anyChar
+    , _discNumber       = fmap read  . parseQueryMaybe q "tag discNumber"         $ many digit
+    , _trackNumber      = fmap read  . parseQueryMaybe q "tag trackNumber"        $ many digit
+    , _albumArtist      =              parseQueryMaybe q "tag albumArtist"        $ many anyChar
+
+    , _stream           =              parseQueryMaybe q "stream"                 $ many anyChar
+
+    , _aaaMode          = toAAAMode  . parseQuery      q "set aaa_mode"           $ many letter
+    , _continue         = toBool     . parseQuery      q "set continue"           $ many letter
+    , _playLibrary      = toBool     . parseQuery      q "set play_library"       $ many letter
+    , _playSorted       = toBool     . parseQuery      q "set play_sorted"        $ many letter
+    , _replayGain       = toBool     . parseQuery      q "set replaygain"         $ many letter
+    , _replayGainLimit  = toBool     . parseQuery      q "set replaygain_limit"   $ many letter
+    , _replayGainPreAmp = read       . parseQuery      q "set replaygain_preamp"  . many $ digit <|> char '.'
+    , _repeat           = toBool     . parseQuery      q "set repeat"             $ many letter
+    , _repeatCurrent    = toBool     . parseQuery      q "set repeat_current"     $ many letter
+    , _shuffle          = toBool     . parseQuery      q "set shuffle"            $ many letter
+    , _softVolume       = toBool     . parseQuery      q "set softvol"            $ many letter
+    , _volumeLeft       = read       . parseQuery      q "set vol_left"           $ many digit
+    , _volumeRight      = read       . parseQuery      q "set vol_right"          $ many digit
+    }
 
     where
-    parseQuery = do
-        status              <- parseGenericMany       "status"    letter
-        file                <- opt . parseGenericMany "file"      $ anyChar
-        duration            <- opt . parseGeneric     "duration"  $ (string "-1" <|> many1 digit) <* newline
-        position            <- opt . parseGenericMany "position"  $ digit
+    parseQuery      = parseQuery' $ either (error . show) id
+    parseQueryMaybe = parseQuery' $ either (const Nothing) Just
 
-        artist              <- parseTag "artist"                  anyChar
-        album               <- parseTag "album"                   anyChar
-        title               <- parseTag "title"                   anyChar
-        date                <- parseTag "date"                    digit
-        _                   <- parseTag "originaldate"            digit
-        genre               <- parseTag "genre"                   anyChar
-        discNumber          <- parseTag "discnumber"              digit
-        trackNumber         <- parseTag "tracknumber"             digit
-        albumArtist         <- parseTag "albumartist"             anyChar
-        _                   <- parseTag "compilation"             digit
-        _                   <- parseTag "artistsort"              anyChar
-        _                   <- parseTag "albumartistsort"         anyChar
-        composer            <- parseTag "composer"                anyChar
-        conductor           <- parseTag "conductor"               anyChar
-        label_              <- parseTag "label"                   anyChar
-        publisher           <- parseTag "publisher"               anyChar
-        _                   <- parseTag "musicbrainz_trackid"     anyChar
-        _                   <- parseTag "media"                   anyChar
-        comment             <- parseTag "comment"                 anyChar
-        replayGainTrackGain <- parseTag "replaygain_track_gain"   anyChar
-
-        stream              <- opt . parseGenericMany "stream"    $ anyChar
-
-        aaaMode             <- parseSet "aaa_mode"                letter
-        continue            <- parseSet "continue"                letter
-        playLibrary         <- parseSet "play_library"            letter
-        playSorted          <- parseSet "play_sorted"             letter
-        replayGain          <- parseSet "replaygain"              letter
-        replayGainLimit     <- parseSet "replaygain_limit"        letter
-        replayGainPreAmp    <- parseSet "replaygain_preamp"       $ digit <|> char '.'
-        repeat_             <- parseSet "repeat"                  letter
-        repeatCurrent       <- parseSet "repeat_current"          letter
-        shuffle             <- parseSet "shuffle"                 letter
-        softVolume          <- parseSet "softvol"                 letter
-        volumeLeft          <- parseSet "vol_left"                digit
-        volumeRight         <- parseSet "vol_right"               digit
-
-        return Metadata
-            { _status               = toStatus status
-            , _file                 = toMaybe file
-            , _duration             = toDuration <$> toMaybe duration
-            , _position             = read <$> toMaybe position
-
-            , _artist               = toMaybe artist
-            , _album                = toMaybe album
-            , _title                = toMaybe title
-            , _date                 = toMaybe date
-            , _genre                = toMaybe genre
-            , _discNumber           = read <$> toMaybe discNumber
-            , _trackNumber          = read <$> toMaybe trackNumber
-            , _albumArtist          = toMaybe albumArtist
-            , _composer             = toMaybe composer
-            , _conductor            = toMaybe conductor
-            , _label                = toMaybe label_
-            , _publisher            = toMaybe publisher
-            , _comment              = toMaybe comment
-            , _replayGainTrackGain  = toMaybe replayGainTrackGain
-
-            , _stream               = toMaybe stream
-
-            , _aaaMode              = toAAAMode aaaMode
-            , _continue             = toBool continue
-            , _playLibrary          = toBool playLibrary
-            , _playSorted           = toBool playSorted
-            , _replayGain           = toBool replayGain
-            , _replayGainLimit      = toBool replayGainLimit
-            , _replayGainPreAmp     = read replayGainPreAmp
-            , _repeat               = toBool repeat_
-            , _repeatCurrent        = toBool repeatCurrent
-            , _shuffle              = toBool shuffle
-            , _softVolume           = toBool softVolume
-            , _volumeLeft           = read volumeLeft
-            , _volumeRight          = read volumeRight
-            }
-
-    opt = option "" . try
-
-    parseGeneric str parser
-        = string str
-       *> space
-       *> parser
-
-    parseGenericMany str parser
-        = parseGeneric str
-        $ manyTill parser newline
-
-    parseTag str parser
-        = opt
-        $ string "tag"
-       *> space
-       *> string str
-       *> space
-       *> manyTill parser newline
-
-    parseSet str parser
-        = string "set"
-       *> space
-       *> string str
-       *> space
-       *> manyTill parser newline
+    parseQuery' f q str parser = f $ parse parser' str q
+        where
+        parser' = manyTill anyChar (try $ string str)
+               *> space
+               *> parser
+               <* newline
 
     toStatus str = case str of
         "playing" -> Playing
         "paused"  -> Paused
         "stopped" -> Stopped
-        _         -> error "weird status"
+        s         -> error $ "weird status: " ++ s
 
-    toDuration str = case str of
+    toDur str = case str of
         "-1" -> Infinity
         _    -> Bounded $ read str
-
-    toMaybe str = case str of
-        "" -> Nothing
-        _  -> Just str
 
     toAAAMode str = case str of
         "all"    -> All
@@ -161,19 +86,11 @@ data Metadata = Metadata
     , _position             :: Maybe Integer
 
     , _artist               :: Maybe (Tag String)
+    , _albumArtist          :: Maybe (Tag String)
     , _album                :: Maybe (Tag String)
     , _title                :: Maybe (Tag String)
-    , _date                 :: Maybe (Tag String)
-    , _genre                :: Maybe (Tag String)
     , _discNumber           :: Maybe (Tag Integer)
     , _trackNumber          :: Maybe (Tag Integer)
-    , _albumArtist          :: Maybe (Tag String)
-    , _composer             :: Maybe (Tag String)
-    , _conductor            :: Maybe (Tag String)
-    , _label                :: Maybe (Tag String)
-    , _publisher            :: Maybe (Tag String)
-    , _comment              :: Maybe (Tag String)
-    , _replayGainTrackGain  :: Maybe (Tag String)
 
     , _stream               :: Maybe String
 

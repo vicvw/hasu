@@ -1,31 +1,33 @@
 module Main where
 
 
-import System.Cmd     (system)
-import System.IO      (BufferMode (..), hFlush, hSetBuffering, hSetEcho, stdin, stdout)
-import System.Random  (randomRIO)
+import Control.Applicative  ((<$>))
+
+import System.Cmd           (system)
+import System.IO            (BufferMode (..), hFlush, hSetBuffering, hSetEcho, stdin, stdout)
+import System.Random        (randomRIO)
 
 
 main :: IO ()
 main = mainLoop
     where
     mainLoop = do
-        kana <- randomKana [平仮名, 平仮名濁点, 他の平仮名]
-        putStrLn kana
+        -- kana <- randomKana [平仮名, 平仮名濁点]
+        hangeul <- randomFromList $ concat [한글]
+        putStrLn hangeul
 
         prompt ""
 
-        doUntil (== kana)
+        doUntil (== hangeul)
                 getInput
-                prompt $
-                \x -> do
+                prompt $ \x -> do
                     prompt $ x ++ "\n"
                     system "clear"
                     mainLoop
 
         where
         prompt result = do
-            putStr $ "\r仮名 ▶ " ++ result
+            putStr $ "\r仮名 " ++ result
             hFlush stdout
 
 
@@ -45,24 +47,17 @@ getInput = do
     hSetEcho      stdin False
     hSetBuffering stdin NoBuffering
 
-    input <- elemToList `fmap` getChar
+    input <- getChar
     putStr " "
 
-    return input
+    return $ return input
 
 
-randomKana :: [String] -> IO String
-randomKana = (elemToList `fmap`)
-           . randomElement
-           . concat
+randomFromList :: String -> IO String
+randomFromList = (return <$>) . randomElement
 
     where
-    randomElement xs = (xs !!)
-                `fmap` randomRIO (0, length xs - 1)
-
-
-elemToList :: a -> [a]
-elemToList = (: [])
+    randomElement xs = (xs !!) <$> randomRIO (0, length xs - 1)
 
 
 平仮名, 平仮名濁点, 他の平仮名 :: String
@@ -125,4 +120,11 @@ elemToList = (: [])
 他 = concat
     [ "ヵヶー"
     , "、。・"
+    ]
+
+
+한글 :: String
+한글 = concat
+    [ "ㄱㄲㅋㅂㅃㅍㅅㅆㅈㅉㅊㄷㄸㅌㅁㄴㅇㄹㅎ"
+    , "ㅗㅛㅏㅑㅓㅕㅜㅠㅐㅒㅔㅖㅣㅡ"
     ]
