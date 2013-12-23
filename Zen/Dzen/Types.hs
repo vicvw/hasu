@@ -38,6 +38,7 @@ data DzenOptions = DzenOptions
     , _dock            :: Bool
     }
 
+
 toArguments :: DzenOptions -> [String]
 toArguments (DzenOptions {..}) = concat
     [ maybeEmpty  "-p" (maybe []) _timeout
@@ -58,21 +59,18 @@ toArguments (DzenOptions {..}) = concat
     , maybeEmpty' "-title-name"   _titleName
     , maybeEmpty' "-slave-name"   _slaveName
     , maybeEmpty' "-xs"           _screen
-    , ifEmpty    "-u"             _updateSim
-    , ifEmpty    "-dock"          _dock
-    , const []                    _events
+    , ifEmpty     "-u"            _updateSim
+    , ifEmpty     "-dock"         _dock
+    , const       []              _events
     ]
 
     where
     maybeEmpty' x  = maybeEmpty x id
-    maybeEmpty x f = maybe [] $ ((x :) . (f showL))
+    maybeEmpty x f = maybe [] $ (x :) . (f $ return . show)
 
     ifEmpty x cond = if cond
         then [x]
         else []
-
-    showL :: Show s => s => [String]
-    showL = return . show
 
 
 data Orientation

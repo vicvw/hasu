@@ -5,7 +5,7 @@ import Dzen.Dzen
 
 
 main :: IO ()
-main = print . toArguments $ defaultOptions
+main = print . unwords . toArguments $ defaultOptions
     { _timeout        = Just $ Just 2
     , _menuMode       = Just $ Just OHorizontal
     , _titleAlignment = Just ALeft
