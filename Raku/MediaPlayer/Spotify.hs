@@ -25,7 +25,10 @@ spotify = MediaPlayer
                      S._length)
                 <$> query
 
-    , _artist     = const $ return ""
+    , _artist     = \p -> (p ++)
+                        . head
+                        . S._artist
+                      <$> query
     , _album      = const $ return ""
     , _title      = \p -> (p ++)
                         . S._title
