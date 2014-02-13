@@ -10,6 +10,7 @@ import qualified Spotify as S
 
 import Control.Applicative  ((<$>))
 import Control.Arrow        ((&&&))
+import Data.List            (intercalate)
 import Data.Maybe           (fromJust)
 
 
@@ -26,7 +27,7 @@ spotify = MediaPlayer
                 <$> query
 
     , _artist     = \p -> (p ++)
-                        . head
+                        . intercalate ", "
                         . S._artist
                       <$> query
     , _album      = const $ return ""

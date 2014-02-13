@@ -30,6 +30,7 @@ main = do
                 ["artist", p] -> putStrLn <=< ($ p) . _artist
                 ["album",  p] -> putStrLn <=< ($ p) . _album
                 ["title",  p] -> putStrLn <=< ($ p) . _title
+                _             -> const $ putStrLn "悪"
 
             ("c" : cmd) -> case cmd of
                 ["play"]      -> _play
@@ -37,6 +38,7 @@ main = do
                 ["stop"]      -> _stop
                 ["prev"]      -> _previous
                 ["next"]      -> _next
+                _             -> const $ putStrLn "悪"
 
             _ -> const $ putStrLn "悪")
 
