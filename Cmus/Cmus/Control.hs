@@ -23,15 +23,16 @@ next     = whenRunning Next
 
 
 toggleStream :: IO ()
-toggleStream = do
-    maybe (return ()) (\q ->
-        maybe (void $ cmus Toggle)
-            (const $ case _status q of
-                Playing -> void $ cmus Stop
-                Paused  -> return ()
-                Stopped -> void $ cmus Play)
-            $ _stream q)
-        =<< query
+toggleStream = maybe
+    (return ())
+    (\q -> maybe
+        (void $ cmus Toggle)
+        (const $ case _status q of
+            Playing -> void $ cmus Stop
+            Paused  -> return ()
+            Stopped -> void $ cmus Play)
+        $ _stream q)
+    =<< query
 
 
 whenRunning :: Command -> IO ()

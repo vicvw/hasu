@@ -17,13 +17,13 @@ data ScreenSize = ScreenSize
 screenSize :: Integer -> IO ScreenSize
 screenSize n = do
     x <- xrandr
-    case parse (parse_screenSize n) "xrandr" x of
+    case parse (parseScreenSize n) "xrandr" x of
         Right d -> return d
         Left _  -> error "xrandr pooped."
 
 
-parse_screenSize :: Integer -> GenParser Char a ScreenSize
-parse_screenSize screen = do
+parseScreenSize :: Integer -> GenParser Char a ScreenSize
+parseScreenSize screen = do
     manyTill anyChar . try $ string (printf "Screen %i" screen)
     manyTill anyChar . try $ string "current "
     x <- manyTill digit $ string " x "

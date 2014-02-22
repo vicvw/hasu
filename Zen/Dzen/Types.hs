@@ -66,11 +66,9 @@ toArguments (DzenOptions {..}) = concat
 
     where
     maybeEmpty' x  = maybeEmpty x id
-    maybeEmpty x f = maybe [] $ (x :) . (f $ return . show)
+    maybeEmpty x f = maybe [] $ (x :) . f (return . show)
 
-    ifEmpty x cond = if cond
-        then [x]
-        else []
+    ifEmpty x cond = [ x | cond ]
 
 
 data Orientation

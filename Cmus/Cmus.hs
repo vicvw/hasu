@@ -1,10 +1,8 @@
 module Cmus
-    ( module Cmus.General
-    , module Cmus.Control
-    , module Cmus.Query
+    ( module Cmus
     ) where
 
 
-import Cmus.General (isRunning)
-import Cmus.Control
-import Cmus.Query
+import Cmus.General as Cmus (isRunning)
+import Cmus.Control as Cmus
+import Cmus.Query   as Cmus

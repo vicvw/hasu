@@ -46,7 +46,7 @@ getWithStatusR origin status = do
 
 getWithStatus :: FilePath -> Filestatus -> IO [FilePath]
 getWithStatus path status =
-    fmap (map fst . filter ((== status) . snd)) $
+    map fst . filter ((== status) . snd) <$>
          getFilestatusManyP path
 
 

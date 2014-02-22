@@ -1,10 +1,8 @@
 module Spotify
-    ( module Spotify.General
-    , module Spotify.Control
-    , module Spotify.Query
+    ( module Spotify
     ) where
 
 
-import Spotify.General
-import Spotify.Control
-import Spotify.Query
+import Spotify.General  as Spotify
+import Spotify.Control  as Spotify
+import Spotify.Query    as Spotify

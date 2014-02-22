@@ -1,10 +1,8 @@
 module Vlc
-    ( module Vlc.General
-    , module Vlc.Control
-    , module Vlc.Query
+    ( module Vlc
     ) where
 
 
-import Vlc.General
-import Vlc.Control
-import Vlc.Query
+import Vlc.General  as Vlc
+import Vlc.Control  as Vlc
+import Vlc.Query    as Vlc

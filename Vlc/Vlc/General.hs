@@ -12,13 +12,13 @@ import DBus
 import DBus.Client
 
 import Control.Applicative  ((<$>))
-import Control.Exception    (catch)
+import Control.Exception    (handle)
 
 import Data.Maybe           (fromJust)
 
 
 isRunning :: IO Bool
-isRunning = withSession $ \client -> flip catch
+isRunning = withSession $ \client -> handle
     (const $ return False :: ClientError -> IO Bool)
     . either (const $ return False) (const $ return True)
         =<< call client (methodCall

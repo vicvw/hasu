@@ -17,18 +17,18 @@ import Control.Applicative  ((<$>), (*>))
 query :: IO (Maybe Metadata)
 query = (<$> cmus Query) $ \mq -> (<$> mq) $ \q -> Metadata
     { _status           = toStatus   . parseQuery      q "status"                 $ many1 letter
-    , _file             =              parseQueryMaybe q "file"                   $ manyNotNewline
+    , _file             =              parseQueryMaybe q "file"                     manyNotNewline
     , _duration         = fmap toDur . parseQueryMaybe q "duration"               $ string "-1" <|> many1 digit
     , _position         = fmap read  . parseQueryMaybe q "position"               $ many1 digit
 
-    , _artist           =              parseQueryMaybe q "tag artist"             $ manyNotNewline
-    , _album            =              parseQueryMaybe q "tag album"              $ manyNotNewline
-    , _title            =              parseQueryMaybe q "tag title"              $ manyNotNewline
+    , _artist           =              parseQueryMaybe q "tag artist"               manyNotNewline
+    , _album            =              parseQueryMaybe q "tag album"                manyNotNewline
+    , _title            =              parseQueryMaybe q "tag title"                manyNotNewline
     , _discNumber       = fmap read  . parseQueryMaybe q "tag discNumber"         $ many digit
     , _trackNumber      = fmap read  . parseQueryMaybe q "tag trackNumber"        $ many digit
-    , _albumArtist      =              parseQueryMaybe q "tag albumArtist"        $ manyNotNewline
+    , _albumArtist      =              parseQueryMaybe q "tag albumArtist"          manyNotNewline
 
-    , _stream           =              parseQueryMaybe q "stream"                 $ manyNotNewline
+    , _stream           =              parseQueryMaybe q "stream"                   manyNotNewline
 
     , _aaaMode          = toAAAMode  . parseQuery      q "set aaa_mode"           $ many letter
     , _continue         = toBool     . parseQuery      q "set continue"           $ many letter

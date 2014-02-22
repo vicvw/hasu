@@ -49,9 +49,9 @@ instance Show GdbarOption where
         (Minimum min)      -> showOption "min" $ show min
         (Maximum max)      -> showOption "max" $ show max
         (Label label)      -> showOption "l"   $ show label
-        (NoNewline nonl)   -> case nonl of
-                                  True  -> showEmptyOption "nonl"
-                                  False -> ""
+        (NoNewline nonl)   -> if nonl
+                              then showEmptyOption "nonl"
+                              else ""
       where
         showEmptyOption = printf "-%s"
         showOption      = printf "-%s %s"

@@ -52,7 +52,7 @@ query = whenRunning . withSession $ \client -> do
              . methodReturnBody
              $ replyPosition
 
-    return $ Metadata
+    return Metadata
         { _status     = status_
         , _url        = fromVariant' . fromJust $ lookup "xesam:url" dict
         , _title      = fromVariant' <$> lookup "xesam:title" dict

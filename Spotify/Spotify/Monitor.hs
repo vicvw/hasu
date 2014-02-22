@@ -27,7 +27,7 @@ muteAds = flip fix False $ \loop wasAd -> do
     maybe' mtitle (return ()) $ \title -> do
         micon <- wmIconName
 
-        maybe' micon (loop wasAd) $ \icon -> do
+        maybe' micon (loop wasAd) $ \icon ->
             -- print title
             -- print icon
 

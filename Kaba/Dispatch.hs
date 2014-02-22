@@ -41,8 +41,7 @@ handle :: ([FilePath], [FilePath])
        -> IO ()
 handle (files, igns) cmd args file (Modified _ mpath) =
     when (null files || isListed) .
-    unless isIgnored $ do
-        -- print path
+    unless isIgnored $
         run cmd args file
 
     where

@@ -7,9 +7,8 @@ import Control.Exception
 
 
 main :: IO ()
-main = do
+main = catch
     (putStrLn . encode =<< getFilestatus "")
-    `catch`
     (const $ putStrLn "無" :: SomeException -> IO ())
 
 
