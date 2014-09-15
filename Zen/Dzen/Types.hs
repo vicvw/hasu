@@ -15,27 +15,27 @@ import Text.Printf (printf)
 
 
 data DzenOptions = DzenOptions
-    { _timeout         :: Maybe (Maybe Integer)
-    , _menuMode        :: Maybe (Maybe Orientation)
-    , _titleAlignment  :: Maybe Alignment
-    , _slaveAlignment  :: Maybe Alignment
-    , _xPosition       :: Maybe Integer
-    , _yPosition       :: Maybe Integer
-    , _width           :: Maybe Integer
-    , _height          :: Maybe Integer
-    , _titleWidth      :: Maybe Integer
-    , _events          :: Maybe ()
-    , _lines           :: Maybe Integer
-    , _font            :: Maybe String
-    , _background      :: Maybe Color
-    , _foreground      :: Maybe Color
-    , _geometry        :: Maybe String
-    , _expand          :: Maybe Direction
-    , _titleName       :: Maybe String
-    , _slaveName       :: Maybe String
-    , _screen          :: Maybe Integer
-    , _updateSim       :: Bool
-    , _dock            :: Bool
+    { _timeout        :: Maybe (Maybe Integer)
+    , _menuMode       :: Maybe (Maybe Orientation)
+    , _titleAlignment :: Maybe Alignment
+    , _slaveAlignment :: Maybe Alignment
+    , _xPosition      :: Maybe Integer
+    , _yPosition      :: Maybe Integer
+    , _width          :: Maybe Integer
+    , _height         :: Maybe Integer
+    , _titleWidth     :: Maybe Integer
+    , _events         :: Maybe ()
+    , _lines          :: Maybe Integer
+    , _font           :: Maybe String
+    , _background     :: Maybe Color
+    , _foreground     :: Maybe Color
+    , _geometry       :: Maybe String
+    , _expand         :: Maybe Direction
+    , _titleName      :: Maybe String
+    , _slaveName      :: Maybe String
+    , _screen         :: Maybe Integer
+    , _updateSim      :: Bool
+    , _dock           :: Bool
     }
 
 

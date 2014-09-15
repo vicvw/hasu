@@ -1,167 +1,157 @@
 module Z
-    ( alias
-    , aliasS
-    , aliasG
-    , depsExist
-    , export
-    , invalidOrder
-    , isValid
-    , missingDeps
-    , validOrder
-    , var
-    , varApp
-    , ZShellExpr
-    ) where
+    where
+--     ( alias
+--     , aliasS
+--     , aliasG
+--     , depsExist
+--     , export
+--     , invalidOrder
+--     , isValid
+--     , missingDeps
+--     , validOrder
+--     , var
+--     , varApp
+--     , ZExpr
+--     ) where
 
 
-import Control.Arrow  ((&&&))
+import Control.Arrow  (first, (&&&), (***))
 
-import Data.List      (intercalate, sort)
+import Data.Function  (on)
+import Data.List      (elemIndex, find, groupBy, intercalate, intersect, nub, sort, sortBy, (\\))
+import Data.Maybe     (fromJust)
+import Data.Ord       (comparing)
+
 import Text.Printf    (printf)
 
--- import Debug.Trace    (traceShow)
+
+topSort :: [ZExpr] -> [Key]
+topSort xs
+    | null $ cycleDetect xs = foldl putBefore [] xs
+    | otherwise             = error $ "cycle: " ++ show (cycleDetect xs)
 
 
-instance Eq ZShellExpr where
-    ZVariable name1 deps1 _ ==
-        ZVariable name2 deps2 _ =
-        name1 == name2 &&
-        deps1 == deps2
-
-    ZExport name1 deps1 ==
-        ZExport name2 deps2 =
-        name1 == name2 &&
-        deps1 == deps2
-
-    ZAlias name1 deps1 _ ==
-        ZAlias name2 deps2 _ =
-        name1 == name2 &&
-        deps1 == deps2
-
-    _ == _ = False
+-- putBefore :: [ZExpr] -> ZExpr -> [ZExpr]
+putBefore :: [Key] -> ZExpr -> [Key]
+putBefore xs x = nub $ case elemIndex (zKey x) xs of
+    Just i  -> uncurry (++) . first (++ zDeps x) $ splitAt i xs
+    _       -> xs ++ zDeps x ++ [zKey x]
 
 
--- TODO: ...
--- instance Ord ZShellExpr where
---     -- (ZVariable {}) `compare`
---     --     (ZAlias {}) = traceShow "v < a" LT
-
---     (ZVariable name1 deps1 _) `compare`
---         (ZVariable name2 deps2 _) =
---         (name1, deps1) `compareBoth` (name2, deps2)
-
---     (ZAlias name1 deps1 _) `compare`
---         (ZAlias name2 deps2 _) =
---         (name1, deps1) `compareBoth` (name2, deps2)
-
---     (ZVariable name1 deps1 _) `compare`
---         (ZAlias name2 deps2 _) =
---         (name1, deps1) `compareBoth` (name2, deps2)
-
---     (ZAlias name1 deps1 _) `compare`
---         (ZVariable name2 deps2 _) =
---         (name1, deps1) `compareBoth` (name2, deps2)
-
---     -- _ `compare` _ = traceShow "else" LT
+cycleDetect :: [ZExpr] -> [[Key]]
+cycleDetect xs
+    = filter ((> 1) . length)
+    . map (\[x1, x2] -> ([zKey x1] `intersect` zDeps x2) ++ ([zKey x2] `intersect` zDeps x1))
+    . combinations 2 $ xs
 
 
--- compareBoth (name1, deps1) (name2, deps2) =
---     if name1 `elem` deps2
---     then traceShow "n1 `elem` d2" LT
-
---     else if name1 `elem` deps2
---         then traceShow "n2 `elem` d1" GT
---         else
---             traceShow "else" EQ
---             -- traceShow "length" $ (length deps1, name1) `compare`
---             --     (length deps2, name2)
+combinations :: Integer -> [ZExpr] -> [[ZExpr]]
+combinations 0 _       = [[]]
+combinations _ []      = []
+combinations k (x:xs)  = map (x :) (combinations (k - 1) xs)
+                      ++ combinations k xs
 
 
-var :: Key -> String -> Deps -> ZShellExpr
-var name value deps = ZVariable name deps $
-    Variable value
+var :: Key -> String -> Deps -> ZExpr
+var name value deps = ZVar name deps $ Var value
 
-varApp :: Key -> String -> Deps -> ZShellExpr
-varApp name value = var name (printf "$%s:%s" name value)
+-- varApp :: Key -> String -> Deps -> ZExpr
+-- varApp name value = var name (printf "$%s:%s" name value)
 
 
-export :: Key -> ZShellExpr
+export :: Key -> ZExpr
 export name = ZExport (printf "export %s" name) [name]
 
 
-alias, aliasS, aliasG :: Key -> String -> Deps -> ZShellExpr
+alias, aliasS, aliasG :: Key -> String -> Deps -> ZExpr
 alias  = alias' AliasNormal
 aliasS = alias' AliasSuffix
 aliasG = alias' AliasGlobal
 
-alias' :: AliasType -> Key -> String -> Deps -> ZShellExpr
-alias' atype name value deps = ZAlias name deps $
-    Alias value atype
+alias' :: AliasType -> Key -> String -> Deps -> ZExpr
+alias' atype name value deps =
+    ZAlias name deps $ Alias value atype
 
 
-isValid :: [ZShellExpr] -> Bool
-isValid conf = all ($ conf) [depsExist, validOrder]
+path :: [String] -> ZExpr
+path ps = var "PATH" (printf "$PATH:%s" $ intercalate ":" ps) []
 
 
-depsExist :: [ZShellExpr] -> Bool
+isUnique :: [ZExpr] -> Bool
+isUnique
+    = all (== 1)
+    . map length
+    . groupBy ((==) `on` zKey)
+    . sort
+
+
+fromKey :: String -> [ZExpr] -> ZExpr
+fromKey k = fromJust . find ((== k) . zKey)
+
+
+-- isValid :: [ZExpr] -> Bool
+-- isValid conf = all ($ conf) [depsExist, validOrder]
+
+
+depsExist :: [ZExpr] -> Bool
 depsExist conf = flip all conf $
-    all (`elem` map zName conf) . zDeps
+    all (`elem` map zKey conf) . zDeps
 
 
-validOrder :: [ZShellExpr] -> Bool
-validOrder conf = flip all conf $
-    \e -> not . any ((zName e `elem`) . zDeps) $
-                    elemsBefore e
+-- validOrder :: [ZExpr] -> Bool
+-- validOrder conf = flip all conf $
+--     \e -> not . any ((zKey e `elem`) . zDeps) $
+--                     elemsBefore e
 
-    where
-    elemsBefore e = takeWhile (/= e) conf
-
-
-missingDeps :: [ZShellExpr] -> [(Key, Deps)]
-missingDeps conf
-    = filter (not . null . snd)
-    . map (zName &&&
-           filter (not . (`elem` map zName conf)) .
-                  zDeps)
-    $ conf
+--     where
+--     elemsBefore e = takeWhile (/= e) conf
 
 
-invalidOrder :: [ZShellExpr] -> (ZShellExpr, [ZShellExpr])
-invalidOrder conf
-    = (,) culprit
-    . filter ((zName culprit `elem`) . zDeps) $
-             elemsBefore culprit
-
-    where
-    culprit = head $ filter (\e -> any ((zName e `elem`) . zDeps) $ elemsBefore e) conf
-    elemsBefore e = takeWhile (/= e) conf
+-- missingDeps :: [ZExpr] -> [(Key, Deps)]
+-- missingDeps conf
+--     = filter (not . null . snd)
+--     . map (zKey &&&
+--            filter (not . (`elem` map zKey conf)) .
+--                   zDeps)
+--     $ conf
 
 
-instance Show ZShellExpr where
+-- invalidOrder :: [ZExpr] -> (ZExpr, [ZExpr])
+-- invalidOrder conf
+--     = (,) culprit
+--     . filter ((zKey culprit `elem`) . zDeps) $
+--              elemsBefore culprit
+
+--     where
+--     culprit = head $ filter (\e -> any ((zKey e `elem`) . zDeps) $ elemsBefore e) conf
+--     elemsBefore e = takeWhile (/= e) conf
+
+
+instance Show ZExpr where
     show expr = case expr of
-        ZVariable { zName      = vname
-                  , zDeps      = vdeps
-                  , zVariable  = Variable vvalue
-                  } ->
-            printf "%s=%s%s"
+        ZVar  { zKey  = vname
+              , zDeps = vdeps
+              , zVar  = Var vvalue
+              } ->
+            printf "%s=%s%s\n"
                 vname
                 (quote vvalue)
                 $ comment vdeps
 
 
-        ZExport { zName      = vname
+        ZExport { zKey       = vname
                 , zDeps      = vdeps
                 } ->
-            printf "%s%s"
+            printf "%s%s\n"
                 vname
                 $ comment vdeps
 
 
-        ZAlias { zName  = aname
+        ZAlias { zKey   = aname
                , zDeps  = adeps
                , zAlias = Alias avalue atype
                } ->
-            printf "alias %s %s=%s%s"
+            printf "alias %s %s=%s%s\n"
                 (show atype)
                 aname
                 (quote avalue)
@@ -173,7 +163,16 @@ instance Show ZShellExpr where
                      . intercalate ", "
                      $ sort deps
 
-        quote string = concat ["'", string, "'"]
+        quote :: String -> String
+        quote = printf "'%s'"
+
+
+instance Ord ZExpr where
+    compare = comparing zKey
+
+
+instance Eq ZExpr where
+    (==) = (==) `on` zKey
 
 
 instance Show AliasType where
@@ -183,23 +182,20 @@ instance Show AliasType where
         AliasGlobal -> "-g"
 
 
--- type ZShellConf = [ZShellExpr]
-
-
-data ZShellExpr
-    = ZVariable
-          { zName      :: Key
-          , zDeps      :: Deps
-          , zVariable  :: Variable
+data ZExpr
+    = ZVar
+          { zKey    :: Key
+          , zDeps   :: Deps
+          , zVar    :: Var
           }
     | ZExport
-          { zName      :: Key
-          , zDeps      :: Deps
+          { zKey    :: Key
+          , zDeps   :: Deps
           }
     | ZAlias
-          { zName      :: Key
-          , zDeps      :: Deps
-          , zAlias     :: Alias
+          { zKey    :: Key
+          , zDeps   :: Deps
+          , zAlias  :: Alias
           }
 
 
@@ -207,7 +203,7 @@ type Key  = String
 type Deps = [Key]
 
 
-data Variable = Variable
+data Var = Var
     { vValue  :: String
     } deriving (Show, Eq)
 
@@ -215,14 +211,11 @@ data Variable = Variable
 data Alias = Alias
     { aValue  :: String
     , aType   :: AliasType
-    } deriving Show
+    } deriving (Show, Eq)
 
 
 data AliasType
     = AliasNormal
     | AliasSuffix
     | AliasGlobal
-
-
--- (-->) :: a -> b -> (a, b)
--- (-->) = (,)
+    deriving Eq

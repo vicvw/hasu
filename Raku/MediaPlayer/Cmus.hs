@@ -9,7 +9,8 @@ import qualified Cmus as C
 
 
 import Control.Applicative  ((<$>), (<|>))
-import Control.Arrow        ((&&&))
+import Control.Arrow        ((&&&), (***))
+import Control.Monad        (join)
 import Data.Maybe           (fromJust, fromMaybe)
 
 
@@ -22,7 +23,8 @@ cmus = MediaPlayer
                         if C._status q == C.Stopped
                         then 0
                         else ($ q)
-                            $ uncurry div
+                            $ round . uncurry (/)
+                            . join (***) fromIntegral
                             . ((* 100) . fromJust . C._position
                                &&&
                                C.fromDuration . fromJust . C._duration)

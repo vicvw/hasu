@@ -3,4 +3,4 @@
 
 bin="volume"
 
-ghc -O2 Main.hs -o $bin && strip $bin
+ghc -dynamic -O2 Main.hs -o $bin && strip $bin

@@ -14,6 +14,7 @@ import Volume
 import System.Environment (getArgs)
 import System.Exit        (exitSuccess)
 import System.IO.Unsafe   (unsafePerformIO)
+-- import System.Process     (system)
 
 
 main :: IO ()
@@ -41,7 +42,9 @@ displayVolumeBar level muted = do
     let dzen1  = dzenVolume scr
         gdbar1 = gdbarVolume scr muted
 
-    runDzen $ "echo " ++ show (level + 1) <|> gdbar1 <|> dzen1
+    runDzen $ "echo " ++ show (level + 1) <|> gdbar1 <|> dzen1 -- ++ "& sleep 0.05; xprop -name 'dzen title' -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xbfffffff"
+
+    -- kill the one before
 
 
 dzenVolume :: ScreenSize -> String

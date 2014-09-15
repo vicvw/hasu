@@ -2,6 +2,7 @@ module Dropbox
     ( getFilestatus
     , getFilestatusP
     , getFilestatusManyP
+    , getMagnitude
     , getWithStatus
     , getWithStatusR
     , toDropboxPath
@@ -21,13 +22,41 @@ import System.FilePath        ((</>))
 import Text.ParserCombinators.Parsec
 
 
+main :: IO ()
+main = do
+    putStrLn =<< getMagnitude
+
+
+getMagnitude :: IO String
+getMagnitude = withDropbox after . flip send $ unlines
+    [ "get_dropbox_status"
+    , "done"
+    ]
+
+    where
+    after = either (error . show) toCharacter .
+                   parse parseStatus "status"
+
+    parseStatus = do
+        string "ok" >> newline
+        string "status" >> tab >> space
+        skipMany $ char '.' <|> space
+        many1 digit
+
+    toCharacter x = case length x of
+        1 -> "一"
+        2 -> "十"
+        3 -> "千"
+        4 -> "萬"
+        _ -> "億"
+
+
 getWithStatusR :: FilePath -> Filestatus -> IO [FilePath]
 getWithStatusR origin status = do
     inOrigin <- getFiles =<< origin `getWithStatus` status
     getWithStatusR' inOrigin origin
 
     where
-
     getWithStatusR' :: [FilePath] -> FilePath -> IO [FilePath]
     getWithStatusR' acc path = do
         withStatus      <- path `getWithStatus` status

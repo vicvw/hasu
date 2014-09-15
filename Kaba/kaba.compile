@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-ghc -O2 Main.hs -o kaba && strip kaba
+ghc -dynamic -O2 Main.hs -o kaba && strip kaba

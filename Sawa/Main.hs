@@ -7,17 +7,14 @@ import System.Process     (readProcess)
 
 
 main :: IO ()
-main = do
-    putStrLn "中"
-    doEveryMin 8 $ xte ["key Control_R"]
+main = doEveryMin 8 $ xte ["key Control_R"]
 
 
 xte :: [String] -> IO ()
 xte args = void $ readProcess "xte" args ""
 
 
-doEverySec s = doEvery    $ s * 10^6
-doEveryMin m = doEverySec $ m * 60
-
-doEvery, doEverySec, doEveryMin :: Int -> IO () -> IO ()
-doEvery μ action = forever $ action >> threadDelay μ
+doEveryMin, doEverySec, doEvery :: Int -> IO () -> IO ()
+doEveryMin m      = doEverySec $ m * 60
+doEverySec s      = doEvery    $ s * 10^6
+doEvery μ action  = forever $ action >> threadDelay μ

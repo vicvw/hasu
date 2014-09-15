@@ -8,8 +8,8 @@ import System.FilePath  (takeFileName)
 
 main :: IO ()
 main = do
-    -- files <- "" `getWithStatusR` Syncing
-    files <- "" `getWithStatusR` Unsyncable
+    files <- "" `getWithStatusR` Syncing
+    -- files <- "" `getWithStatusR` Unsyncable
 
     mapM_ putStrLn files
     -- mapM_ (putStrLn . takeFileName) files

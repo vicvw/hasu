@@ -10,9 +10,9 @@ import General
 import Control.Monad          (void)
 import Text.Printf            (printf)
 
-import System.Cmd             (system)
 import System.Exit            (ExitCode (..))
 import System.FilePath
+import System.Process         (system)
 
 
 handlers :: [([String], Handler)]

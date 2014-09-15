@@ -27,7 +27,7 @@ runDzen :: String -> IO ()
 -- runDzen options = void $ readProcess dzenCmd options ""
 --     where
 --     dzenCmd = "dzen2"
-runDzen options = void . system $ options
+runDzen = void . system
 
 
 infixr 9 <|>

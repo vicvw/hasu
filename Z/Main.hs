@@ -8,16 +8,26 @@ import Control.Monad  (unless)
 
 
 main :: IO ()
-main = if isValid conf
-    then mapM_ print conf
-    else do
-        unless (depsExist conf) $
-            mapM_ print $ missingDeps conf
+main = do
+    print conf
 
-        unless (validOrder conf) $ do
-            print . fst $ invalidOrder conf
-            putStrLn "|"
-            mapM_ print . snd $ invalidOrder conf
+    if isUnique conf && depsExist conf
+    then do
+        print $ fromKey "PATH" conf
+        print $ topSort conf
+    else print "not"
+
+-- main = print conf
+-- main = if isValid conf
+--     then mapM_ print conf
+--     else do
+--         unless (depsExist conf) $
+--             mapM_ print $ missingDeps conf
+
+--         unless (validOrder conf) $ do
+--             print . fst $ invalidOrder conf
+--             putStrLn "|"
+--             mapM_ print . snd $ invalidOrder conf
 
     where
     conf = Conf.conf

@@ -1,1 +1,1 @@
-_Omo/Omo.hs
+../Omo/Omo.hs

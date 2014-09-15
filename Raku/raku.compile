@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-ghc -O2 Main.hs -o raku && strip raku
+ghc -dynamic -O2 -iCmus:Spotify:Vlc Main.hs -o raku && strip raku

@@ -9,7 +9,8 @@ import qualified Vlc as V
 
 
 import Control.Applicative  ((<$>), (<|>))
-import Control.Arrow        ((&&&))
+import Control.Arrow        ((&&&), (***))
+import Control.Monad        (join)
 import Data.Maybe           (fromJust, fromMaybe)
 
 import System.FilePath      (takeFileName)
@@ -20,8 +21,8 @@ vlc = MediaPlayer
     { _isRunning  = V.isRunning
 
     , _status     = showStatus . V._status <$> query
-    , _progress   = show
-                  . uncurry div
+    , _progress   = show . round . uncurry (/)
+                  . join (***) fromIntegral
                   . ((* 100) . V._position
                      &&&
                      fromMaybe (10^6) . V._length)

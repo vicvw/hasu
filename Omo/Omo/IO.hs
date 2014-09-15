@@ -10,9 +10,11 @@ import Omo
 import Control.Applicative  ((<$>))
 import Control.Concurrent   (threadDelay)
 import Control.Monad        (join, void)
+
 import Data.List.Split      (splitOn)
-import System.Cmd           (system)
+
 import System.Environment   (getArgs)
+import System.Process       (system)
 
 
 differentIO :: DiffT (IO ()) -> IO ()
