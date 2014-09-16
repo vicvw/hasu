@@ -2,7 +2,8 @@ module Main (main) where
 
 
 import Control.Applicative  ((<$>), (<*), (*>))
-import Data.List            (genericLength)
+import Control.Arrow        ((&&&))
+import Data.List            (delete, genericLength)
 import Data.Maybe           (catMaybes)
 import Text.ParserCombinators.Parsec
 import System.Environment   (getArgs)
@@ -21,12 +22,11 @@ main = do
         . (. filter (< 100) . catMaybes)
         . if' null (const 0)
         $ if what == "a"
-          then ceiling . average
+          then ceiling . average . (delete =<< maximum)
           else maximum
 
     where
-    progresses :: Parser [Maybe Int]
-    progresses = map (read <$>) <$> (firstLine *> many progress)
+    progresses = map (read <$>) <$> (firstLine *> many progress) :: Parser [Maybe Int]
     firstLine  = manyTill anyChar newline
     progress
         = spaces
