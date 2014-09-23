@@ -1,0 +1,4 @@
+#!/bin/bash
+
+
+ghc "$1" -dynamic -O2 -o "$2" && strip "$2"

@@ -1,8 +1,7 @@
 module Main (main) where
 
 
-import Control.Applicative  ((<$>), (<*), (*>))
-import Control.Arrow        ((&&&))
+import Control.Applicative  ((<$>), (<*>), (<*), (*>))
 import Data.List            (delete, genericLength)
 import Data.Maybe           (catMaybes)
 import Text.ParserCombinators.Parsec
@@ -26,7 +25,7 @@ main = do
           else maximum
 
     where
-    progresses = map (read <$>) <$> (firstLine *> many progress) :: Parser [Maybe Int]
+    progresses = map (read <$>) <$> (firstLine *> many progress) :: Parser [Maybe Integer]
     firstLine  = manyTill anyChar newline
     progress
         = spaces
@@ -37,7 +36,11 @@ main = do
 
 
 average :: (Real a, Fractional b) => [a] -> b
-average xs = realToFrac (sum xs) / genericLength xs
+average = if' null (const 0) $
+    (/) . realToFrac . sum <*> genericLength
+
+-- average [] = 0
+-- average xs = realToFrac (sum xs) / genericLength xs
 
 
 either' :: Either a b -> (a -> c) -> (b -> c) -> c
