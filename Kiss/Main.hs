@@ -2,6 +2,7 @@ module Kiss (main) where
 
 
 import Control.Applicative      ((<$>))
+import Control.Arrow            ((&&&))
 import Control.Concurrent.Async (mapConcurrently)
 import Control.Monad            ((<=<))
 
@@ -21,16 +22,15 @@ main = do
     links <- episodeLinks title
     tagss <- mapConcurrently getTags links
 
-    putStrLn . concat . concat . reverse . (<$> tagss) . (. flip id) $
-        (<$> [ fromTagText . head . drop 2 . concat . sections (~== "Filename:")
-             , firstLink . concat . sections (~== "<div id='divDownload'>")
-             , const "\n"
-             ])
+    mapM_ (putStrLn . wget) . reverse . (<$> tagss) $
+            filename  . sections' "Filename:"
+        &&& firstLink . sections' "<div id='divDownload'>"
 
     where
     episodeLinks title = (<$> getTags ("/Anime/" ++ title)) $
         episodes . concat . sections (~== "<table class='listing'>")
 
+    filename  = fromTagText . head . drop 2
     firstLink = head . hrefs
 
     episodes = filter ("?id" `isInfixOf`) . hrefs
@@ -39,6 +39,18 @@ main = do
                | tag@(TagOpen "a" attrs) <- ss
                , isJust $ find ((== "href") . fst) attrs
                ]
+
+    sections' s = concat . sections (~== s)
+
+
+wget :: (String, String) -> String
+wget (title, link) = concat
+    [ "wget -q -O '"
+    , filter (/= '\n') title
+    , ".mp4' '"
+    , link
+    , "'&"
+    ]
 
 
 getTags :: String -> IO [Tag String]
