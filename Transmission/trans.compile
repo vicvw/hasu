@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-ghc -dynamic -O2 Main.hs -o trans && strip trans
+ghc -O2 Main.hs -o trans && strip trans

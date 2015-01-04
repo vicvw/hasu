@@ -1,0 +1,4 @@
+#!/bin/bash
+
+
+ghc -O2 FromArgs.hs -o omo-run && strip omo-run

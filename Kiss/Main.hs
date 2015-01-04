@@ -1,4 +1,4 @@
-module Kiss (main) where
+module Main (main) where
 
 
 import Control.Applicative      ((<$>))
@@ -12,6 +12,7 @@ import Data.Maybe               (isJust)
 import Network.HTTP             (getRequest, getResponseBody, simpleHTTP)
 
 import Text.HTML.TagSoup        ((~==), fromAttrib, fromTagText, parseTags, sections, Tag (TagOpen))
+import Text.Printf              (printf)
 
 import System.Environment       (getArgs)
 
@@ -19,8 +20,9 @@ import System.Environment       (getArgs)
 main :: IO ()
 main = do
     title <- head <$> getArgs
-    links <- episodeLinks title
-    tagss <- mapConcurrently getTags links
+    -- links <- episodeLinks title
+    let links = episodeFiles $ read title
+    tagss <- mapConcurrently getTagsF links
 
     mapM_ (putStrLn . wget) . reverse . (<$> tagss) $
             filename  . sections' "Filename:"
@@ -29,6 +31,8 @@ main = do
     where
     episodeLinks title = (<$> getTags ("/Anime/" ++ title)) $
         episodes . concat . sections (~== "<table class='listing'>")
+
+    episodeFiles n = printf "Episode-0%02d.html" <$> [1..n :: Integer]
 
     filename  = fromTagText . head . drop 2
     firstLink = head . hrefs
@@ -55,6 +59,10 @@ wget (title, link) = concat
 
 getTags :: String -> IO [Tag String]
 getTags = (parseTags <$>) . getURL . kiss
+
+
+getTagsF :: String -> IO [Tag String]
+getTagsF = (parseTags <$>) . readFile
 
 
 getURL :: String -> IO String
