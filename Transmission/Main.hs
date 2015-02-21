@@ -30,6 +30,7 @@ main = do
     progress
         = spaces
        *> many1 digit
+       *> optional (char '*')
        *> spaces
        *> optionMaybe (many1 digit)
        <* manyTill anyChar newline
