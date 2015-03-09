@@ -1,0 +1,4 @@
+#!/bin/bash
+
+
+ghc -O2 Status.hs -o dropbox-status && strip dropbox-status
