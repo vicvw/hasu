@@ -6,59 +6,74 @@ import Data.List      (intercalate)
 import Text.Printf    (printf)
 
 
-varEx :: Key -> String -> ZExpr
-varEx name value = ZExprs
+varEx :: Key -> String -> Expr
+varEx name value = Exprs
     [ var name value
     , export name
     ]
 
-var :: Key -> String -> ZExpr
-var name value = ZVar name $ Var value
+var :: Key -> String -> Expr
+var name value = Var name $ Var' value
 
 
-export :: Key -> ZExpr
-export name = ZExport (printf "export %s" name)
+export :: Key -> Expr
+export name = Export (printf "export %s" name)
 
 
-alias, aliasS, aliasG :: Key -> String -> ZExpr
+alias, aliasS, aliasG :: Key -> String -> Expr
 alias  = alias' AliasNormal
 aliasS = alias' AliasSuffix
 aliasG = alias' AliasGlobal
 
-alias' :: AliasType -> Key -> String -> ZExpr
+aliasS' cmd = Exprs . map (flip aliasS cmd)
+
+alias' :: AliasType -> Key -> String -> Expr
 alias' atype name value =
-    ZAlias name $ Alias value atype
+    Alias name $ Alias' value atype
 
 
-raw :: String -> String -> ZExpr
-raw = ZRaw
+func :: String -> [String] -> Expr
+func = Function
 
 
-instance Show ZExpr where
-    show (ZVar    { zKey = name
-                  , zVar = Var value }) =
+raw :: String -> String -> Expr
+raw = Raw
+
+
+instance Show Expr where
+    show Var      { zKey = name
+                  , zVar = Var' value } =
         printf "%s=%s" name value
 
-    show (ZExport { zKey = name }) =
+    show Export   { zKey = name } =
         printf "%s" name
 
-    show (ZAlias  { zKey   = name
-                  , zAlias = Alias value atype }) =
+    show Alias    { zKey   = name
+                  , zAlias = Alias' value atype } =
         printf "alias %s %s=%s"
             (show atype)
             name
             (quote value)
 
-    show (ZRaw    { zKey   = name
-                  , zValue = value }) =
+    show Function { zKey  = name
+                  , zFunc = func } =
+        printf "function %s {\n%s}"
+            name
+          . unlines $ map (indent 1) func
+
+    show Raw      { zKey   = name
+                  , zValue = value } =
         printf "%s %s" name value
 
-    show (ZExprs  { zExprs = exprs }) =
+    show Exprs    { zExprs = exprs } =
         intercalate "\n" $ map show exprs
 
 
 quote :: String -> String
 quote = printf "'%s'"
+
+indent :: Int -> String -> String
+indent n = (concat (replicate n "  ") ++)
 
 
 instance Show AliasType where
@@ -68,36 +83,40 @@ instance Show AliasType where
         AliasGlobal -> "-g"
 
 
-data ZExpr
-    = ZVar
+data Expr
+    = Var
         { zKey    :: Key
-        , zVar    :: Var
+        , zVar    :: Var'
         }
-    | ZExport
+    | Export
         { zKey    :: Key
         }
-    | ZAlias
+    | Alias
         { zKey    :: Key
-        , zAlias  :: Alias
+        , zAlias  :: Alias'
         }
-    | ZRaw
+    | Function
+        { zKey    :: Key
+        , zFunc   :: [String]
+        }
+    | Raw
         { zKey    :: String
         , zValue  :: String
         }
-    | ZExprs
-        { zExprs  :: [ZExpr]
+    | Exprs
+        { zExprs  :: [Expr]
         }
 
 
 type Key  = String
 
 
-data Var = Var
+data Var' = Var'
     { vValue  :: String
     } deriving (Show, Eq)
 
 
-data Alias = Alias
+data Alias' = Alias'
     { aValue  :: String
     , aType   :: AliasType
     } deriving (Show, Eq)
