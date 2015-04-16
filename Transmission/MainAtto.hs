@@ -2,22 +2,25 @@ module Main (main) where
 
 
 import Control.Applicative  ((<$>), (<*>), (<*), (*>))
+
+import Data.Attoparsec.Text
 import Data.List            (delete, genericLength)
 import Data.Maybe           (catMaybes)
-import Text.ParserCombinators.Parsec
+import Data.Text            (pack)
+
 import System.Environment   (getArgs)
 import System.Process       (readProcessWithExitCode)
 
 
 main :: IO ()
 main = do
-    what:_      <- getArgs
-    (_, out, _) <- readProcessWithExitCode "transmission-remote" ["-l"] ""
+    what:_    <- getArgs
+    (_, o, _) <- readProcessWithExitCode "transmission-remote" ["-l"] ""
 
-    let parsed = parse progresses "" out
+    let parsed = maybeResult . parse progresses $ pack o
 
     print
-        . either' parsed (const 0)
+        . maybe' parsed 0
         . (. filter (< 100) . catMaybes)
         . if' null (const 0)
         $ if what == "a"
@@ -25,27 +28,26 @@ main = do
           else maximum
 
     where
-    progresses = firstLine *> many progress
-    firstLine  = manyTill anyChar newline
-    progress = fmap (read <$>)
-        $ spaces
+    progresses = firstLine *> progress `sepBy` endOfLine
+    firstLine  = manyTill anyChar endOfLine
+    progress
+        = option Nothing
+        . (Just . read <$>)
+        $ skipSpace
        *> many1 digit
-       *> optional (char '*')
-       *> spaces
-       *> optionMaybe (many1 digit)
-       <* manyTill anyChar newline
+       *> skipMany (char '*')
+       *> skipSpace
+       *> many1 digit
+       <* skipWhile (not . isEndOfLine)
 
 
 average :: (Real a, Fractional b) => [a] -> b
 average = if' null (const 0) $
     (/) . realToFrac . sum <*> genericLength
 
--- average [] = 0
--- average xs = realToFrac (sum xs) / genericLength xs
 
-
-either' :: Either a b -> (a -> c) -> (b -> c) -> c
-either' = flip $ flip . either
+maybe' :: Maybe a -> b -> (a -> b) -> b
+maybe' = flip $ flip . maybe
 
 
 if' :: (a -> Bool) -> (a -> b) -> (a -> b) -> a -> b
