@@ -12,32 +12,51 @@ varEx name value = Exprs
     , export name
     ]
 
-var :: Key -> String -> Expr
-var name value = Var name $ Var' value
-
-
 export :: Key -> Expr
 export name = Export (printf "export %s" name)
 
 
+var' :: [(String, String)] -> Expr
+var' = exprs $ uncurry var
+
+var :: Key -> String -> Expr
+var name value = Var name $ Var' value
+
+
+alias' :: [(String, String)] -> Expr
+alias' = exprs $ uncurry alias
+
+-- aliasS'' :: String -> [String] -> Expr
+aliasS'' = exprs $ uncurry aliasS'
+
+aliasS' :: String -> [String] -> Expr
+aliasS' = exprs . flip aliasS
+
 alias, aliasS, aliasG :: Key -> String -> Expr
-alias  = alias' AliasNormal
-aliasS = alias' AliasSuffix
-aliasG = alias' AliasGlobal
+alias  = alias_ AliasNormal
+aliasS = alias_ AliasSuffix
+aliasG = alias_ AliasGlobal
 
-aliasS' cmd = Exprs . map (flip aliasS cmd)
-
-alias' :: AliasType -> Key -> String -> Expr
-alias' atype name value =
+alias_ :: AliasType -> Key -> String -> Expr
+alias_ atype name value =
     Alias name $ Alias' value atype
 
+
+func' :: [(String, [String])] -> Expr
+func' = exprs $ uncurry func
 
 func :: String -> [String] -> Expr
 func = Function
 
 
+raw' :: [(String, String)] -> Expr
+raw' = exprs $ uncurry raw
+
 raw :: String -> String -> Expr
 raw = Raw
+
+
+exprs f = Exprs . map f
 
 
 instance Show Expr where
@@ -53,7 +72,7 @@ instance Show Expr where
         printf "alias %s %s=%s"
             (show atype)
             name
-            (quote value)
+            (q' value)
 
     show Function { zKey  = name
                   , zFunc = func } =
@@ -69,8 +88,10 @@ instance Show Expr where
         intercalate "\n" $ map show exprs
 
 
-quote :: String -> String
-quote = printf "'%s'"
+q, q' :: String -> String
+q         = wrap "\""
+q'        = wrap "'"
+wrap w s  = concat [w, s, w]
 
 indent :: Int -> String -> String
 indent n = (concat (replicate n "  ") ++)

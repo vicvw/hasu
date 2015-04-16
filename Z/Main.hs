@@ -9,7 +9,7 @@ import Control.Monad  (unless)
 
 main :: IO ()
 main = do
-    mapM_ (putStrLn . show) conf
+    putStr . unlines $ map show conf
 
     where
     conf = Conf.conf

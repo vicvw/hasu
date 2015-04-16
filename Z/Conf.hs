@@ -8,262 +8,307 @@ import Z
 
 conf :: [Expr]
 conf =
-    [ var   "ZSH"       "$HOME/.oh-my-zsh"
+    [ var'
+        [ "ZSH"                        ｜ "$HOME/.oh-my-zsh"
+        , "DISABLE_AUTO_UPDATE"        ｜ "true"
+        , "DISABLE_AUTO_TITLE"         ｜ "true"
+        , "plugins"                    ｜ "(git zsh-syntax-highlighting)"
+        , "ZSH_HIGHLIGHT_HIGHLIGHTERS" ｜ "(main brackets pattern)"
+        ]
+
     , varEx "ZSH_THEME" "kaze"
 
-    , var   "DISABLE_AUTO_UPDATE" "true"
-    , var   "DISABLE_AUTO_TITLE"  "true"
-
-    , var   "plugins" "(git zsh-syntax-highlighting)"
-
-    , var   "ZSH_HIGHLIGHT_HIGHLIGHTERS"
-            "(main brackets pattern)"
-
-    , raw   "source" "$ZSH/oh-my-zsh.sh"
-    , raw   "setopt" $ unwords
-            [ "appendhistory"
-            , "autocd"
-            , "extendedglob"
-            , "nomatch"
-            , "notify"
-            , "histignorealldups"
-            ]
-    , raw   "unsetopt" $ unwords
-            [ "correct_all"
-            , "beep"
-            , "histignorespace"
-            , "share_history"
-            ]
-    , raw   "bindkey"  "-v"
-    , raw   "autoload" "-Uz compinit"
-    , raw   "compinit" ""
+    , raw'
+        [ "source" ｜ "$ZSH/oh-my-zsh.sh"
+        , "setopt" ｜ unwords
+              [ "appendhistory"
+              , "autocd"
+              , "extendedglob"
+              , "nomatch"
+              , "notify"
+              , "histignorealldups"
+              ]
+        , "unsetopt" ｜ unwords
+              [ "correct_all"
+              , "beep"
+              , "histignorespace"
+              , "share_history"
+              ]
+        , "bindkey"  ｜ "-v"
+        , "autoload" ｜ "-Uz compinit"
+        , "compinit" ｜ ""
+        , "unset"    ｜ "GREP_OPTIONS"
+        ]
 
 
-    , var   "HISTFILE"    "~/.histfile"
-    , var   "HISTSIZE"    "1000"
-    , var   "SAVEHIST"    "1000"
-    , var   "KEYTIMEOUT"  "1"
-
-    , raw   "unset" "GREP_OPTIONS"
-
-
-    , alias "sr"    "source ~/.zshrc"
-
-    , alias "lang"  "echo $LANG"
-    , alias "en"    "LANG=\"en_US.UTF-8\""
-    , alias "ja"    "LANG=\"ja_JP.UTF-8\""
-    , alias "ko"    "LANG=\"ko_KR.UTF-8\""
-    , alias "tw"    "LANG=\"zh_TW.UTF-8\""
-
-    , alias "s"     "sudo"
-    , alias "x"     "startx"
-    , alias "r"     "ranger"
-
-    , alias "l"     "tree --dirsfirst -ChL 1"
-    , alias "lc"    "tree --dirsfirst -hL 1"
-    , alias "l2"    "tree --dirsfirst -ChL 2"
-    , alias "l3"    "tree --dirsfirst -ChL 3"
-    , alias "la"    "l -a"
-    , alias "lca"   "lc -a"
-    , alias "ls"    "ls --color=auto"
-    , alias "lsc"   "ls --color=never"
-    , alias "lsa"   "ls -a"
-    , alias "lsca"  "lsc -a"
-    , alias "ll"    "ls -lh"
-    , alias "lla"   "ls -lah"
-    , alias "lld"   "ls -ldh"
-
-    , alias "px"    "chmod +x"
-    , alias "rf"    "rm -rf"
-    , alias "cr"    "cp -r"
-    , alias "c"     "cd"
-    , alias "d"     "cd && clear"
-    , alias "lns"   "ln -s"
-    , alias "mv"    "mv -i"
-    , alias "md"    "mkdir -p"
-    , func  "mdc"
-            [ "md $1 && cd $1" ]
-    , alias "dus"   "du -hs"
-    , alias "duu"   "du -hd 1"
-    , alias "dh"    "df -h"
-    , alias "hh"    "dh /dev/sda5"
-    , alias "sw"    "s swapoff -a && s swapon -a"
-    , alias "ti"    "dus ~/.local/share/Trash"
-    , alias "trf"   "rf ~/.local/share/Trash"
-
-    , alias "ctl"   "systemctl"
-    , alias "sctl"  "s systemctl"
-
-    , alias "dvd"   "s mount /dev/sr0 /media/dvd"
-    , alias "udvd"  "s umount /media/dvd"
-
-    , alias "pm"    "s pacman"
-    , alias "pms"   "pm -S"
-    , alias "pmr"   "pm -R"
-    , alias "pmrs"  "pm -Rs"
-    , alias "pmu"   "pm -U"
-    , alias "pmss"  "pacman -Ss"
-    , alias "pmsi"  "pacman -Si"
-    , alias "pmqs"  "pacman -Qs"
-    , alias "pmqi"  "pacman -Qi"
-    , alias "pmqm"  "pacman -Qm"
-    , alias "pmc"   "echo \"y\\nn\\n\" | s pacman -Scc"
-    , alias "uu"    "packer --quickcheck"
-    , alias "pa"    "packer"
-    , alias "pas"   "packer -S"
-    , alias "u"     "pa -Syu && pmc"
-    , alias "uc"    "pa -Syu"
-
-    , alias "o"     "mimeopen"
-    , alias "v"     "vim"
-    , alias "g"     "gvim"
-    , alias "gr"    "gvim --remote-silent"
-    , alias "sv"    "s vim"
-    , alias "sg"    "s gvim"
-    , alias "gi"    "git"
-    , alias "e"     "evince"
-    , alias "f"     "file-roller"
-    , alias "m"     "mpv"
-    , alias "vv"    "vlc"
-    , alias "vino"  "killall compton; /usr/lib/vino/vino-server"
-    , alias "lo"    "libreoffice"
-
-    , alias "uz"    "unzip"
-    , alias "ur"    "unrar x"
-    , alias "ut"    "tar xf"
+    , var'
+        [ "HISTFILE"   ｜ "~/.histfile"
+        , "HISTSIZE"   ｜ "1000"
+        , "SAVEHIST"   ｜ "1000"
+        , "KEYTIMEOUT" ｜ "1"
+        ]
 
 
-    , aliasS' "eog"
-            [ "pdf"
-            , "djvu"
-            ]
+    , alias'
+        [ "sr"    ｜ "source ~/.zshrc"
 
-    , aliasS' "eog"
-            [ "jpg"
-            , "jpeg"
-            , "png"
-            , "gif"
-            ]
+        , "lang"  ｜ "echo $LANG"
+        , "en"    ｜ lang "en_US"
+        , "ja"    ｜ lang "ja_JP"
+        , "ko"    ｜ lang "ko_KR"
+        , "tw"    ｜ lang "zh_TW"
+        ]
 
-    , aliasS' "vv"
-            [ "mp4"
-            , "avi"
-            , "mkv"
-            ]
+        -- , "s"     ｜ "sudo"
+        -- , "r"     ｜ "ranger"
 
-    , aliasS' "lo"
-            [ "odt"
-            , "ods"
-            , "odp"
-            , "doc"
-            , "docx"
-            , "ppt"
-            , "pptx"
-            ]
+        -- , "l"     ｜ "tree --dirsfirst -ChL 1"
+        -- , "lc"    ｜ "tree --dirsfirst -hL 1"
+        -- , "l2"    ｜ "tree --dirsfirst -ChL 2"
+        -- , "l3"    ｜ "tree --dirsfirst -ChL 3"
+        -- , "la"    ｜ "l -a"
+        -- , "lca"   ｜ "lc -a"
+        -- , "ls"    ｜ "ls --color=auto"
+        -- , "lsc"   ｜ "ls --color=never"
+        -- , "lsa"   ｜ "ls -a"
+        -- , "lsca"  ｜ "lsc -a"
+        -- , "ll"    ｜ "ls -lh"
+        -- , "lla"   ｜ "ls -lah"
+        -- , "lld"   ｜ "ls -ldh"
 
-    , aliasS' "f"
-            [ "zip"
-            , "rar"
-            , "tar"
-            , "gz"
-            , "bz2"
-            , "xz"
-            ]
+        -- , "px"    ｜ "chmod +x"
+        -- , "rf"    ｜ "rm -rf"
+        -- , "cr"    ｜ "cp -r"
+        -- , "c"     ｜ "cd"
+        -- , "d"     ｜ "cd && clear"
+        -- , "lns"   ｜ "ln -s"
+        -- , "mv"    ｜ "mv -i"
+        -- , "md"    ｜ "mkdir -p"
 
-    , aliasS "exe"  "wine"
+        -- , "dus"   ｜ "du -hs"
+        -- , "duu"   ｜ "du -hd 1"
+        -- , "dh"    ｜ "df -h"
+        -- , "hh"    ｜ "dh /dev/sda5"
+        -- , "sw"    ｜ unwords [s "swapoff -a", "&&", s "swapon -a"]
+        -- , "ti"    ｜ "dus ~/.local/share/Trash"
+        -- , "trf"   ｜ "rf ~/.local/share/Trash"
 
-    , alias "t"     "vitetris"
-    , alias "ts"    "~/_/g/tetris/gameserver"
+        -- , "ctl"   ｜ "systemctl"
+        -- , "sctl"  ｜ s "systemctl"
 
-    , alias "mcs"   "cd ~/_/g/minecraft && java -Xmx1024M -Xms1024M -jar minecraft_server.jar nogui"
+        -- , "dvd"   ｜ s "mount /dev/sr0 /media/dvd"
+        -- , "udvd"  ｜ s "umount /media/dvd"
 
-    , alias "h"     "ghci"
-    , alias "rh"    "runhaskell"
-    , alias "-s hs" "rh"
-    , alias "ca"    "cabal"
-    , alias "cau"   "ca update"
-    , alias "cai"   "ca install"
-    , alias "ht"    "cd ~/ふ/_; gvim _.hs; kaba -m _.hs"
-    , func  "hp"
-            [ "cd ~/ぶ/$1"
-            , "gvim Main.hs"
-            , "kaba -m Main.hs" ]
+        -- , "pa"    ｜      "packer"
+        -- , "pas"   ｜ pa   "-S"
+        -- , "pm"    ｜ s    "pacman"
+        -- , "pms"   ｜ spm  "-S"
+        -- , "pmr"   ｜ spm  "-R"
+        -- , "pmrs"  ｜ spm  "-Rs"
+        -- , "pmu"   ｜ spm  "-U"
+        -- , "pmss"  ｜ pm   "-Ss"
+        -- , "pmsi"  ｜ pm   "-Si"
+        -- , "pmqs"  ｜ pm   "-Qs"
+        -- , "pmqi"  ｜ pm   "-Qi"
+        -- , "pmqm"  ｜ pm   "-Qm"
+        -- , "uu"    ｜ pa   "--quickcheck"
+        -- , "uc"    ｜ pa   "-Syu"
+        -- , "u"     ｜ unwords [pa "-Syu", "&&", pmClear]
+        -- , "pmc"   ｜ pmClear
 
-    , alias "j"     "java"
-    , alias "jt"    "cd ~/ふ/_; gvim Test.java; kaba -m Test.java -i \"\\.class\""
-    , alias "jc"    "javac"
-    , alias "sc"    "scala"
+        -- , "o"     ｜ "mimeopen"
+        -- , "v"     ｜ "vim"
+        -- , "g"     ｜ "gvim"
+        -- , "gr"    ｜ "gvim --remote-silent"
+        -- , "sv"    ｜ s "vim"
+        -- , "sg"    ｜ s "gvim"
+        -- , "gi"    ｜ "git"
+        -- , "e"     ｜ "evince"
+        -- , "f"     ｜ "file-roller"
+        -- , "m"     ｜ "mpv"
+        -- , "vv"    ｜ "vlc"
+        -- , "lo"    ｜ "libreoffice"
+        -- , "vino"  ｜ "killall compton; /usr/lib/vino/vino-server"
 
-    , alias "mozc"  "/usr/lib/mozc/mozc_tool --mode=config_dialog"
+        -- , "ap"    ｜ "apack"
+        -- , "au"    ｜ "aunpack"
+        -- , "uz"    ｜ "unzip"
+        -- , "ur"    ｜ "unrar x"
+        -- , "ut"    ｜ "tar xf"
 
-    , alias "db"    "dropbox-cli"
-    , alias "dbs"   "dropbox-cli start"
-    , alias "dbp"   "dropbox-cli stop"
-    , alias "dbr"   "dropbox-cli stop && sleep 5 && dropbox-cli start"
-    , alias "ds"    "dropbox-cli status"
-    , alias "dsw"   "watch -n 1 dropbox-cli status"
+        -- , "t"     ｜ "vitetris"
+        -- , "ts"    ｜ "~/_/g/tetris/gameserver"
 
-    , alias "ci"    "s cpupower -c all frequency-info"
-    , alias "cif"   "s cpupower -c all frequency-info | grep \"current CPU frequency\""
-    , alias "cpo"   "s cpupower -c all frequency-set -g powersave"
-    , alias "cpe"   "s cpupower -c all frequency-set -g performance"
-    , alias "c8"    "s su -c \"echo 27 > /sys/devices/system/cpu/intel_pstate/max_perf_pct\""
-    , alias "c14"   "s su -c \"echo 50 > /sys/devices/system/cpu/intel_pstate/max_perf_pct\""
-    , alias "c0"    "s su -c \"echo 100 > /sys/devices/system/cpu/intel_pstate/max_perf_pct\""
-    , alias "cit"   "cat /sys/devices/system/cpu/intel_pstate/no_turbo"
-    , alias "ct"    "s su -c \"echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo\""
-    , alias "cnt"   "s su -c \"echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo\""
+        -- , "mcs"   ｜ "cd ~/_/g/minecraft && java -Xmx1024M -Xms1024M -jar minecraft_server.jar nogui"
 
-    , alias "a"     "acpi"
-    , alias "bat"   "cat /sys/class/power_supply/BAT0/charge_full"
-    , alias "ptop"  "s powertop"
-    , alias "hi"    "s hdparm -B /dev/sda"
-    , alias "h0"    "s hdparm -B 255 /dev/sda"
-    , alias "h1"    "s hdparm -B 1 /dev/sda"
-    , alias "h128"  "s hdparm -B 128 /dev/sda"
-    , alias "h254"  "s hdparm -B 254 /dev/sda"
+        -- , "h"     ｜ "ghci"
+        -- , "rh"    ｜ "runhaskell"
+        -- , "-s hs" ｜ "rh"
+        -- , "ca"    ｜ "cabal"
+        -- , "cau"   ｜ ca "update"
+        -- , "cai"   ｜ ca "install"
+        -- , "ht"    ｜ "cd ~/ふ/_; gvim _.hs; kaba -m _.hs"
 
-    , alias "pp"    "ping g.co"
+        -- , "j"     ｜ "java"
+        -- , "jc"    ｜ "javac"
+        -- , "jt"    ｜ "cd ~/ふ/_; gvim Test.java; kaba -m Test.java -i \"\\.class\""
+        -- , "sc"    ｜ "scala"
 
-    , alias "uon"   "s vpnc uni.conf"
-    , alias "uoff"  "s vpnc-disconnect"
-    , alias "von"   "s openconnect --user=wiatrvic -b asa.rz.uni-augsburg.de"
-    , alias "voff"  "s killall openconnect"
-    , alias "wired" "snet uniw && von"
+        -- , "mozc"  ｜ "/usr/lib/mozc/mozc_tool --mode=config_dialog"
 
-    , alias "gnome" "startx /usr/bin/gnome-session"
-    , alias "ata"   "s catalyst_build_module all"
-    , alias "mw"    "cd ~/.wine/drive_c/Program\\ Files/Bethesda\\ Softworks/Morrowind; wine Morrowind.exe; cd ~; clear"
+        -- , "db"    ｜ "dropbox-cli"
+        -- , "dbs"   ｜ dbc "start"
+        -- , "dbp"   ｜ dbc "stop"
+        -- , "dbr"   ｜ unwords [dbc "stop", "&& sleep 5 &&", dbc "start"]
+        -- , "ds"    ｜ dbc "status"
+        -- , "dsw"   ｜ pre "watch -n 1" (dbc "status")
 
-    , alias "hib"   "systemctl hibernate"
-    , alias "sus"   "systemctl suspend"
-    , alias "ha"    "systemctl poweroff"
-    , alias "re"    "systemctl reboot"
+        -- , "ci"    ｜ cpu "frequency-info"
+        -- , "cif"   ｜ cpu "frequency-info | grep \"current CPU frequency\""
+        -- , "cpo"   ｜ cpu "frequency-set -g powersave"
+        -- , "cpe"   ｜ cpu "frequency-set -g performance"
+        -- , "c8"    ｜ su (cpuF 27)
+        -- , "c14"   ｜ su (cpuF 50)
+        -- , "c0"    ｜ su (cpuF 100)
+        -- , "ct"    ｜ su (cpuT True)
+        -- , "cnt"   ｜ su (cpuT False)
+        -- , "cit"   ｜ cat noTurbo
 
-    , alias "k"     "eval `keychain --quiet --eval --agents ssh id_rsa`"
-    , func  "kk"
-            [ "eval `keychain --quiet --eval --agents ssh $1`" ]
+        -- , "a"     ｜      "acpi"
+        -- , "bat"   ｜ cat  "/sys/class/power_supply/BAT0/charge_full"
+        -- , "ptop"  ｜ s    "powertop"
+        -- , "hi"    ｜ hdB  "/dev/sda"
+        -- , "h0"    ｜ hdB  "255 /dev/sda"
+        -- , "h1"    ｜ hdB  "1 /dev/sda"
+        -- , "h128"  ｜ hdB  "128 /dev/sda"
+        -- , "h254"  ｜ hdB  "254 /dev/sda"
 
-    , func  ","
-            [ clear
-            , zshci "\"$@\"" ]
+        -- , "pp"    ｜ "ping g.co"
 
-    , alias ",l"    ", l"
+        -- , "uon"   ｜ s "vpnc uni.conf"
+        -- , "uoff"  ｜ s "vpnc-disconnect"
+        -- , "von"   ｜ s "openconnect --user=wiatrvic -b asa.rz.uni-augsburg.de"
+        -- , "voff"  ｜ s "killall openconnect"
+        -- , "wired" ｜ "snet uniw && von"
 
-    , func  ".,"
-            [ zshci "\"$@\""
-            , clear ]
+        -- , "gnome" ｜ "startx /usr/bin/gnome-session"
+        -- , "ata"   ｜ s "catalyst_build_module all"
+        -- , "mw"    ｜ "cd ~/.wine/drive_c/Program\\ Files/Bethesda\\ Softworks/Morrowind; wine Morrowind.exe; cd ~; clear"
 
-    , func  ",.,"
-            [ clear
-            , zshci "\"$@\""
-            , clear ]
+        -- , "hib"   ｜ ctl "hibernate"
+        -- , "sus"   ｜ ctl "suspend"
+        -- , "ha"    ｜ ctl "poweroff"
+        -- , "re"    ｜ ctl "reboot"
+
+        -- , "k"     ｜ "eval `keychain --quiet --eval --agents ssh id_rsa`"
+
+        -- , ",l"    ｜ ", l"
+        -- ]
 
 
-    , raw   "source" "~/.profile"
-    , raw   "source" "~/.fzf.zsh"
+    -- , aliasS''
+        -- [ "evince" ｜
+        --     [ "pdf"
+        --     , "djvu"
+        --     ]
+
+        -- , "eog" ｜
+        --     [ "jpg"
+        --     , "jpeg"
+        --     , "png"
+        --     , "gif"
+        --     ]
+
+        -- , "vlc" ｜
+        --     [ "mp4"
+        --     , "avi"
+        --     , "mkv"
+        --     ]
+
+        -- , "libreoffice" ｜
+        --     [ "odt"
+        --     , "ods"
+        --     , "odp"
+        --     , "doc"
+        --     , "docx"
+        --     , "ppt"
+        --     , "pptx"
+        --     ]
+
+        -- , "file-roller" ｜
+        --     [ "zip"
+        --     , "rar"
+        --     , "tar"
+        --     , "gz"
+        --     , "bz2"
+        --     , "xz"
+        --     ]
+
+        -- , "wine" ｜
+        --     [ "exe" ]
+        -- ]
+
+
+    -- , func'
+        -- [ "mdc" ｜
+        --     [ "md $1 && cd $1" ]
+
+        -- , "hp" ｜
+        --     [ "cd ~/ぶ/$1"
+        --     , "gvim Main.hs"
+        --     , "kaba -m Main.hs" ]
+
+        -- , "kk" ｜
+        --     [ "eval `keychain --quiet --eval --agents ssh $1`" ]
+
+        -- , "," ｜
+        --     [ clear
+        --     , zshci $ q "$@" ]
+
+        -- , ".," ｜
+        --     [ zshci $ q "$@"
+        --     , clear ]
+
+        -- , ",.," ｜
+        --     [ clear
+        --     , zshci $ q "$@"
+        --     , clear ]
+        -- ]
+
+
+    -- , raw' $ map ("source" ｜)
+        -- [ "~/.profile"
+        -- , "~/.fzf.zsh"
+        -- ]
     ]
 
     where
+    lang  = ("LANG=" ++) . q . (++ ".UTF-8")
+    s     = pre "sudo"
+    ctl   = pre "systemctl"
+    cat   = pre "cat"
+    pm    = pre "pacman"
+    spm   = pre "sudo pacman"
+    pa    = pre "packer"
+    ca    = pre "cabal"
+    dbc   = pre "dropbox-cli"
+    cpu   = pre $ s "cpupower -c all"
+    su    = pre $ s "su -c"
+    hdB   = pre $ s "hdparm -B"
+
     clear = "clear"
     zshci = ("zsh -ci " ++)
+
+    cpuF f = q $ unwords ["echo", show f, ">", maxPerf]
+    cpuT b = q $ unwords ["echo", b',     ">", noTurbo]
+        where
+        b' = if b then "0" else "1"
+
+    pmClear = "echo \"y\\nn\\n\" | s pacman -Scc"
+    maxPerf = "/sys/devices/system/cpu/intel_pstate/max_perf_pct"
+    noTurbo = "/sys/devices/system/cpu/intel_pstate/no_turbo"
+
+    pre s   = unwords . ([s] ++) . return
+
+    infixr 9 ｜
+    (｜)    = (,)
