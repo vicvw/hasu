@@ -6,49 +6,6 @@ import Data.List      (intercalate)
 import Text.Printf    (printf)
 
 
-varEx :: Key -> String -> Expr
-varEx name value = Exprs
-    [ var name value
-    , export name
-    ]
-
-export :: Key -> Expr
-export name = Export (printf "export %s" name)
-
-
-var' :: [(String, String)] -> Expr
-var' = exprs $ uncurry var
-
-var :: Key -> String -> Expr
-var name value = Var name $ Var' value
-
-
-alias' :: [(String, String)] -> Expr
-alias' = exprs $ uncurry alias
-
--- aliasS'' :: String -> [String] -> Expr
-aliasS'' = exprs $ uncurry aliasS'
-
-aliasS' :: String -> [String] -> Expr
-aliasS' = exprs . flip aliasS
-
-alias, aliasS, aliasG :: Key -> String -> Expr
-alias  = alias_ AliasNormal
-aliasS = alias_ AliasSuffix
-aliasG = alias_ AliasGlobal
-
-alias_ :: AliasType -> Key -> String -> Expr
-alias_ atype name value =
-    Alias name $ Alias' value atype
-
-
-func' :: [(String, [String])] -> Expr
-func' = exprs $ uncurry func
-
-func :: String -> [String] -> Expr
-func = Function
-
-
 raw' :: [(String, String)] -> Expr
 raw' = exprs $ uncurry raw
 
@@ -56,95 +13,78 @@ raw :: String -> String -> Expr
 raw = Raw
 
 
-exprs f = Exprs . map f
+var' :: [(String, String)] -> Expr
+var' = exprs $ uncurry var
+
+var :: String -> String -> Expr
+var = Var
+
+
+varEx :: String -> String -> Expr
+varEx n v = Exprs [ var n v, export n ]
+
+export :: String -> Expr
+export = Export . printf "export %s"
+
+
+alias' :: [(String, String)] -> Expr
+alias' = exprs $ uncurry alias
+
+aliasS'' :: [(String, [String])] -> Expr
+aliasS'' = exprs $ uncurry aliasS'
+
+aliasS' :: String -> [String] -> Expr
+aliasS' = exprs . flip aliasS
+
+alias, aliasS, aliasG :: String -> String -> Expr
+alias  = alias_ ANormal
+aliasS = alias_ ASuffix
+aliasG = alias_ AGlobal
+
+alias_ :: AType -> String -> String -> Expr
+alias_ = flip $ flip . Alias
+
+
+func' :: [(String, [String])] -> Expr
+func' = exprs $ uncurry func
+
+func :: String -> [String] -> Expr
+func = Func
+
+
+exprs :: (a -> Expr) -> [a] -> Expr
+exprs = (Exprs .) . map
 
 
 instance Show Expr where
-    show Var      { zKey = name
-                  , zVar = Var' value } =
-        printf "%s=%s" name value
+    show (Raw n v)      = unwords [n, v]
+    show (Var n v)      = printf "%s=%s" n v
+    show (Export n)     = n
+    show (Alias n v t)  = printf "alias %s %s=%s" (show t) n (q' v)
+    show (Func n b)     = printf "function %s {\n%s}" n . unlines $ map (indent 1) b
+    show (Exprs es)     = intercalate "\n" $ map show es
 
-    show Export   { zKey = name } =
-        printf "%s" name
-
-    show Alias    { zKey   = name
-                  , zAlias = Alias' value atype } =
-        printf "alias %s %s=%s"
-            (show atype)
-            name
-            (q' value)
-
-    show Function { zKey  = name
-                  , zFunc = func } =
-        printf "function %s {\n%s}"
-            name
-          . unlines $ map (indent 1) func
-
-    show Raw      { zKey   = name
-                  , zValue = value } =
-        printf "%s %s" name value
-
-    show Exprs    { zExprs = exprs } =
-        intercalate "\n" $ map show exprs
+instance Show AType where
+    show ANormal = "  "
+    show ASuffix = "-s"
+    show AGlobal = "-g"
 
 
-q, q' :: String -> String
 q         = wrap "\""
 q'        = wrap "'"
 wrap w s  = concat [w, s, w]
-
-indent :: Int -> String -> String
-indent n = (concat (replicate n "  ") ++)
-
-
-instance Show AliasType where
-    show atype = case atype of
-        AliasNormal -> "  "
-        AliasSuffix -> "-s"
-        AliasGlobal -> "-g"
+indent n  = (concat (replicate n "  ") ++)
 
 
 data Expr
-    = Var
-        { zKey    :: Key
-        , zVar    :: Var'
-        }
-    | Export
-        { zKey    :: Key
-        }
-    | Alias
-        { zKey    :: Key
-        , zAlias  :: Alias'
-        }
-    | Function
-        { zKey    :: Key
-        , zFunc   :: [String]
-        }
-    | Raw
-        { zKey    :: String
-        , zValue  :: String
-        }
-    | Exprs
-        { zExprs  :: [Expr]
-        }
+    = Raw     String String
+    | Var     String String
+    | Export  String
+    | Alias   String String AType
+    | Func    String [String]
+    | Exprs   [Expr]
 
-
-type Key  = String
-
-
-data Var' = Var'
-    { vValue  :: String
-    } deriving (Show, Eq)
-
-
-data Alias' = Alias'
-    { aValue  :: String
-    , aType   :: AliasType
-    } deriving (Show, Eq)
-
-
-data AliasType
-    = AliasNormal
-    | AliasSuffix
-    | AliasGlobal
-    deriving Eq
+data AType
+    = ANormal
+    | ASuffix
+    | AGlobal
