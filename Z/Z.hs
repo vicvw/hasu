@@ -1,9 +1,8 @@
 module Z where
 
 
-import Data.List      (intercalate)
-
-import Text.Printf    (printf)
+import Data.List    (intercalate)
+import Text.Printf  (printf)
 
 
 raw' :: [(String, String)] -> Expr
@@ -21,10 +20,7 @@ var = Var
 
 
 varEx :: String -> String -> Expr
-varEx n v = Exprs [ var n v, export n ]
-
-export :: String -> Expr
-export = Export . printf "export %s"
+varEx n v = Exprs [ var n v, Export n ]
 
 
 alias' :: [(String, String)] -> Expr
@@ -57,12 +53,12 @@ exprs = (Exprs .) . map
 
 
 instance Show Expr where
-    show (Raw n v)      = unwords [n, v]
-    show (Var n v)      = printf "%s=%s" n v
-    show (Export n)     = n
-    show (Alias n v t)  = printf "alias %s %s=%s" (show t) n (q' v)
-    show (Func n b)     = printf "function %s {\n%s}" n . unlines $ map (indent 1) b
-    show (Exprs es)     = intercalate "\n" $ map show es
+    show (Raw    n v  ) = unwords [n, v]
+    show (Var    n v  ) = printf "%s=%s" n v
+    show (Export n    ) = unwords ["export", n]
+    show (Alias  n v t) = printf "alias %s %s=%s" (show t) n (q' v)
+    show (Func   n b  ) = printf "function %s {\n%s}" n . unlines $ map (indent 1) b
+    show (Exprs  es   ) = intercalate "\n" $ map show es
 
 instance Show AType where
     show ANormal = "  "
