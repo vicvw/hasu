@@ -1,0 +1,6 @@
+#!/bin/sh
+
+
+bin="$2"
+
+ghc -O2 "$1" -o $bin && strip $bin
