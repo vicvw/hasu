@@ -1,6 +1,0 @@
-#!/bin/sh
-
-
-bin="volume"
-
-ghc -O2 Main.hs -o $bin && strip $bin

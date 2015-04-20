@@ -137,12 +137,10 @@ conf =
 
         , "t"     ｜  "vitetris"
         , "ts"    ｜  "~/_/g/tetris/gameserver"
-
         , "mcs"   ｜  "cd ~/_/g/minecraft && java -Xmx1024M -Xms1024M -jar minecraft_server.jar nogui"
 
         , "h"     ｜  "ghci"
         , "rh"    ｜  "runhaskell"
-        , "-s hs" ｜  "rh"
         , "ca"    ｜  "cabal"
         , "cau"   ｜  ca "update"
         , "cai"   ｜  ca "install"
@@ -196,52 +194,50 @@ conf =
         , "ha"    ｜  ctl "poweroff"
         , "re"    ｜  ctl "reboot"
 
-        , "k"     ｜  "eval `keychain --quiet --eval --agents ssh id_rsa`"
+        , "kc"    ｜  "eval `keychain --quiet --eval --agents ssh id_rsa`"
 
         , ",l"    ｜  ", l"
         ]
 
 
     , aliasS''
-        [ "evince" ｜
+        [ "mimeopen" ｜
             [ "pdf"
             , "djvu"
-            ]
 
-        , "eog" ｜
-            [ "jpg"
+            , "jpg"
             , "jpeg"
             , "png"
             , "gif"
-            ]
 
-        , "vlc" ｜
-            [ "mp4"
+            , "mp3"
+            , "mp4"
+            , "m4a"
             , "avi"
             , "mkv"
-            ]
 
-        , "libreoffice" ｜
-            [ "odt"
+            , "odt"
             , "ods"
             , "odp"
             , "doc"
             , "docx"
             , "ppt"
             , "pptx"
-            ]
 
-        , "file-roller" ｜
-            [ "zip"
+            , "zip"
             , "rar"
             , "tar"
             , "gz"
             , "bz2"
             , "xz"
+
+            , "html"
+
+            , "exe"
             ]
 
-        , "wine" ｜
-            [ "exe" ]
+        , "runhaskell" ｜
+            [ "hs" ]
         ]
 
 

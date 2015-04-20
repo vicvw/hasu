@@ -196,17 +196,6 @@ hostVolumeSteps = different (error "unknown host")
         , 36, 45, 56, 69, 85
         , 100 ]
 
-    . onHost "aristoteles"
-        [ 00, 18, 20, 22, 25
-        , 28, 32, 35, 40, 45
-        , 50, 56, 63, 71, 79
-        , 89, 100 ]
-    . onHost "heraklit"
-        [ 00, 01, 03, 05, 07
-        , 10, 13, 18, 23, 29
-        , 36, 45, 56, 69, 85
-        , 100 ]
-
 
 indexCurrentOut :: IO String
 indexCurrentOut = parsePacmd ["list-sinks"] id
@@ -223,7 +212,7 @@ indexApp app = parsePacmdFail ["list-sink-inputs"]
    <* manyTill anyChar (tillApp app)
 
     where
-    tillIndex  = manyTill anyChar . try $ string "index: "
+    tillIndex = manyTill anyChar . try $ string "index: "
 
 
 volumeSteps :: IO Integer

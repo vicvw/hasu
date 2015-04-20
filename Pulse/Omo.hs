@@ -1,1 +1,1 @@
-/home/v/フハ/Omo/Omo.hs
+../Omo/Omo.hs

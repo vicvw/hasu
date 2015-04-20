@@ -1,6 +1,0 @@
-#!/bin/sh
-
-
-bin="reset-volume"
-
-ghc -O2 Reset.hs -o $bin && strip $bin

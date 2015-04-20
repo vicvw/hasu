@@ -5,4 +5,4 @@ import Volume
 
 
 main :: IO ()
-main = print =<< volumeOutLinear
+main = toggleMuteApp "chrome"
