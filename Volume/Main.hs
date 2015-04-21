@@ -6,15 +6,14 @@ import Dzen.Dzen
 import Dzen.Gdbar
 import Dzen.Misc
 
-import Omo  (different, onHost, 風, 空)
+import Omo    (different, 風, 空)
 
-import Volume
+import Volume (toggleMute, isMuted, volume, decVolume, incVolume)
 
 
 import System.Environment (getArgs)
 import System.Exit        (exitSuccess)
 import System.IO.Unsafe   (unsafePerformIO)
--- import System.Process     (system)
 
 
 main :: IO ()
@@ -22,28 +21,29 @@ main = do
     args <- getArgs
 
     case args of
-        ["-"] -> decreaseVolumeOut
-        ["+"] -> increaseVolumeOut
-        ["%"] -> toggleMuteOut
-        _ -> do
-            print . round =<< volumeOutLinear
+        ["-"] -> decVolume
+        ["+"] -> incVolume
+        ["%"] -> toggleMute
+        _     -> do
+            print . round =<< volume
             exitSuccess
 
-    volume <- volumeOutLinear
-    muted  <- isMutedOut
+    v <- volume
+    m <- isMuted
 
-    displayVolumeBar volume muted
+    displayVolumeBar v m
 
 
-displayVolumeBar :: Level -> Bool -> IO ()
+displayVolumeBar :: Double -> Bool -> IO ()
 displayVolumeBar level muted = do
     scr <- screenSize 0
 
     let dzen1  = dzenVolume scr
         gdbar1 = gdbarVolume scr muted
 
-    runDzen $ "echo " ++ show (level + 1) <|> gdbar1 <|> dzen1 -- ++ "& sleep 0.05; xprop -name 'dzen title' -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xbfffffff"
+    runDzen $ "echo " ++ show (level + 1) <|> gdbar1 <|> dzen1
 
+    -- ++ "& sleep 0.05; xprop -name 'dzen title' -f _NET_WM_WINDOW_OPACITY 32c -set _NET_WM_WINDOW_OPACITY 0xbfffffff"
     -- kill the one before
 
 
@@ -88,6 +88,3 @@ gdbarVolume (ScreenSize _ _) muted = gdbar . concat $
     segs = unsafePerformIO . different (error "unknown host")
         $ 風 16
         . 空 15
-
-        . onHost "aristoteles" 16
-        . onHost "heraklit" 15

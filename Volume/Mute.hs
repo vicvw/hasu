@@ -1,7 +1,7 @@
 module Main (main) where
 
 
-import VolumeNew
+import Volume
 
 import System.Environment (getArgs)
 
