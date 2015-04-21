@@ -24,12 +24,16 @@ main = do
         ["-"] -> decVolume
         ["+"] -> incVolume
         ["%"] -> toggleMute
-        _     -> do
+        ["m", mt, mf] -> do
+            m <- isMuted
+            putStrLn $ if m then mt else mf
+            exitSuccess
+        _ -> do
             print . round =<< volume
             exitSuccess
 
-    v <- volume
     m <- isMuted
+    v <- volume
 
     displayVolumeBar v m
 

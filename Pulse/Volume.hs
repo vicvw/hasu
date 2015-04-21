@@ -201,7 +201,7 @@ readPacmd args = readProcess "pacmd" args ""
 instance Show SinkInput where
     show (SinkInput i m n) = concat
         [ show i
-        , if m then " 　 " else " ・ "
+        , if m then " ・ " else " 　 "
         , n
         ]
 
