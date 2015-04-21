@@ -1,11 +1,14 @@
 module Volume
     ( toggleMute
     , toggleMuteApp
+    , toggleMuteSink
     , isMuted
     , volume
     , decVolume
     , incVolume
     , setVolume
+    , sinkInputs
+    , SinkInput (..)
     ) where
 
 
@@ -16,7 +19,7 @@ import Control.Applicative hiding ((<|>), many)
 import Control.Monad  (void, unless, when)
 
 import Data.List      (isInfixOf)
-import Data.Foldable  (minimumBy)
+import Data.Foldable  (find, minimumBy)
 import Data.Maybe     (fromJust)
 import Data.Ord       (comparing)
 
@@ -27,10 +30,13 @@ import Text.ParserCombinators.Parsec
 
 main :: IO ()
 main = do
-    o <- currentSink
-    print o
+    sinks <- sinkInputs
+    let s = unlines $ map show sinks
 
-    print =<< volume
+    out   <- readProcess "dmenu" ["-b", "-fn", "Noto Sans CJK JP:size=14"] s
+
+    let i = read . takeWhile (/= ' ') $ out :: Integer
+    toggleMuteSink . fromJust $ find ((== i) . inputIndex) sinks
 
 
 isMuted :: IO Bool
@@ -83,6 +89,11 @@ toggleMuteApp :: String -> IO ()
 toggleMuteApp app = (=<< appSinks app) .
     mapM_ $ \(SinkInput i m _) ->
         toggleMute_ "set-sink-input-mute" i m
+
+
+toggleMuteSink :: SinkInput -> IO ()
+toggleMuteSink (SinkInput i m _) =
+    toggleMute_ "set-sink-input-mute" i m
 
 
 toggleMute :: IO ()
@@ -187,6 +198,14 @@ readPacmd :: [String] -> IO String
 readPacmd args = readProcess "pacmd" args ""
 
 
+instance Show SinkInput where
+    show (SinkInput i m n) = concat
+        [ show i
+        , if m then " 　 " else " ・ "
+        , n
+        ]
+
+
 data Sink = Sink
     { sinkIndex   :: Integer
     , sinkMuted   :: Bool
@@ -200,7 +219,7 @@ data SinkInput = SinkInput
     { inputIndex  :: Integer
     , inputMuted  :: Bool
     , inputName   :: String
-    } deriving Show
+    }
 
 
 
