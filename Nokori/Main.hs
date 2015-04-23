@@ -4,13 +4,12 @@ module Main (main) where
 
 
 import Control.Applicative          ((<$>))
-import Control.Arrow                ((&&&), first)
-import Control.Monad                (void, when)
+import Control.Arrow                ((&&&))
+import Control.Monad                (when)
 
 import Data.Time.Calendar.WeekDate  (toWeekDate)
 import Data.Time.Clock              (addUTCTime, diffUTCTime, getCurrentTime, NominalDiffTime, UTCTime)
 import Data.Time.LocalTime          (getCurrentTimeZone, localDay, localTimeOfDay, todHour, todMin, utcToLocalTime, LocalTime)
-import Debug.Trace
 
 import System.Directory             (doesFileExist, removeFile)
 import System.Environment           (getArgs)
@@ -19,7 +18,7 @@ import System.Process               (system)
 
 main :: IO ()
 main = getArgs >>= \case
-    ["s", h, m, s] -> do
+    [h, m, s] -> do
         now <- getCurrentTime
 
         toFile
