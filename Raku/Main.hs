@@ -30,7 +30,7 @@ main = do
                 ["artist", p] -> putStrLn <=< ($ p) . _artist
                 ["album",  p] -> putStrLn <=< ($ p) . _album
                 ["title",  p] -> putStrLn <=< ($ p) . _title
-                _             -> const $ putStrLn "悪"
+                _             -> fail
 
             ("c" : cmd) -> case cmd of
                 ["play"]      -> _play
@@ -38,10 +38,11 @@ main = do
                 ["stop"]      -> _stop
                 ["prev"]      -> _previous
                 ["next"]      -> _next
-                _             -> const $ putStrLn "悪"
+                _             -> fail
 
-            _ -> const $ putStrLn "悪")
+            _ -> fail)
 
     where
     running = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
     players = [vlc, spotify, cmus]
+    fail    = const $ putStrLn "失"

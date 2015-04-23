@@ -144,11 +144,11 @@ conf =
         , "ca"    ｜  "cabal"
         , "cau"   ｜  ca "update"
         , "cai"   ｜  ca "install"
-        , "ht"    ｜  "cd ~/ふ/_; gvim _.hs; kaba -m _.hs"
+        , "ht"    ｜  "cd ~/ふ/_; gvim _.hs; k -m _.hs"
 
         , "j"     ｜  "java"
         , "jc"    ｜  "javac"
-        , "jt"    ｜  "cd ~/ふ/_; gvim Test.java; kaba -m Test.java -i \"\\.class\""
+        , "jt"    ｜  "cd ~/ふ/_; gvim Test.java; k -m Test.java -i \".class\""
         , "sc"    ｜  "scala"
 
         , "mozc"  ｜  "/usr/lib/mozc/mozc_tool --mode=config_dialog"
@@ -248,7 +248,7 @@ conf =
         , "hp" ｜
             [ "cd ~/ぶ/$1"
             , "gvim Main.hs"
-            , "kaba -m Main.hs" ]
+            , "k -m Main.hs" ]
 
         , "kk" ｜
             [ "eval `keychain --quiet --eval --agents ssh $1`" ]
@@ -290,8 +290,8 @@ conf =
     du    = pre "du"
     dus   = pre $ du "-hs"
     df    = pre "df"
-    l     = pre $ tree "ChL 1"
-    lc    = pre $ tree "hL 1"
+    l     = pre $ tree "-ChL 1"
+    lc    = pre $ tree "-hL 1"
     cpu   = pre $ s "cpupower -c all"
     su    = pre $ s "su -c"
     hdB   = pre $ s "hdparm -B"
