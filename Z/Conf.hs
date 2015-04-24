@@ -69,9 +69,11 @@ conf =
         , "md"    ｜  "mkdir -p"
         , "lns"   ｜  "ln -s"
 
-        , "l"     ｜  tree "-ChL 1"
-        , "l2"    ｜  tree "-ChL 2"
-        , "l3"    ｜  tree "-ChL 3"
+        , "l"     ｜  treeL 1
+        , "l2"    ｜  treeL 2
+        , "l3"    ｜  treeL 3
+        , "l4"    ｜  treeL 4
+        , "l5"    ｜  treeL 5
         , "lc"    ｜  tree "-hL 1"
         , "la"    ｜  l    "-a"
         , "lca"   ｜  lc   "-a"
@@ -243,11 +245,11 @@ conf =
 
     , func'
         [ "mdc" ｜
-            [ "md $1 && cd $1" ]
+            [ "md $1 && c $1" ]
 
         , "hp" ｜
-            [ "cd ~/ぶ/$1"
-            , "gvim Main.hs"
+            [ "c ~/ぶ/$1"
+            , "g Main.hs"
             , "k -m Main.hs" ]
 
         , "kk" ｜
@@ -265,6 +267,18 @@ conf =
             [ clear
             , zshci $ q "$@"
             , clear ]
+
+        , "zc" ｜
+            [ "c ~/ぶ/Z"
+            , "g Conf.hs"
+            , "k -m Main.hs"
+            ]
+
+        , "zg" ｜
+            [ "c ~/ぶ/Z"
+            , "rh Main.hs > ~/.zshrc"
+            , "c -"
+            ]
         ]
 
 
@@ -285,6 +299,7 @@ conf =
     ca    = pre "cabal"
     dbc   = pre "dropbox-cli"
     tree  = pre "tree --dirsfirst"
+    treeL = pre (tree "-ChL") . show
     ls    = pre "ls --color=auto"
     lsc   = pre "ls --color=never"
     du    = pre "du"

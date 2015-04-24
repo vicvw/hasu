@@ -9,4 +9,4 @@ import System.Process (system)
 
 
 main :: IO ()
-main = doEveryM 60 . void $ system "sudo pacman -Sy"
+main = doEveryM 60 . void $ system "sudo pacman -Syw"
