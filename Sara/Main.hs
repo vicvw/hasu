@@ -7,20 +7,23 @@ import Omo
 import Control.Applicative  ((<$>))
 import Data.List            ((\\))
 import System.Environment   (getArgs)
+import System.Exit          (ExitCode (..))
 import System.Process       (readProcessWithExitCode)
 
 
 main :: IO ()
 main = do
-    (_, o, _) <- readProcessWithExitCode "packer" ["--quickcheck"] ""
+    (e, o, _) <- readProcessWithExitCode "packer" ["--quickcheck"] ""
     sin:_     <- getArgs
     kuro      <- kurod
 
-    putStrLn
-        . ji sin
-        . length
-        . (\\ kuro)
-        $ lines o
+    putStrLn $ case e of
+        ExitFailure _ -> sin
+        ExitSuccess
+           -> ji sin
+            . length
+            . (\\ kuro)
+            $ lines o
 
     where
     kurod = different []

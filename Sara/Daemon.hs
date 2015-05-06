@@ -3,10 +3,9 @@ module Main (main) where
 
 import Ma             (doEveryM)
 
-
-import Control.Monad  (void)
 import System.Process (system)
 
 
 main :: IO ()
-main = doEveryM 60 . void $ system "sudo pacman -Syw"
+main = doEveryM 60 $ system "sudo pacman -Sy"
+-- main = doEveryM 60 $ system "sudo pacman -Syuw --noconfirm"
