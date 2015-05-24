@@ -11,12 +11,13 @@ import System.Process     (system)
 main :: IO ()
 main = do
     [cond, true, false, const] <- getArgs
-    code <- system $ zsh cond
+    -- code <- system $ zsh cond
+    code <- system cond
 
-    void . system . zsh . prepend const
-        $ case code of
-          ExitSuccess   -> true
-          ExitFailure _ -> false
+    -- void . system . zsh . prepend const $ case code of
+    void . system . prepend const $ case code of
+        ExitSuccess   -> true
+        ExitFailure _ -> false
 
     where
     prepend = (unwords .) . (. return) . (:)

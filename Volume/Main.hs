@@ -23,7 +23,7 @@ main = do
     case args of
         ["-"] -> decVolume
         ["+"] -> incVolume
-        ["%"] -> toggleMute
+        ["%"] -> toggleMute >> exitSuccess
         ["m", mt, mf] -> do
             m <- isMuted
             putStrLn $ if m then mt else mf
