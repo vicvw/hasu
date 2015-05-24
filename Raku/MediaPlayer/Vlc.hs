@@ -28,14 +28,13 @@ vlc = MediaPlayer
                      fromMaybe (10^6) . V._length)
                 <$> query
 
-    , _artist     = const $ return ""
+    , _artist     = return . id
     , _album      = const $ return ""
-    , _title      = \p -> maybeEmpty
-                        . prefix p
+    , _title      = const $ (<$> query)
+                        $ maybeEmpty
                         . foldr1 (<|>)
                         . zipWith ($) [V._nowPlaying, V._title, Just . takeFileName . V._url]
                         . repeat
-                      <$> query
 
     , _play       = V.play
     , _toggle     = V.toggle
@@ -47,10 +46,9 @@ vlc = MediaPlayer
     where
     query = fromJust <$> V.query
 
-    showStatus status = case status of
-        V.Playing -> "再"
-        V.Paused  -> "休"
-        V.Stopped -> "止"
+    showStatus V.Playing = "再"
+    showStatus V.Paused  = "休"
+    showStatus V.Stopped = "止"
 
-    prefix 前 = fmap (前 ++)
+    prefix 前  = fmap (前 ++)
     maybeEmpty = fromMaybe ""

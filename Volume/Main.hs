@@ -73,7 +73,7 @@ dzenVolume (ScreenSize swidth sheight) = dzen
 
 
 gdbarVolume :: ScreenSize -> Bool -> String
-gdbarVolume (ScreenSize _ _) muted = gdbar . concat $
+gdbarVolume _ muted = gdbar . concat $
     [ width |*| height
     , color
     , segmented width segs 2

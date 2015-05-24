@@ -47,7 +47,7 @@ main = getArgs >>= \case
                 $ removeFile file
                >> system `mapM_`
                     -- [ "notify-send 殘"
-                    [ "exec mpv --no-terminal /usr/share/sounds/freedesktop/stereo/suspend-error.oga"
+                    [ "mpv --no-terminal /usr/share/sounds/freedesktop/stereo/suspend-error.oga"
                     ]
 
             putStrLn $ concat

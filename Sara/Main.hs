@@ -13,9 +13,9 @@ import System.Process       (readProcessWithExitCode)
 
 main :: IO ()
 main = do
-    (e, o, _) <- readProcessWithExitCode "packer" ["--quickcheck"] ""
-    sin:_     <- getArgs
-    kuro      <- kurod
+    (e,o,_) <- readProcessWithExitCode "packer" ["--quickcheck"] ""
+    sin:_   <- getArgs
+    kuro    <- kurod
 
     putStrLn $ case e of
         ExitFailure _ -> sin
@@ -27,8 +27,8 @@ main = do
 
     where
     kurod = different []
-        $ 風 ["fcitx-mozc-ut"]
-        . 空 ["compton-git", "packer"]
+        $ 風 ["fcitx-mozc-ut", "xcape-git"]
+        . 空 ["compton-git", "packer", "xcape-git"]
 
 
 ji :: String -> Int -> String
