@@ -1,4 +1,4 @@
-module Mosi
+module Nara
     ( fi
     , ii
     , if_

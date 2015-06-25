@@ -1,6 +1,7 @@
 module Main (main) where
 
 
+import Nara
 import Omo
 
 
@@ -17,17 +18,17 @@ main = do
     sin:_   <- getArgs
     kuro    <- kurod
 
-    putStrLn $ case e of
-        ExitFailure _ -> sin
-        ExitSuccess
-           -> ji sin
-            . length
-            . (\\ kuro)
-            $ lines o
+    let success = ji sin . length . (\\ kuro) . lines
+
+    putStrLn . if_ o (/= "\n")
+        success
+        $ case e of
+            ExitFailure _ -> const "失"
+            ExitSuccess   -> success
 
     where
     kurod = different []
-        $ 風 ["fcitx-mozc-ut", "xcape-git"]
+        $ 風 ["xcape-git"]
         . 空 ["compton-git", "packer", "xcape-git"]
 
 

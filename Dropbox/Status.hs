@@ -18,4 +18,4 @@ encode :: String -> Filestatus -> String
 encode utd status = case status of
     UpToDate  -> utd
     Syncing   -> "中"
-    _         -> "非"
+    _         -> "上"

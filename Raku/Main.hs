@@ -6,7 +6,7 @@ import MediaPlayer.Cmus
 import MediaPlayer.Spotify
 import MediaPlayer.Vlc
 
-import Mosi
+import Nara
 
 
 import Control.Applicative  ((<$>))

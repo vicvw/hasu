@@ -61,7 +61,7 @@ conf =
         , "s"     ｜  "sudo"
         , "r"     ｜  "ranger"
         , "c"     ｜  "cd"
-        , "d"     ｜  "cd && clear"
+        , "d"     ｜  "cd" ＆ "clear"
         , "px"    ｜  "chmod +x"
         , "rf"    ｜  "rm -rf"
         , "cr"    ｜  "cp -r"
@@ -90,30 +90,33 @@ conf =
         , "dh"    ｜  df   "-h"
         , "hh"    ｜  df   "-h /dev/sda5"
         , "ti"    ｜  dus  "~/.local/share/Trash"
-        , "sw"    ｜  unwords [s "swapoff -a", "&&", s "swapon -a"]
+        , "sw"    ｜  s "swapoff -a" ＆ s "swapon -a"
         , "trf"   ｜  "rf ~/.local/share/Trash"
 
         , "ctl"   ｜  "systemctl"
         , "sctl"  ｜  s "systemctl"
 
+        , "nr"    ｜  s "netctl restart"
+        , "nrr"   ｜  s "netctl stop-all" ＆ s "netctl start"
+
         , "dvd"   ｜  s "mount /dev/sr0 /media/dvd"
         , "udvd"  ｜  s "umount /media/dvd"
 
-        , "pa"    ｜       "packer"
-        , "pas"   ｜  pa   "-S"
-        , "pm"    ｜  s    "pacman"
-        , "pms"   ｜  spm  "-S"
-        , "pmr"   ｜  spm  "-R"
-        , "pmrs"  ｜  spm  "-Rs"
-        , "pmu"   ｜  spm  "-U"
-        , "pmss"  ｜  pm   "-Ss"
-        , "pmsi"  ｜  pm   "-Si"
-        , "pmqs"  ｜  pm   "-Qs"
-        , "pmqi"  ｜  pm   "-Qi"
-        , "pmqm"  ｜  pm   "-Qm"
-        , "uu"    ｜  pa   "--quickcheck"
-        , "uc"    ｜  pa   "-Syu"
-        , "u"     ｜  unwords [pa "-Syu", "&&", pmClear]
+        , "pa"    ｜      "packer"
+        , "pas"   ｜  pa  "-S"
+        , "pm"    ｜  s   "pacman"
+        , "pms"   ｜  spm "-S"
+        , "pmr"   ｜  spm "-R"
+        , "pmrs"  ｜  spm "-Rs"
+        , "pmu"   ｜  spm "-U"
+        , "pmss"  ｜  pm  "-Ss"
+        , "pmsi"  ｜  pm  "-Si"
+        , "pmqs"  ｜  pm  "-Qs"
+        , "pmqi"  ｜  pm  "-Qi"
+        , "pmqm"  ｜  pm  "-Qm"
+        , "uu"    ｜  pa  "--quickcheck"
+        , "uc"    ｜  pa  "-Syu"
+        , "u"     ｜  pa  "-Syu" ＆ pmClear
         , "pmc"   ｜  pmClear
 
         , "o"     ｜  "mimeopen"
@@ -139,7 +142,7 @@ conf =
 
         , "t"     ｜  "vitetris"
         , "ts"    ｜  "~/_/g/tetris/gameserver"
-        , "mcs"   ｜  "cd ~/_/g/minecraft && java -Xmx1024M -Xms1024M -jar minecraft_server.jar nogui"
+        , "mcs"   ｜  "cd ~/_/g/minecraft" ＆ "java -Xmx1024M -Xms1024M -jar minecraft_server.jar nogui"
 
         , "h"     ｜  "ghci"
         , "rh"    ｜  "runhaskell"
@@ -158,7 +161,7 @@ conf =
         , "db"    ｜  "dropbox-cli"
         , "dbs"   ｜  dbc "start"
         , "dbp"   ｜  dbc "stop"
-        , "dbr"   ｜  unwords [dbc "stop", "&& sleep 5 &&", dbc "start"]
+        , "dbr"   ｜  dbc "stop" ＆ "sleep 5" ＆ dbc "start"
         , "ds"    ｜  dbc "status"
         , "dsw"   ｜  pre "watch -n 1" (dbc "status")
 
@@ -211,6 +214,7 @@ conf =
             , "jpeg"
             , "png"
             , "gif"
+            , "bmp"
 
             , "mp3"
             , "mp4"
@@ -250,23 +254,27 @@ conf =
         , "hp" ｜
             [ "c ~/ぶ/$1"
             , "g Main.hs"
-            , "k -m Main.hs" ]
+            , "k -m Main.hs"
+            ]
 
         , "kk" ｜
             [ "eval `keychain --quiet --eval --agents ssh $1`" ]
 
         , "," ｜
             [ clear
-            , zshci $ q "$@" ]
+            , zshci $ q "$@"
+            ]
 
         , ".," ｜
             [ zshci $ q "$@"
-            , clear ]
+            , clear
+            ]
 
         , ",.," ｜
             [ clear
             , zshci $ q "$@"
-            , clear ]
+            , clear
+            ]
 
         , "zc" ｜
             [ "c ~/ぶ/Z"
@@ -323,7 +331,8 @@ conf =
     maxPerf = "/sys/devices/system/cpu/intel_pstate/max_perf_pct"
     noTurbo = "/sys/devices/system/cpu/intel_pstate/no_turbo"
 
-    pre s   = unwords . ([s] ++) . return
+    pre s   = unwords . (s :) . return
 
-    infixr 9 ｜
+    infixr 9 ＆, ｜
+    a ＆ b  = unwords [a, "&&", b]
     (｜)    = (,)

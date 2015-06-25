@@ -3,7 +3,7 @@
 module Main (main) where
 
 
-import Mosi
+import Nara
 
 
 import Control.Applicative          ((<$>))

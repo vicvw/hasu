@@ -1,1 +1,0 @@
-../Mosi/Mosi.hs
