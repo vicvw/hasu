@@ -53,8 +53,9 @@ main = do
 
     n  <- (<$> r未)
         $ length
-        . nubBy (\(Episode _ n1 e1 _) (Episode _ n2 e2 _) ->
-                    n1 == n2 && e1 == e2)
+        . nubBy (\(Episode _ n1 e1 _) (Episode _ n2 e2 _)
+                    -> lookup' n1 白 == lookup' n2 白
+                    && e1 == e2)
 
     when (n > 0) . putStr $ show n ++ 有
 
@@ -80,8 +81,6 @@ main = do
           ｜"오렌지 마말레아드"
         , [ "Time We Were Not In Love" ]
           ｜"너를 사랑한 시간"
-        , [ "Warm and Cozy", "Jeju Island Gatsby" ]
-          ｜"맨도롱 또똣"
         , [ "When I See You Again" ]
           ｜"他看她的第2眼"
         ]
