@@ -15,10 +15,11 @@ import System.Process       (readProcessWithExitCode)
 main :: IO ()
 main = do
     (e,o,_) <- readProcessWithExitCode "packer" ["--quickcheck"] ""
+    -- (_,p,_) <- readProcessWithExitCode "pacman" ["-Quq"] ""
     sin:_   <- getArgs
     kuro    <- kurod
 
-    let success = ji sin . length . (\\ kuro) . lines
+    let success = ji sin . length . (\\ kuro) . lines -- . (p ++)
 
     putStrLn . if_ o (/= "\n")
         success

@@ -5,6 +5,8 @@ import Control.Monad      ((<=<))
 
 import Network.HTTP       (getRequest, getResponseBody, simpleHTTP)
 
+import System.Timeout     (timeout)
+
 import Text.HTML.TagSoup  (parseTags, Tag)
 import Text.ParserCombinators.Parsec  (parse, Parser)
 
@@ -13,12 +15,13 @@ parseEpisodes :: String -> Parser [Episode] -> String -> [Episode]
 parseEpisodes s p = either (error . show) id . parse p s
 
 
-getTags :: String -> IO [Tag String]
-getTags url = parseTags <$> getURL url
+getTags :: String -> [Tag String]
+getTags = parseTags
 
 
-getURL :: String -> IO String
-getURL = getResponseBody <=< simpleHTTP . getRequest
+getURL :: String -> IO (Maybe String)
+getURL = timeout 5000000
+    . getResponseBody <=< simpleHTTP . getRequest
 
 
 data Episode = Episode

@@ -12,7 +12,7 @@ import Control.Concurrent.Async           (mapConcurrently)
 import Control.Monad                      (forM_, when)
 
 import Data.List                          ((\\), find, isInfixOf, nubBy, union)
-import Data.Maybe                         (fromJust, isJust)
+import Data.Maybe                         (fromJust, isJust, catMaybes)
 
 import System.Environment                 (getArgs)
 import System.IO                          (appendFile, writeFile)
@@ -25,7 +25,8 @@ import Text.Printf                        (printf)
 main :: IO ()
 main = do
     有:_ <- getArgs
-    tags <- mapConcurrently getTags [Bay.url, Fir.url, MAT.url]
+    tags <- map getTags <$> catMaybes
+        <$> mapConcurrently getURL [Bay.url, Fir.url, MAT.url]
 
     let 劇  = filter ((`elem` concatMap fst 白) . name)
             . concat
@@ -61,31 +62,31 @@ main = do
 
     where
     白  =
-        [ [ "Hide Your Identity", "Hidden Identity" ]
-          ｜"신분을 숨겨라"
+        [ [ "Assembly" ]
+          ｜"어셈블리"
         , [ "High Society" ]
           ｜"상류사회"
+        , [ "I Order You" ]
+          ｜"당신을 주문합니다"
         , [ "I Remember You" ]
           ｜"너를 기억해"
         , [ "Make A Woman Cry" ]
           ｜"여자를 울려"
         , [ "Mask", "MASK" ]
           ｜"가면"
-        , [ "Masked Prosecutor" ]
-          ｜"복면검사"
-        , [ "My Beautiful Bride" ]
-          ｜"아름다운 나의 신부"
         , [ "My Love Eun Dong" ]
           ｜"사랑하는 은동아"
         , [ "Orange Marmalade" ]
           ｜"오렌지 마말레아드"
+        , [ "Scholar Who Walks the Night" ]
+          ｜"밤을 걷는 선비"
         , [ "Time We Were Not In Love" ]
           ｜"너를 사랑한 시간"
         , [ "When I See You Again" ]
           ｜"他看她的第2眼"
         ]
 
-    lookup' x = maybe (error x) snd . find (isJust . find (isInfixOf x) . fst)
+    lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)
 
 
     w劇 = writeFile  (ぶ "劇") . show'
