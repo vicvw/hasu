@@ -80,10 +80,6 @@ main = do
           ｜"오렌지 마말레아드"
         , [ "Scholar Who Walks the Night" ]
           ｜"밤을 걷는 선비"
-        , [ "Time We Were Not In Love" ]
-          ｜"너를 사랑한 시간"
-        , [ "When I See You Again" ]
-          ｜"他看她的第2眼"
         ]
 
     lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)
