@@ -12,20 +12,21 @@ module Volume
     ) where
 
 
-import Omo            (different, 風, 空)
+import Omo                (different, 風, 空)
 
 
 import Control.Applicative hiding ((<|>), many)
-import Control.Monad  (void, unless, when)
+import Control.Monad      (void, unless, when)
 
-import Data.List      (isInfixOf)
-import Data.Foldable  (find, minimumBy)
-import Data.Maybe     (fromJust)
-import Data.Ord       (comparing)
+import Data.List          (isInfixOf)
+import Data.Foldable      (find, minimumBy)
+import Data.Maybe         (fromJust)
+import Data.Ord           (comparing)
 
-import System.Process (readProcess)
+import System.Process     (readProcess)
 
-import Text.ParserCombinators.Parsec
+import Text.Parsec
+import Text.Parsec.String (Parser)
 
 
 main :: IO ()

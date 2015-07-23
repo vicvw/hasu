@@ -2,19 +2,23 @@ module Main (main) where
 
 
 import Control.Applicative  ((<$>), (<*>), (<*), (*>))
+
 import Data.List            (delete, genericLength)
 import Data.Maybe           (catMaybes)
-import Text.ParserCombinators.Parsec
+
 import System.Environment   (getArgs)
 import System.Process       (readProcessWithExitCode)
+
+import Text.Parsec
+import Text.Parsec.String
 
 
 main :: IO ()
 main = do
-    what:_      <- getArgs
-    (_, out, _) <- readProcessWithExitCode "transmission-remote" ["-l"] ""
+    what:_  <- getArgs
+    (_,o,_) <- readProcessWithExitCode "transmission-remote" ["-l"] ""
 
-    let parsed = parse progresses "" out
+    let parsed = parse progresses "" o
 
     print
         . either' parsed (const 0)

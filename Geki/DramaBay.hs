@@ -9,8 +9,8 @@ import Nara
 import Data.List          (isPrefixOf)
 
 import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions, Tag)
-import Text.ParserCombinators.Parsec
-import Debug.Trace
+import Text.Parsec
+import Text.Parsec.String (Parser)
 
 
 url :: String

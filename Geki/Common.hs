@@ -8,7 +8,8 @@ import Network.HTTP       (getRequest, getResponseBody, simpleHTTP)
 import System.Timeout     (timeout)
 
 import Text.HTML.TagSoup  (parseTags, Tag)
-import Text.ParserCombinators.Parsec  (parse, Parser)
+import Text.Parsec        (parse)
+import Text.Parsec.String (Parser)
 
 
 parseEpisodes :: String -> Parser [Episode] -> String -> [Episode]

@@ -7,7 +7,8 @@ import Common
 import Data.List          (isInfixOf)
 
 import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions, Tag)
-import Text.ParserCombinators.Parsec
+import Text.Parsec
+import Text.Parsec.String (Parser)
 
 
 url :: String
