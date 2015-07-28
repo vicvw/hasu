@@ -53,5 +53,5 @@ cmus = MediaPlayer
         C.Paused  -> "休"
         C.Stopped -> "止"
 
-    prefix 前 = fmap (前 ++)
+    prefix 後 = fmap (++ 後)
     maybeEmpty = fromMaybe ""

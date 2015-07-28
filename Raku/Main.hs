@@ -47,5 +47,5 @@ main = do
     where
     elide   = if' ((> 60) . length) ((++ "…") . take 60) id
     running = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
-    players = [vlc, spotify, cmus]
+    players = [vlc, cmus]
     fail    = const $ putStrLn "失"

@@ -50,5 +50,5 @@ vlc = MediaPlayer
     showStatus V.Paused  = "休"
     showStatus V.Stopped = "止"
 
-    prefix 前  = fmap (前 ++)
+    prefix 後  = fmap (++ 後)
     maybeEmpty = fromMaybe ""
