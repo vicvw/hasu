@@ -8,9 +8,9 @@ data MediaPlayer = MediaPlayer
 
     , _status         :: IO String
     , _progress       :: IO String
-    , _artist         :: String -> IO String
-    , _album          :: String -> IO String
-    , _title          :: String -> IO String
+    , _artist         :: IO String
+    , _album          :: IO String
+    , _title          :: IO String
 
     , _play           :: IO ()
     , _toggle         :: IO ()

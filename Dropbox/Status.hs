@@ -11,7 +11,7 @@ main :: IO ()
 main = do
     utd:_ <- getArgs
     (putStrLn . encode utd =<< getFilestatus "")
-        `catch` (const $ putStrLn "無" :: SomeException -> IO ())
+        `catch` (const $ putStrLn utd :: SomeException -> IO ())
 
 
 encode :: String -> Filestatus -> String

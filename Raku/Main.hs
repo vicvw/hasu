@@ -3,7 +3,6 @@ module Main (main) where
 
 import MediaPlayer.Interface
 import MediaPlayer.Cmus
-import MediaPlayer.Spotify
 import MediaPlayer.Vlc
 
 import Nara
@@ -20,18 +19,18 @@ main = do
     args <- getArgs
 
     (running >>=) $ maybe
-        (case args of
-            ["q", "status"]   -> putStrLn "無"
-            ["q", "progress"] -> putStrLn "0"
-            _                 -> putStrLn "")
+        (putStrLn $ case args of
+            ["q", "status"]   -> "無"
+            ["q", "progress"] -> "0"
+            _                 -> "")
 
         (case args of
             "q" : cmd -> case cmd of
-                ["status"]    -> putStrLn <=< _status
-                ["progress"]  -> putStrLn <=< _progress
-                ["artist", p] -> putStrLn <=< ($ p) . _artist
-                ["album",  p] -> putStrLn <=< ($ p) . _album
-                ["title",  p] -> putStrLn . elide <=< ($ p) . _title
+                ["status"]    -> putStrLn         <=< _status
+                ["progress"]  -> putStrLn         <=< _progress
+                ["artist", p] -> putStrLn         <=< postfix p . _artist
+                ["album",  p] -> putStrLn         <=< postfix p . _album
+                ["title",  p] -> putStrLn . elide <=< postfix p . _title
                 _             -> fail
 
             "c" : cmd -> case cmd of
@@ -45,7 +44,9 @@ main = do
             _ -> fail)
 
     where
-    elide   = if' ((> 60) . length) ((++ "…") . take 60) id
+    postfix = fmap . flip (++)
+    elide   = if' ((> 70) . length) ((++ "…") . take 70) id
+    fail    = putStrLn . const "失"
+
     running = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
     players = [vlc, cmus]
-    fail    = const $ putStrLn "失"

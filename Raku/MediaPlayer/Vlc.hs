@@ -21,20 +21,20 @@ vlc = MediaPlayer
     { _isRunning  = V.isRunning
 
     , _status     = showStatus . V._status <$> query
-    , _progress   = show . round . uncurry (/)
+    , _progress   = (<$> query)
+                  $ show . round . uncurry (/)
                   . join (***) fromIntegral
                   . ((* 100) . V._position
                      &&&
                      fromMaybe (10^6) . V._length)
-                <$> query
 
-    , _artist     = return . id
-    , _album      = const $ return ""
-    , _title      = const $ (<$> query)
-                        $ maybeEmpty
-                        . foldr1 (<|>)
-                        . zipWith ($) [V._nowPlaying, V._title, Just . takeFileName . V._url]
-                        . repeat
+    , _artist     = return ""
+    , _album      = return ""
+    , _title      = (<$> query)
+                  $ fromMaybe ""
+                  . foldr1 (<|>)
+                  . zipWith ($) [V._nowPlaying, V._title, Just . takeFileName . V._url]
+                  . repeat
 
     , _play       = V.play
     , _toggle     = V.toggle
@@ -49,6 +49,3 @@ vlc = MediaPlayer
     showStatus V.Playing = "再"
     showStatus V.Paused  = "休"
     showStatus V.Stopped = "止"
-
-    prefix 後  = fmap (++ 後)
-    maybeEmpty = fromMaybe ""

@@ -29,14 +29,13 @@ cmus = MediaPlayer
                                &&&
                                C.fromDuration . fromJust . C._duration)
 
-    , _artist     = \p -> maybeEmpty . prefix p . C._artist <$> query
-    , _album      = \p -> maybeEmpty . prefix p . C._album  <$> query
-    , _title      = \p -> maybeEmpty
-                        . prefix p
-                        . foldr1 (<|>)
-                        . zipWith ($) [C._stream, C._title, C._file]
-                        . repeat
-                      <$> query
+    , _artist     = maybeEmpty . C._artist <$> query
+    , _album      = maybeEmpty . C._album  <$> query
+    , _title      = (<$> query)
+                  $ maybeEmpty
+                  . foldr1 (<|>)
+                  . zipWith ($) [C._stream, C._title, C._file]
+                  . repeat
 
     , _play       = C.play
     , _toggle     = C.toggle
@@ -53,5 +52,4 @@ cmus = MediaPlayer
         C.Paused  -> "休"
         C.Stopped -> "止"
 
-    prefix 後 = fmap (++ 後)
     maybeEmpty = fromMaybe ""
