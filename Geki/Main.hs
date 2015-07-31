@@ -64,20 +64,10 @@ main = do
     白  =
         [ [ "Assembly" ]
           ｜"어셈블리"
-        , [ "High Society" ]
-          ｜"상류사회"
-        , [ "I Order You" ]
-          ｜"당신을 주문합니다"
         , [ "I Remember You" ]
           ｜"너를 기억해"
         , [ "Make A Woman Cry" ]
           ｜"여자를 울려"
-        , [ "Mask", "MASK" ]
-          ｜"가면"
-        , [ "My Love Eun Dong" ]
-          ｜"사랑하는 은동아"
-        , [ "Orange Marmalade" ]
-          ｜"오렌지 마말레아드"
         , [ "Scholar Who Walks the Night" ]
           ｜"밤을 걷는 선비"
         ]
