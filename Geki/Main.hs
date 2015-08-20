@@ -25,6 +25,8 @@ import Text.Printf                        (printf)
 main :: IO ()
 main = do
     有:_ <- getArgs
+    白   <- fmap read . SIO.readFile $ ぶ "白" :: IO [([String], String)]
+
     tags <- map getTags <$> catMaybes
         <$> mapConcurrently getURL [Bay.url, Fir.url, MAT.url]
 
@@ -61,16 +63,18 @@ main = do
     when (n > 0) . putStr $ show n ++ 有
 
     where
-    白  =
-        [ [ "Assembly" ]
-          ｜"어셈블리"
-        , [ "I Remember You" ]
-          ｜"너를 기억해"
-        , [ "Make A Woman Cry" ]
-          ｜"여자를 울려"
-        , [ "Scholar Who Walks the Night" ]
-          ｜"밤을 걷는 선비"
-        ]
+    -- 白 =
+    --     [ [ "Assembly" ]
+    --       ｜"어셈블리"
+    --     , [ "Love Cuisine" ]
+    --       ｜"料理高校生"
+    --     , [ "Make A Woman Cry" ]
+    --       ｜"여자를 울려"
+    --     , [ "Scholar Who Walks the Night" ]
+    --       ｜"밤을 걷는 선비"
+    --     , [ "Yong Pal" ]
+    --       ｜"용팔이"
+    --     ]
 
     lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)
 

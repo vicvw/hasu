@@ -23,7 +23,7 @@ episodes = do
     sp   <- lookAhead $ many1 anyChar
 
     fi (sp == "Special")
-        (return $ [Episode DramaBay name 0 Nothing])
+        (return [Episode DramaBay name 0 Nothing])
         $ do
             a    <- many1 digit
             look <- lookAhead $ many anyChar

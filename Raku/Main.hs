@@ -9,7 +9,7 @@ import Nara
 
 
 import Control.Applicative  ((<$>))
-import Control.Monad        ((<=<), filterM)
+import Control.Monad        ((>=>), filterM)
 import Data.Maybe           (listToMaybe)
 import System.Environment   (getArgs)
 
@@ -26,11 +26,11 @@ main = do
 
         (case args of
             "q" : cmd -> case cmd of
-                ["status"]    -> putStrLn         <=< _status
-                ["progress"]  -> putStrLn         <=< _progress
-                ["artist", p] -> putStrLn         <=< postfix p . _artist
-                ["album",  p] -> putStrLn         <=< postfix p . _album
-                ["title",  p] -> putStrLn . elide <=< postfix p . _title
+                ["status"]    -> _status   >=> putStrLn
+                ["progress"]  -> _progress >=> putStrLn
+                ["artist", p] -> _artist   >=> putStrLn . postfix p
+                ["album",  p] -> _album    >=> putStrLn . postfix p
+                ["title",  p] -> _title    >=> putStrLn . postfix p . elide
                 _             -> fail
 
             "c" : cmd -> case cmd of
@@ -44,9 +44,9 @@ main = do
             _ -> fail)
 
     where
-    postfix = fmap . flip (++)
-    elide   = if' ((> 70) . length) ((++ "…") . take 70) id
-    fail    = putStrLn . const "失"
+    postfix p = if' null id (++ p)
+    elide     = if' ((> n) . length) ((++ "…") . take n) id where n = 70
+    fail      = putStrLn . const "失"
 
-    running = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
-    players = [vlc, cmus]
+    running   = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
+    players   = [vlc, cmus]
