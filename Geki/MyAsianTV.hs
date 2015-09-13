@@ -10,7 +10,7 @@ import Text.Parsec.String (Parser)
 
 
 url :: String
-url = "http://myasiantv.com"
+url = "http://myasiantv.se"
 
 
 episodes :: Parser [Episode]

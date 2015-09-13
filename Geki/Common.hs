@@ -35,8 +35,6 @@ data Episode = Episode
 
 data Site
     = DramaBay
-    | DramaCool
     | DramaFire
-    | DramaFever
     | MyAsianTV
     deriving (Show, Read, Eq)

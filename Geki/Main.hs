@@ -48,11 +48,11 @@ main = do
     a未 劇新
 
     forM_ 劇新 $ \(Episode s n e t) -> system $ printf
-        "notify-send '【 %02d 】%s［%s%s］'"
+        "notify-send -a %s '【 %02d 】　%s%s'"
+        (show s)
         e
         (n `lookup'` 白)
-        (show s)
-        (maybe "" (printf " − %d%%") t)
+        (maybe "" (printf "　  %d%%") t)
 
     n  <- (<$> r未)
         $ length

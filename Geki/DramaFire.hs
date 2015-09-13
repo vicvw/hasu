@@ -13,7 +13,6 @@ import Data.Maybe         (isNothing)
 import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions, Tag)
 import Text.Parsec
 import Text.Parsec.String (Parser)
-import Debug.Trace
 
 
 url :: String
@@ -38,8 +37,7 @@ episodes = do
 
 links :: [Tag String] -> [String]
 links
-    = traceShowId
-    . filter ("episode" `isInfixOf`)
+    = filter ("episode" `isInfixOf`)
     . map fromTagText
     . filter isTagText
     . takeWhile (~/= "<div class='recent-from recent-last et-recent-top'>")
