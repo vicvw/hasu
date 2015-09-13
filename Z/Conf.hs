@@ -292,7 +292,7 @@ conf =
 
     , raw' $ map ("source" ｜)
         [ "~/.profile"
-        , "~/.fzf.zsh"
+        , "~/.dot/fzf.zsh"
         ]
     ]
 
