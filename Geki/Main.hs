@@ -66,14 +66,6 @@ main = do
     -- 白 =
     --     [ [ "Assembly" ]
     --       ｜"어셈블리"
-    --     , [ "Love Cuisine" ]
-    --       ｜"料理高校生"
-    --     , [ "Make A Woman Cry" ]
-    --       ｜"여자를 울려"
-    --     , [ "Scholar Who Walks the Night" ]
-    --       ｜"밤을 걷는 선비"
-    --     , [ "Yong Pal" ]
-    --       ｜"용팔이"
     --     ]
 
     lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)

@@ -4,6 +4,7 @@ module Volume
     , toggleMuteSink
     , isMuted
     , volume
+    , volumeRaw
     , decVolume
     , incVolume
     , setVolume
@@ -44,6 +45,10 @@ isMuted :: IO Bool
 isMuted = sinkMuted <$> currentSink
 
 
+volumeRaw :: IO Integer
+volumeRaw = sinkVolume <$> currentSink
+
+
 volume :: IO Double
 volume = (<$> currentSink) $ \Sink { sinkVolume = v, sinkPoints = ps } ->
     linearize (fst <$> ps) v
@@ -75,6 +80,12 @@ changeVolume sel = do
 
     where
     closest v = fst . minimumBy (comparing $ abs . subtract v . fst)
+
+
+-- setVolumeRaw :: Integer -> IO ()
+-- setVolumeRaw v = do
+--     i <- sinkIndex <$> currentSink
+--     execPacmd ["set-sink-volume", show i, show v]
 
 
 setVolume :: Integer -> IO ()

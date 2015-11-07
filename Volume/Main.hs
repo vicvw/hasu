@@ -6,14 +6,21 @@ import Dzen.Dzen
 import Dzen.Gdbar
 import Dzen.Misc
 
+import Nara
 import Omo    (different, 風, 空)
-
-import Volume (toggleMute, isMuted, volume, decVolume, incVolume)
+import Volume (toggleMute, isMuted, volume, volumeRaw, decVolume, incVolume, setVolume)
 
 
 import System.Environment (getArgs)
 import System.Exit        (exitSuccess)
 import System.IO.Unsafe   (unsafePerformIO)
+import qualified System.IO.Strict as SIO  (readFile)
+
+
+data State = State
+    { cur :: Bool
+    , vs  :: (Integer, Integer)
+    } deriving (Read, Show)
 
 
 main :: IO ()
@@ -26,8 +33,22 @@ main = do
         ["%"] -> toggleMute >> exitSuccess
         ["m", mt, mf] -> do
             m <- isMuted
-            putStrLn $ if m then mt else mf
+            putStrLn $ fi m mt mf
             exitSuccess
+
+        ["_"] -> do
+            v <- volumeRaw
+            State cur (v1, v2) <- read <$> SIO.readFile state
+
+            writeFile state . show . State (not cur) $
+                fi cur (v, v2) (v1, v)
+
+        ["="] -> do
+            s@(State cur (v1, v2)) <- read <$> SIO.readFile state
+
+            setVolume $ fi cur v1 v2
+            writeFile state . show $ s { cur = not cur }
+
         _ -> do
             print . round =<< volume
             exitSuccess
@@ -36,6 +57,9 @@ main = do
     v <- volume
 
     displayVolumeBar v m
+
+
+state = "/home/v/ぶ/Volume/様"
 
 
 displayVolumeBar :: Double -> Bool -> IO ()

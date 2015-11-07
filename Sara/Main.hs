@@ -29,7 +29,7 @@ main = do
 
     where
     kurod = different []
-        $ 風 ["xcape-git"]
+        $ 風 ["soundconverter-py3k-git", "xcape-git"]
         . 空 ["compton-git", "packer", "xcape-git"]
 
 
