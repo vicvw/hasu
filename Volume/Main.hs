@@ -11,6 +11,7 @@ import Omo    (different, 風, 空)
 import Volume (toggleMute, isMuted, volume, volumeRaw, decVolume, incVolume, setVolume)
 
 
+import Control.Arrow      (first, second)
 import System.Environment (getArgs)
 import System.Exit        (exitSuccess)
 import System.IO.Unsafe   (unsafePerformIO)
@@ -36,12 +37,8 @@ main = do
             putStrLn $ fi m mt mf
             exitSuccess
 
-        ["_"] -> do
-            v <- volumeRaw
-            State cur (v1, v2) <- read <$> SIO.readFile state
-
-            writeFile state . show . State (not cur) $
-                fi cur (v, v2) (v1, v)
+        ["0"] -> save first
+        ["1"] -> save second
 
         ["="] -> do
             s@(State cur (v1, v2)) <- read <$> SIO.readFile state
@@ -60,6 +57,15 @@ main = do
 
 
 state = "/home/v/ぶ/Volume/様"
+
+
+save :: ((a -> Integer) -> (Integer, Integer) -> (Integer, Integer)) -> IO ()
+save f = do
+    v <- volumeRaw
+    State cur vs <- read <$> SIO.readFile state
+
+    writeFile state . show . State (not cur) $
+        const v `f` vs
 
 
 displayVolumeBar :: Double -> Bool -> IO ()
