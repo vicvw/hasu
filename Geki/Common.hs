@@ -37,4 +37,5 @@ data Site
     = DramaBay
     | DramaFire
     | MyAsianTV
+    | DramaNet
     deriving (Show, Read, Eq)
