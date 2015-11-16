@@ -62,10 +62,9 @@ state = "/home/v/ぶ/Volume/様"
 save :: ((a -> Integer) -> (Integer, Integer) -> (Integer, Integer)) -> IO ()
 save f = do
     v <- volumeRaw
-    State cur vs <- read <$> SIO.readFile state
+    s@(State _ vs) <- read <$> SIO.readFile state
 
-    writeFile state . show . State (not cur) $
-        const v `f` vs
+    writeFile state . show $ s { vs = const v `f` vs }
 
 
 displayVolumeBar :: Double -> Bool -> IO ()
