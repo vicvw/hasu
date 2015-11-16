@@ -133,6 +133,7 @@ conf =
         , "lo"    ｜  "libreoffice"
         , "pp"    ｜  "ping g.co"
         , "vino"  ｜  "killall compton; /usr/lib/vino/vino-server"
+        , "ge"    ｜  "geki \"\""
 
         , "ap"    ｜  "apack"
         , "au"    ｜  "aunpack"
