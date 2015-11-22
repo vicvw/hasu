@@ -6,6 +6,7 @@ module Main (main) where
 import Volume
 
 import Data.Foldable      (find)
+import Data.List          (isInfixOf)
 import Data.Maybe         (fromJust)
 
 import System.Environment (getArgs)
@@ -17,9 +18,13 @@ main =
     getArgs >>= \case
         [] -> do
             sinks <- sinkInputs
-            let s = unlines $ map show sinks
+            let 黒 = ["C*"]
+                示 = unlines
+                   . filter (not . (`any` 黒) . flip isInfixOf)
+                   $ map show sinks
+            putStrLn 示
 
-            out <- readProcess "dmenu" dmenuArgs s
+            out <- readProcess "dmenu" dmenuArgs 示
 
             let i = read $ takeWhile (/= ' ') out
             toggleMuteSink . fromJust $ find ((== i) . inputIndex) sinks
