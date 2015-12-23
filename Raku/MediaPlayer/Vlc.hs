@@ -12,6 +12,7 @@ import Control.Applicative  ((<$>), (<|>))
 import Control.Arrow        ((&&&), (***))
 import Control.Monad        (join)
 import Data.Maybe           (fromJust, fromMaybe)
+import Network.HTTP.Base    (urlDecode)
 
 import System.FilePath      (takeFileName)
 
@@ -31,7 +32,8 @@ vlc = MediaPlayer
     , _artist     = return ""
     , _album      = return ""
     , _title      = (<$> query)
-                  $ fromMaybe ""
+                  $ urlDecode
+                  . fromMaybe ""
                   . foldr1 (<|>)
                   . zipWith ($) [V._nowPlaying, V._title, Just . takeFileName . V._url]
                   . repeat
