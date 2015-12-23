@@ -35,7 +35,7 @@ main =
     where
     dmenuArgs =
         [ "-b" , "-i"
-        , "-fn", "Noto Sans CJK JP:size=14"
+        , "-fn", "Noto Sans CJK JP:pixelsize=12"
         , "-nb", "#000000"
         , "-nf", "#ffffff"
         , "-sb", "#ffffff"
