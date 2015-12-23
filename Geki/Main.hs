@@ -3,7 +3,6 @@ module Main (main) where
 
 import Common
 import qualified DramaBay  as Bay
-import qualified DramaFire as Fir
 import qualified MyAsianTV as MAT
 import qualified DramaNet  as Net
 
@@ -12,7 +11,7 @@ import Control.Arrow                      (first)
 import Control.Concurrent.Async           (mapConcurrently)
 import Control.Monad                      (forM_, when)
 
-import Data.List                          ((\\), find, isInfixOf, nubBy, union)
+import Data.List                          ((\\), find, intercalate, isInfixOf, nubBy, union)
 import Data.Maybe                         (fromJust, isJust, catMaybes)
 
 import System.Environment                 (getArgs)
@@ -29,14 +28,13 @@ main = do
     白   <- fmap read . SIO.readFile $ ぶ "白" :: IO [([String], String)]
 
     tags <- map getTags <$> catMaybes
-        <$> mapConcurrently getURL [Bay.url, Fir.url, MAT.url, Net.url]
+        <$> mapConcurrently getURL [Bay.url, MAT.url, Net.url]
 
     let 劇  = filter ((`elem` concatMap fst 白) . name)
             . concat
             $ zipWith (\ts (url, es, ls) -> parseEpisodes url es `concatMap` ls ts)
                 tags
                 [ (Bay.url, Bay.episodes, Bay.links)
-                , (Fir.url, Fir.episodes, Fir.links)
                 , (MAT.url, MAT.episodes, MAT.links)
                 , (Net.url, Net.episodes, Net.links)
                 ]
@@ -50,7 +48,7 @@ main = do
     a未 劇新
 
     forM_ 劇新 $ \(Episode s n e t) -> system $ printf
-        "notify-send -a %s '【 %02d 】　%s%s'"
+        "notify-send -u low -a %s '【 %02d 】　%s%s'"
         (show s)
         e
         (n `lookup'` 白)
@@ -62,14 +60,10 @@ main = do
                     -> lookup' n1 白 == lookup' n2 白
                     && e1 == e2)
 
+    putStr . (++ 有) . intercalate 有 . lines =<< SIO.readFile (ぶ "椴")
     when (n > 0) . putStr $ show n ++ 有
 
     where
-    -- 白 =
-    --     [ [ "Assembly" ]
-    --       ｜"어셈블리"
-    --     ]
-
     lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)
 
 
@@ -87,7 +81,3 @@ main = do
 
     read' :: String -> [Episode]
     read' = map read . lines
-
-
-infixr 9 ｜
-(｜)    = (,)
