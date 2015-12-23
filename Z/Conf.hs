@@ -61,7 +61,7 @@ conf =
         , "s"     ｜  "sudo"
         , "r"     ｜  "ranger"
         , "c"     ｜  "cd"
-        , "d"     ｜  "cd" ＆ "clear"
+        , "d"     ｜  "cd" ＆ clear
         , "px"    ｜  "chmod +x"
         , "rf"    ｜  "rm -rf"
         , "cr"    ｜  "cp -r"
@@ -133,7 +133,7 @@ conf =
         , "lo"    ｜  "libreoffice"
         , "pp"    ｜  "ping g.co"
         , "vino"  ｜  "killall compton; /usr/lib/vino/vino-server"
-        , "ge"    ｜  "geki \"\""
+        , "ge"    ｜  "geki \"\"" ＆ clear
 
         , "ap"    ｜  "apack"
         , "au"    ｜  "aunpack"
@@ -241,6 +241,7 @@ conf =
             , "html"
 
             , "exe"
+            , "EXE"
             ]
 
         , "runhaskell" ｜
