@@ -38,4 +38,5 @@ data Site
     | DramaFire
     | MyAsianTV
     | DramaNet
+    | IKShow
     deriving (Show, Read, Eq)

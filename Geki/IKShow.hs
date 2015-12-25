@@ -1,4 +1,4 @@
-module DramaNet where
+module IKShow where
 
 
 import Common
@@ -10,21 +10,22 @@ import Text.Parsec.String (Parser)
 
 
 url :: String
-url = "http://www.drama.net/transit-girls/"
+url = "http://ikshow.net/shows/k-pop-star-s5/"
 
 
 episodes :: Parser [Episode]
 episodes = do
-    name <- manyTill anyChar . try $ string "\160Episode "
+    name <- manyTill anyChar . try $ string " Episode "
     ep   <- many1 digit
-    return [Episode DramaNet name (read ep) Nothing]
+    return [Episode IKShow name (read ep) Nothing]
 
 
 links :: [Tag String] -> [String]
 links
-    = filter (not . (`elem` "\n ") . head)
+    = filter ((/= 'o') . last)
+    . filter (not . (`elem` "S\r\n ") . head)
     . map fromTagText
     . filter isTagText
-    . takeWhile (~/= "</ul>")
+    . takeWhile (~/= "</tbody>")
     . concat
-    . partitions (~== "<ul class='anime-list'>")
+    . partitions (~== "<div id='list-episodes'>")

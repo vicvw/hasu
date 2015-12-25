@@ -2,9 +2,10 @@ module Main (main) where
 
 
 import Common
-import qualified DramaBay  as Bay
-import qualified MyAsianTV as MAT
-import qualified DramaNet  as Net
+import qualified DramaBay   as Bay
+import qualified MyAsianTV  as MAT
+import qualified DramaNet   as Net
+import qualified IKShow     as IKS
 
 
 import Control.Arrow                      (first)
@@ -28,7 +29,7 @@ main = do
     白   <- fmap read . SIO.readFile $ ぶ "白" :: IO [([String], String)]
 
     tags <- map getTags <$> catMaybes
-        <$> mapConcurrently getURL [Bay.url, MAT.url, Net.url]
+        <$> mapConcurrently getURL [Bay.url, MAT.url, Net.url, IKS.url]
 
     let 劇  = filter ((`elem` concatMap fst 白) . name)
             . concat
@@ -37,6 +38,7 @@ main = do
                 [ (Bay.url, Bay.episodes, Bay.links)
                 , (MAT.url, MAT.episodes, MAT.links)
                 , (Net.url, Net.episodes, Net.links)
+                , (IKS.url, IKS.episodes, IKS.links)
                 ]
 
     劇古 <- r劇
