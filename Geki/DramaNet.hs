@@ -20,7 +20,7 @@ episodes = do
     return [Episode DramaNet name (read ep) Nothing]
 
 
-links :: [Tag String] -> [String]
+links :: String -> [String]
 links
     = filter (not . (`elem` "\n ") . head)
     . map fromTagText
@@ -28,3 +28,4 @@ links
     . takeWhile (~/= "</ul>")
     . concat
     . partitions (~== "<ul class='anime-list'>")
+    . parseTags

@@ -28,18 +28,21 @@ main = do
     有:_ <- getArgs
     白   <- fmap read . SIO.readFile $ ぶ "白" :: IO [([String], String)]
 
-    tags <- map getTags <$> catMaybes
+    urls <- catMaybes
         <$> mapConcurrently getURL [Bay.url, MAT.url, Net.url, IKS.url]
 
     let 劇  = filter ((`elem` concatMap fst 白) . name)
             . concat
-            $ zipWith (\ts (url, es, ls) -> parseEpisodes url es `concatMap` ls ts)
-                tags
+            $ zipWith (\us (url, es, ls) -> parseEpisodes url es `concatMap` ls us)
+                urls
                 [ (Bay.url, Bay.episodes, Bay.links)
                 , (MAT.url, MAT.episodes, MAT.links)
                 , (Net.url, Net.episodes, Net.links)
                 , (IKS.url, IKS.episodes, IKS.links)
                 ]
+
+    -- let a = maybe undefined id <$> getURL MAT.url
+    -- print . MAT.links =<< a
 
     劇古 <- r劇
     未   <- r未

@@ -4,9 +4,12 @@ module MyAsianTV where
 import Common
 
 
-import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions, Tag)
+import Data.List          (isInfixOf)
+
 import Text.Parsec
 import Text.Parsec.String (Parser)
+import Text.HandsomeSoup  (css)
+import Text.XML.HXT.Core  (getText, hasText, hread, removeAllWhiteSpace, runLA, when, (>>>), (/>))
 
 
 url :: String
@@ -21,11 +24,12 @@ episodes = do
     return $ [Episode MyAsianTV name (read ep) (read <$> sub)]
 
 
-links :: [Tag String] -> [String]
-links
-    = filter (not . (`elem` "\r ") . head)
-    . map fromTagText
-    . filter isTagText
-    . takeWhile (~/= "</div>")
-    . concat
-    . partitions (~== "<ul class='list lastest'>")
+links :: String -> [String]
+links html
+    = ($ html)
+    . runLA
+    $ hread
+    >>> css "div.lastest"
+    >>> css "a" `when` (css "h3" /> hasText ("SUBBED" `isInfixOf`))
+    >>> removeAllWhiteSpace
+     /> getText

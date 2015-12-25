@@ -4,9 +4,10 @@ module IKShow where
 import Common
 
 
-import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions, Tag)
 import Text.Parsec
 import Text.Parsec.String (Parser)
+import Text.HandsomeSoup  (css)
+import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, when, (>>>), (/>))
 
 
 url :: String
@@ -20,12 +21,12 @@ episodes = do
     return [Episode IKShow name (read ep) Nothing]
 
 
-links :: [Tag String] -> [String]
-links
-    = filter ((/= 'o') . last)
-    . filter (not . (`elem` "S\r\n ") . head)
-    . map fromTagText
-    . filter isTagText
-    . takeWhile (~/= "</tbody>")
-    . concat
-    . partitions (~== "<div id='list-episodes'>")
+links :: String -> [String]
+links html
+    = ($ html)
+    . runLA
+    $ hread
+    >>> css "#list-episodes h2"
+    >>> css "a" `when` css ".label-sub"
+    >>> removeAllWhiteSpace
+     /> getText

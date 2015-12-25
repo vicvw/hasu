@@ -7,17 +7,12 @@ import Network.HTTP       (getRequest, getResponseBody, simpleHTTP)
 
 import System.Timeout     (timeout)
 
-import Text.HTML.TagSoup  (parseTags, Tag)
 import Text.Parsec        (parse)
 import Text.Parsec.String (Parser)
 
 
 parseEpisodes :: String -> Parser [Episode] -> String -> [Episode]
 parseEpisodes s p = either (error . show) id . parse p s
-
-
-getTags :: String -> [Tag String]
-getTags = parseTags
 
 
 getURL :: String -> IO (Maybe String)
