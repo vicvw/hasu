@@ -45,7 +45,7 @@ main = do
 
     where
     postfix p = if' null id (++ p)
-    elide     = if' ((> n) . length) ((++ "…") . take n) id where n = 70
+    elide     = if' ((> n) . length) ((++ "…") . take n) id where n = 75
     fail      = putStrLn . const "失"
 
     running   = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
