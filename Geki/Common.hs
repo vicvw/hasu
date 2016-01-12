@@ -31,7 +31,8 @@ data Episode = Episode
 data Site
     = DramaBay
     | DramaFire
-    | MyAsianTV
     | DramaNet
+    | DramaNice
     | IKShow
+    | MyAsianTV
     deriving (Show, Read, Eq)
