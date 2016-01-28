@@ -8,10 +8,10 @@ import Nara
 
 import Data.List          (isPrefixOf)
 
-import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions, Tag)
+import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions)
 import Text.Parsec
 import Text.Parsec.String (Parser)
-import Text.HandsomeSoup  (css)
+-- import Text.HandsomeSoup  (css)
 -- import Text.XML.HXT.Core  (getText, hread, runLA, when, (>>>), (/>))
 -- import Text.XML.HXT.Core
 

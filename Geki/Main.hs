@@ -1,14 +1,6 @@
 module Main (main) where
 
 
-import Common
-import qualified DramaBay   as Bay
-import qualified DramaNet   as Net
-import qualified DramaNice  as Nic
-import qualified IKShow     as IKS
-import qualified MyAsianTV  as MAT
-
-
 import Control.Arrow                      (first)
 import Control.Concurrent.Async           (mapConcurrently)
 import Control.Monad                      (forM_, when)
@@ -24,13 +16,27 @@ import System.Process                     (system)
 import Text.Printf                        (printf)
 
 
+import Common
+import qualified DramaBay     as Bay
+import qualified DramaNice    as Nic
+import qualified IKShow       as IKS
+import qualified MyAsianFever as Fev
+import qualified MyAsianTV    as MAT
+
+
 main :: IO ()
 main = do
     有:_ <- getArgs
     白   <- fmap read . SIO.readFile $ ぶ "白" :: IO [([String], String)]
 
     urls <- catMaybes
-        <$> mapConcurrently getURL [Bay.url, MAT.url, Net.url, IKS.url, Nic.url]
+        <$> mapConcurrently getURL
+                [ Bay.url
+                , MAT.url
+                , Fev.url
+                , IKS.url
+                , Nic.url
+                ]
 
     let 劇  = filter ((`elem` concatMap fst 白) . name)
             . concat
@@ -38,13 +44,14 @@ main = do
                 urls
                 [ (Bay.url, Bay.episodes, Bay.links)
                 , (MAT.url, MAT.episodes, MAT.links)
-                , (Net.url, Net.episodes, Net.links)
+                , (Fev.url, Fev.episodes, Fev.links)
                 , (IKS.url, IKS.episodes, IKS.links)
                 , (Nic.url, Nic.episodes, Nic.links)
                 ]
 
-    -- let a = maybe undefined id <$> getURL MAT.url
-    -- print . MAT.links =<< a
+    -- let a = maybe undefined id <$> getURL Fev.url
+    -- print =<< a
+    -- mapM_ putStrLn . Fev.links =<< a
 
     劇古 <- r劇
     未   <- r未

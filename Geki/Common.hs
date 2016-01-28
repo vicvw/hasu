@@ -34,5 +34,6 @@ data Site
     | DramaNet
     | DramaNice
     | IKShow
+    | MyAsianFever
     | MyAsianTV
     deriving (Show, Read, Eq)
