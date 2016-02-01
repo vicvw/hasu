@@ -1,13 +1,15 @@
 module DramaNice where
 
 
-import Common
-
+import Data.List
 
 import Text.Parsec
 import Text.Parsec.String (Parser)
 import Text.HandsomeSoup  (css)
-import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, (>>>), (/>))
+import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, (>>>), (/>), (<+>))
+
+
+import Common
 
 
 url :: String
@@ -23,9 +25,11 @@ episodes = do
 
 links :: String -> [String]
 links html
-    = ($ html)
+    = nub
+    . ($ html)
     . runLA
     $ hread
-    >>> css "#recentadd .sub .info-name a span"
+    >>> css "#recentadd" <+> css "#recentpopular"
+    >>> css ".sub .info-name a span"
     >>> removeAllWhiteSpace
      /> getText
