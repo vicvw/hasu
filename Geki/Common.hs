@@ -1,4 +1,4 @@
-module Common where --(main) where
+module Common where
 
 
 import Control.Monad      ((<=<))
@@ -16,15 +16,14 @@ parseEpisodes s p = either (error . show) id . parse p s
 
 
 getURL :: String -> IO (Maybe String)
-getURL = timeout 5000000
-    . getResponseBody <=< simpleHTTP . getRequest
+getURL = timeout 5000000 . getResponseBody <=< simpleHTTP . getRequest
 
 
 data Episode = Episode
-    { site  :: Site
-    , name  :: String
-    , ep    :: Int
-    , sub   :: Maybe Int
+    { _site :: Site
+    , _name :: String
+    , _ep   :: Int
+    , _sub  :: Maybe Int
     } deriving (Show, Read, Eq)
 
 

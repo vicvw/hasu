@@ -36,7 +36,7 @@ main = do
                 , Nic.url
                 ]
 
-    let 劇  = filter ((`elem` concatMap fst 白) . name)
+    let 劇  = filter ((`elem` concatMap fst 白) . _name)
             . concat
             $ zipWith (\us (url, es, ls) -> parseEpisodes url es `concatMap` ls us)
                 urls
@@ -59,12 +59,7 @@ main = do
     w劇 劇
     a未 劇新
 
-    forM_ 劇新 $ \(Episode s n e t) -> system $ printf
-        "notify-send -u low -a %s '【 %02d 】　%s%s'"
-        (show s)
-        e
-        (n `lookup'` 白)
-        (maybe "" (printf "　  %d%%") t)
+    notify 劇新 白
 
     n  <- (<$> r未)
         $ length
@@ -72,12 +67,23 @@ main = do
                     -> lookup' n1 白 == lookup' n2 白
                     && e1 == e2)
 
-    putStr . (++ 有) . intercalate 有 . lines =<< SIO.readFile (ぶ "椴")
+    todo
     when (n > 0) . putStr $ show n ++ 有
 
     where
-    lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)
+    notify xs wl = forM_ xs $ \(Episode site name ep sub) -> system $ printf
+        "notify-send -u low -a %s '【 %02d 】　%s%s'"
+        (show site)
+        ep
+        (name `lookup'` wl)
+        (maybe "" (printf "　  %d%%") sub)
 
+
+    todo = putStr . (++ sep) . intercalate sep . lines =<< SIO.readFile (ぶ "椴")
+        where sep = "　"
+
+
+    lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)
 
     w劇 = writeFile  (ぶ "劇") . show'
     a未 = appendFile (ぶ "未") . show'

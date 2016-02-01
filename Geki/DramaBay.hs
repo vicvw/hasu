@@ -1,11 +1,7 @@
 module DramaBay where
 
 
-import Common
-
-import Nara
-
-
+import Control.Monad      (void)
 import Data.List          (isPrefixOf)
 
 import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions)
@@ -14,6 +10,11 @@ import Text.Parsec.String (Parser)
 -- import Text.HandsomeSoup  (css)
 -- import Text.XML.HXT.Core  (getText, hread, runLA, when, (>>>), (/>))
 -- import Text.XML.HXT.Core
+
+
+import Nara
+
+import Common
 
 
 url :: String
@@ -34,7 +35,7 @@ episodes = do
             b    <- fi (null look || " (" `isPrefixOf` look)
                         (return a)
                         $ do
-                            manyTill anyChar $ char 'E'
+                            void . manyTill anyChar $ char 'E'
                             many1 digit
 
             return $ (<$> [read a .. read b]) $ \n ->

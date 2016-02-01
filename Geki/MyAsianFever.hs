@@ -1,6 +1,7 @@
 module MyAsianFever where
 
 
+import Control.Monad      (void)
 import Data.List          (intercalate, isInfixOf)
 
 import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions)
@@ -18,7 +19,7 @@ url = "http://myasianfever.tv"
 episodes :: Parser [Episode]
 episodes = do
     name <- manyTill anyChar $ char '|'
-    try $ string "Episode " <|> string "S01E"
+    void . try $ string "Episode " <|> string "S01E"
     ep   <- many1 digit
     return [Episode MyAsianFever name (read ep) Nothing]
 
