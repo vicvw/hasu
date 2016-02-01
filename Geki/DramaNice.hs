@@ -7,18 +7,18 @@ import Common
 import Text.Parsec
 import Text.Parsec.String (Parser)
 import Text.HandsomeSoup  (css)
-import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, when, (>>>), (/>))
+import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, (>>>), (/>))
 
 
 url :: String
-url = "http://www.dramanice.to/drama/survival-audition-k-pop-star-s5-detail"
+url = "http://dramanice.to"
 
 
 episodes :: Parser [Episode]
 episodes = do
-    string "Episode "
+    name <- manyTill anyChar . try $ string " Episode "
     ep   <- many1 digit
-    return [Episode DramaNice "K-Pop Star (S5)" (read ep) Nothing]
+    return [Episode DramaNice name (read ep) Nothing]
 
 
 links :: String -> [String]
@@ -26,7 +26,6 @@ links html
     = ($ html)
     . runLA
     $ hread
-    >>> css ".list-episodes div a"
-    >>> css "span" `when` css ".SUB"
+    >>> css "#recentadd .sub .info-name a span"
     >>> removeAllWhiteSpace
      /> getText

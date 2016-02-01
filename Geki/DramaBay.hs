@@ -15,8 +15,6 @@ import Text.Parsec.String (Parser)
 -- import Text.XML.HXT.Core  (getText, hread, runLA, when, (>>>), (/>))
 -- import Text.XML.HXT.Core
 
-import Debug.Trace
-
 
 url :: String
 url = "http://www.dramabay.com/new-episodes/"

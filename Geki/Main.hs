@@ -1,15 +1,13 @@
 module Main (main) where
 
 
-import Control.Arrow                      (first)
 import Control.Concurrent.Async           (mapConcurrently)
 import Control.Monad                      (forM_, when)
 
 import Data.List                          ((\\), find, intercalate, isInfixOf, nubBy, union)
-import Data.Maybe                         (fromJust, isJust, catMaybes)
+import Data.Maybe                         (isJust, catMaybes)
 
 import System.Environment                 (getArgs)
-import System.IO                          (appendFile, writeFile)
 import qualified System.IO.Strict as SIO  (readFile)
 import System.Process                     (system)
 
@@ -49,7 +47,7 @@ main = do
                 , (Nic.url, Nic.episodes, Nic.links)
                 ]
 
-    -- let a = maybe undefined id <$> getURL Fev.url
+    -- let a = maybe undefined id <$> getURL Nic.url
     -- print =<< a
     -- mapM_ putStrLn . Fev.links =<< a
 
