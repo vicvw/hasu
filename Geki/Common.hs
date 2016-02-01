@@ -15,8 +15,8 @@ parseEpisodes :: String -> Parser [Episode] -> String -> [Episode]
 parseEpisodes s p = either (error . show) id . parse p s
 
 
-getURL :: String -> IO (Maybe String)
-getURL = timeout 5000000 . getResponseBody <=< simpleHTTP . getRequest
+getUrl :: String -> IO (Maybe String)
+getUrl = timeout 5000000 . getResponseBody <=< simpleHTTP . getRequest
 
 
 data Episode = Episode
