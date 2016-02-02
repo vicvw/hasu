@@ -1,35 +1,32 @@
-module DramaNice where
+module DramaNice (spec) where
 
 
-import Data.List
+import Data.List          (nub)
 
 import Text.Parsec
-import Text.Parsec.String (Parser)
 import Text.HandsomeSoup  (css)
-import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, (>>>), (/>), (<+>))
+import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, (>>>), (/>))--, (<+>))
 
 
 import Common
 
 
-url :: String
-url = "http://dramanice.to"
+spec :: Spec
+spec = Spec
+    { url = "http://dramanice.to"
 
+    , parser = do
+        name <- manyTill anyChar . try $ string " Episode "
+        ep   <- many1 digit
+        return [Episode DramaNice name (read ep) Nothing]
 
-episodes :: Parser [Episode]
-episodes = do
-    name <- manyTill anyChar . try $ string " Episode "
-    ep   <- many1 digit
-    return [Episode DramaNice name (read ep) Nothing]
-
-
-links :: String -> [String]
-links html
-    = nub
-    . ($ html)
-    . runLA
-    $ hread
-    >>> css "#recentadd" <+> css "#recentpopular"
-    >>> css ".sub .info-name a span"
-    >>> removeAllWhiteSpace
-     /> getText
+    , links = \html
+       -> nub
+        . ($ html)
+        . runLA
+        $ hread
+        >>> css "#recentadd" -- <+> css "#recentpopular"
+        >>> css ".sub .info-name a span"
+        >>> removeAllWhiteSpace
+         /> getText
+    }

@@ -1,4 +1,4 @@
-module DramaBay where
+module DramaBay (spec) where
 
 
 import Control.Monad      (void)
@@ -17,7 +17,9 @@ import Nara
 import Common
 
 
-url :: String
+spec = (url, episodes, links)
+
+
 url = "http://www.dramabay.com/new-episodes/"
 
 
@@ -42,16 +44,6 @@ episodes = do
                 Episode DramaBay name n Nothing
 
 
--- links :: String -> [String]
--- links html
---     = traceShowId
---     . ($ html)
---     . runLA
---     $ hread
---     >>> css "#col2 a"
---      /> getText
-
-
 links :: String -> [String]
 links
     = tail
@@ -62,3 +54,13 @@ links
     . concat
     . partitions (~== "<div id='col2'")
     . parseTags
+
+
+-- links :: String -> [String]
+-- links html
+--     = traceShowId
+--     . ($ html)
+--     . runLA
+--     $ hread
+--     >>> css "#col2 a"
+--      /> getText

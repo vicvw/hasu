@@ -19,6 +19,13 @@ getUrl :: String -> IO (Maybe String)
 getUrl = timeout 5000000 . getResponseBody <=< simpleHTTP . getRequest
 
 
+data Spec = Spec
+    { url     :: String
+    , parser  :: Parser [Episode]
+    , links   :: String -> [String]
+    }
+
+
 data Episode = Episode
     { _site :: Site
     , _name :: String
