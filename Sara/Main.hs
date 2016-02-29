@@ -5,7 +5,6 @@ import Nara
 import Omo
 
 
-import Control.Applicative  ((<$>))
 import Data.List            ((\\))
 import System.Environment   (getArgs)
 import System.Exit          (ExitCode (..))
