@@ -161,7 +161,7 @@ conf =
 
         , "db"    ｜  "dropbox-cli"
         , "dbs"   ｜  dbc "start"
-        , "dbp"   ｜  dbc "stop"
+        , "dbb"   ｜  dbc "stop"
         , "dbr"   ｜  dbc "stop" ＆ "sleep 5" ＆ dbc "start"
         , "ds"    ｜  dbc "status"
         , "dsw"   ｜  pre "watch -n 1" (dbc "status")
@@ -250,7 +250,12 @@ conf =
 
 
     , func'
-        [ "mdc" ｜
+        [ "oki" ｜
+            [ s "rtcwake -m mem -t $(date +%s -d \"$1\")"
+            , "raku c play"
+            ]
+
+        , "mdc" ｜
             [ "md $1 && c $1" ]
 
         , "hp" ｜
