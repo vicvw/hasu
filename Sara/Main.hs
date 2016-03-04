@@ -23,12 +23,12 @@ main = do
     putStrLn . if_ o (/= "\n")
         success
         $ case e of
-            ExitFailure _ -> const "失"
+            ExitFailure c -> fi (c == 1) (const $ success "") (const "失")
             ExitSuccess   -> success
 
     where
     kurod = different []
-        $ 風 ["soundconverter-py3k-git", "xcape-git"]
+        $ 風 ["xcape-git"]
         . 空 ["compton-git", "packer", "xcape-git"]
 
 
