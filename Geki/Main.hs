@@ -21,7 +21,6 @@ import Nara
 import Common
 import qualified DramaNice
 import qualified IKShow
-import qualified MyAsianFever
 import qualified MyAsianTV
 
 
@@ -34,7 +33,6 @@ main = do
     劇 <- whitelist 白 <$> getDramas
         [ DramaNice.spec
         , IKShow.spec
-        , MyAsianFever.spec
         , MyAsianTV.spec
         ]
 
