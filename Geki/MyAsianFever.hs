@@ -17,6 +17,7 @@ spec = Spec
 
     , parser = do
         name <- manyTill anyChar $ char '|'
+        optional $ string "Season 2 "
         void . try $ string "Episode " <|> string "S01E"
         ep   <- many1 digit
         return [Episode MyAsianFever name (read ep) Nothing]
