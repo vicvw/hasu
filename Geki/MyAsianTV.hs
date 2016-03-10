@@ -19,7 +19,7 @@ spec = Spec
         name <- manyTill anyChar . try $ string " Ep "
         ep   <- many1 digit
         sub  <- optionMaybe . try $ string " (" *> string "Sub: " *> many1 digit
-        return $ [Episode MyAsianTV name (read ep) (read <$> sub)]
+        return [Episode MyAsianTV name (read ep) (read <$> sub)]
 
     , links = \html
        -> ($ html)

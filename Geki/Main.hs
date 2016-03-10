@@ -19,9 +19,9 @@ import Text.Printf                        (printf)
 import Nara
 
 import Common
+import qualified DramaFire
 import qualified DramaNice
 import qualified IKShow
-import qualified MyAsianFever
 import qualified MyAsianTV
 
 
@@ -32,9 +32,9 @@ main = do
     古 <- r劇
     未 <- r未
     劇 <- whitelist 白 <$> getDramas
-        [ DramaNice.spec
+        [ DramaFire.spec
+        , DramaNice.spec
         , IKShow.spec
-        , MyAsianFever.spec
         , MyAsianTV.spec
         ]
 

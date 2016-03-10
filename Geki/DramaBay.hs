@@ -25,7 +25,7 @@ url = "http://www.dramabay.com/new-episodes/"
 
 episodes :: Parser [Episode]
 episodes = do
-    name <- manyTill anyChar . try $ (lookAhead $ string "Special") <|> (string " E" <* notFollowedBy letter)
+    name <- manyTill anyChar . try $ lookAhead (string "Special") <|> (string " E" <* notFollowedBy letter)
     sp   <- lookAhead $ many1 anyChar
 
     fi (sp == "Special")
