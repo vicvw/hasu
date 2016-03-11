@@ -52,7 +52,7 @@ main = do
     whitelist l   = filter $ (`elem` concatMap fst l) . _name
 
     getDramas specs = concat . catMaybes <$> (`mapConcurrently` specs)
-        (\Spec {..} -> (fmap $ parseEpisodes url parser <=< links) <$> getUrl url)
+        (\Spec {..} -> fmap (parseEpisodes url parser <=< links) <$> getUrl url)
 
     notify xs wl = forM_ xs $ \(Episode site name ep sub) -> system $ printf
         "notify-send -u low -a %s '【 %02d 】　%s%s'"
