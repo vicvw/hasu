@@ -24,8 +24,8 @@ spec = Spec
 
     , links
         = filter (not . isInfixOf "Complete")
-        . map (intercalate "|")
-        . chunk 2
+        . map (intercalate "|" . take 2)
+        . chunk 5
         . filter (not . (`elem` "\n\r ") . head)
         . map fromTagText
         . filter isTagText
