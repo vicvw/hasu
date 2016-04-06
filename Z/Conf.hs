@@ -90,7 +90,7 @@ conf =
         , "dh"    ｜  df   "-h"
         , "hh"    ｜  df   "-h /dev/sda5"
         , "ti"    ｜  dus  "~/.local/share/Trash"
-        , "sw"    ｜  s "swapoff -a" ＆ s "swapon -a"
+        , "sw"    ｜  s "swapoff -a" ＆ s "swapon -a" ＆ clear
         , "trf"   ｜  "rf ~/.local/share/Trash"
 
         , "ctl"   ｜  "systemctl"
