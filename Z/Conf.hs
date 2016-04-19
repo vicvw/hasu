@@ -160,8 +160,8 @@ conf =
         , "mozc"  ｜  "/usr/lib/mozc/mozc_tool --mode=config_dialog"
 
         , "db"    ｜  "dropbox-cli"
-        , "dbs"   ｜  dbc "start"
-        , "dbb"   ｜  dbc "stop"
+        , "dbs"   ｜  dbc "start" ＆ clear
+        , "dbb"   ｜  dbc "stop" ＆ clear
         , "dbr"   ｜  dbc "stop" ＆ "sleep 5" ＆ dbc "start"
         , "ds"    ｜  dbc "status"
         , "dsw"   ｜  pre "watch -n 1" (dbc "status")
