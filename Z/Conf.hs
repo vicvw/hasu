@@ -118,6 +118,7 @@ conf =
         , "uc"    ｜  pa  "-Syu"
         , "u"     ｜  pa  "-Syu" ＆ pmClear
         , "pmc"   ｜  pmClear
+        , "rp"    ｜  "rf /tmp/packerbuild-1000"
 
         , "o"     ｜  "mimeopen"
         , "v"     ｜  "vim"
