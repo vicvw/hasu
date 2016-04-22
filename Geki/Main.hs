@@ -33,7 +33,6 @@ main = do
     未 <- r未
     劇 <- whitelist 白 <$> getDramas
         [ DramaNice.spec
-        , IKShow.spec
         , MyAsianFever.spec
         , MyAsianTV.spec
         ]
