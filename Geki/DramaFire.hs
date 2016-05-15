@@ -11,7 +11,7 @@ import Data.List          (isInfixOf)
 import Data.Maybe         (isNothing)
 
 import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions)
-import Text.Parsec
+import Text.Megaparsec
 
 
 spec :: Spec
@@ -22,13 +22,13 @@ spec = Spec
         name <- manyTill anyChar . try $ string " episode"
         optional $ char 's'
         space
-        ep   <- many1 digit
-        more <- optionMaybe $ char '-'
+        ep   <- some digitChar
+        more <- optional $ char '-'
 
         fi (isNothing more)
             (return [Episode DramaFire name (read ep) Nothing])
             $ do
-                ep' <- many1 digit <?> name
+                ep' <- some digitChar <?> name
                 return $ (<$> [read ep .. read ep']) $ \n ->
                     Episode DramaFire name n Nothing
 

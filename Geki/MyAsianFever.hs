@@ -5,7 +5,7 @@ import Control.Monad      (void)
 import Data.List          (intercalate, isInfixOf)
 
 import Text.HTML.TagSoup  ((~==), (~/=), fromTagText, isTagText, parseTags, partitions)
-import Text.Parsec
+import Text.Megaparsec
 
 
 import Common
@@ -18,7 +18,7 @@ spec = Spec
     , parser = do
         name <- manyTill anyChar $ char '|'
         void . manyTill anyChar $ string "Episode "
-        ep   <- many1 digit
+        ep   <- some digitChar
         return [Episode MyAsianFever name (read ep) Nothing]
 
     , links

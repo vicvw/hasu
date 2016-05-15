@@ -1,14 +1,14 @@
 module Common where
 
 
-import Control.Monad      ((<=<))
+import Control.Monad          ((<=<))
 
-import Network.HTTP       (getRequest, getResponseBody, simpleHTTP)
+import Network.HTTP           (getRequest, getResponseBody, simpleHTTP)
 
-import System.Timeout     (timeout)
+import System.Timeout         (timeout)
 
-import Text.Parsec        (parse)
-import Text.Parsec.String (Parser)
+import Text.Megaparsec        (parse)
+import Text.Megaparsec.String (Parser)
 
 
 parseEpisodes :: String -> Parser [Episode] -> String -> [Episode]

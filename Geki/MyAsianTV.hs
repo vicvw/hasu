@@ -3,9 +3,9 @@ module MyAsianTV (spec) where
 
 import Data.List          (isInfixOf)
 
-import Text.Parsec
 import Text.HandsomeSoup  (css)
 import Text.XML.HXT.Core  (getText, hasText, hread, removeAllWhiteSpace, runLA, when, (>>>), (/>))
+import Text.Megaparsec
 
 
 import Common
@@ -16,9 +16,9 @@ spec = Spec
     { url = "http://myasiantv.se"
 
     , parser = do
-        name <- manyTill anyChar . try $ string " Ep "
-        ep   <- many1 digit
-        sub  <- optionMaybe . try $ string " (" *> string "Sub: " *> many1 digit
+        name <- manyTill anyChar $ string " Ep "
+        ep   <- some digitChar
+        sub  <- optional $ string " (" *> string "Sub: " *> some digitChar
         return [Episode MyAsianTV name (read ep) (read <$> sub)]
 
     , links = \html

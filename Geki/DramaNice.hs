@@ -3,9 +3,9 @@ module DramaNice (spec) where
 
 import Data.List          (nub)
 
-import Text.Parsec
 import Text.HandsomeSoup  (css)
 import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, (>>>), (/>))--, (<+>))
+import Text.Megaparsec
 
 
 import Common
@@ -16,8 +16,8 @@ spec = Spec
     { url = "http://dramanice.eu"
 
     , parser = do
-        name <- manyTill anyChar . try $ string " Episode "
-        ep   <- many1 digit
+        name <- manyTill anyChar $ string " Episode "
+        ep   <- some digitChar
         return [Episode DramaNice name (read ep) Nothing]
 
     , links = \html

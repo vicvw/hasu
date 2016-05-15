@@ -1,9 +1,9 @@
 module IKShow (spec) where
 
 
-import Text.Parsec
 import Text.HandsomeSoup  (css)
 import Text.XML.HXT.Core  (getText, hread, removeAllWhiteSpace, runLA, when, (>>>), (/>))
+import Text.Megaparsec
 
 
 import Common
@@ -15,7 +15,7 @@ spec = Spec
 
     , parser = do
         name <- manyTill anyChar . try $ string " Episode "
-        ep   <- many1 digit
+        ep   <- some digitChar
         return [Episode IKShow name (read ep) Nothing]
 
     , links = \html
