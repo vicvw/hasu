@@ -251,8 +251,11 @@ conf =
 
 
     , func'
-        [ "oki" ｜
-            [ s "rtcwake -m mem -t $(date +%s -d \"$1\")"
+        [ "command_not_found_handler_" ｜
+            []
+
+        , "oki" ｜
+            [ s "rtcwake -m \"$1\" -t $(date +%s -d \"$2\")"
             , "raku c play"
             ]
 
