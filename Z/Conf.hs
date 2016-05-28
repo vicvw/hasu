@@ -251,8 +251,9 @@ conf =
 
 
     , func'
-        [ "command_not_found_handler_" ｜
-            []
+        [ "command_not_found_handler" ｜
+            [ "google-chrome-stable \"google.de/search?q=$*\" &> /dev/null &|"
+            ]
 
         , "oki" ｜
             [ s "rtcwake -m \"$1\" -t $(date +%s -d \"$2\")"
