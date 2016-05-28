@@ -6,7 +6,7 @@ module Main (main) where
 import Volume
 
 import Data.Foldable      (find)
-import Data.List          (isInfixOf)
+import Data.List          (isInfixOf, nub)
 import Data.Maybe         (fromJust)
 
 import System.Environment (getArgs)
@@ -18,21 +18,26 @@ main =
     getArgs >>= \case
         [] -> do
             sinks <- sinkInputs
-            let 黒 = ["C*"]
-                示 = unlines
-                   . filter (not . (`any` 黒) . flip isInfixOf)
-                   $ map show sinks
-            putStrLn 示
+            out   <- readProcess "dmenu" dmenuArgs $ format sinks
+            toggle out sinks
 
-            out <- readProcess "dmenu" dmenuArgs 示
+        [n@[_]] ->
+            toggleMuteSink =<< (!! read n) . blacklist <$> sinkInputs
 
-            let i = read $ takeWhile (/= ' ') out
-            toggleMuteSink . fromJust $ find ((== i) . inputIndex) sinks
-
-        (app:_) ->
-            toggleMuteApp app
+        apps ->
+            mapM_ toggleMuteApp $ nub apps
 
     where
+    format = unlines . map show . blacklist
+
+    toggle out = toggleMuteSink . fromJust . find ((== i) . inputIndex)
+        where
+        i = read $ takeWhile (/= ' ') out
+
+    blacklist = filter (not . (`any` black) . flip isInfixOf . inputName)
+        where
+        black = ["C*"]
+
     dmenuArgs =
         [ "-b" , "-i"
         , "-fn", "Noto Sans CJK JP:pixelsize=12"
