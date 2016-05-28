@@ -54,7 +54,8 @@ main = do
         (\Spec {..} -> fmap (parseEpisodes url parser <=< links) <$> getUrl url)
 
     notify xs wl = forM_ xs $ \(Episode site name ep sub) -> system $ printf
-        "notify-send -u low -a %s '【 %02d 】　%s%s'"
+        -- "notify-send -u low -a %s '【 %02d 】　%s%s'"
+        "notify-send -u low -a %s '　%02d　　%s%s'"
         (show site)
         ep
         (name `lookup'` wl)
