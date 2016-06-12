@@ -251,13 +251,14 @@ conf =
 
 
     , func'
-        [ "command_not_found_handler" ｜
-            [ "google-chrome-stable \"google.de/search?q=$*\" &> /dev/null &|"
-            ]
+        -- [ "command_not_found_handler" ｜
+        --     [ "google-chrome-stable \"google.de/search?q=$*\" &> /dev/null &|"
+        --     ]
 
-        , "oki" ｜
+        [ "oki" ｜
             [ s "rtcwake -m \"$1\" -t $(date +%s -d \"$2\")"
             , "raku c play"
+            , clear
             ]
 
         , "mdc" ｜
