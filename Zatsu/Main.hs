@@ -13,4 +13,4 @@ main = do
         -- ["t"] -> do
         _ -> do
             (_,o,_) <- readProcessWithExitCode "df" ["-h"] ""
-            putStrLn . (!! 2) . words . (!! 6) $ lines o
+            putStrLn . (!! 2) . words . (!! 7) $ lines o
