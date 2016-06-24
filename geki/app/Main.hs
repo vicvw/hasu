@@ -21,6 +21,7 @@ import Nara
 import Common
 import qualified DramaNice
 import qualified MyAsianTV
+import qualified NewAsianTV
 
 
 main :: IO ()
@@ -30,8 +31,9 @@ main = do
     古 <- r劇
     未 <- r未
     劇 <- whitelist 白 <$> getDramas
-        [ DramaNice.spec
-        , MyAsianTV.spec
+        -- [ DramaNice.spec
+        -- , MyAsianTV.spec
+        [ NewAsianTV.spec
         ]
 
     let 新 = reverse $ 劇 \\ union 古 未
