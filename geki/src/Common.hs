@@ -35,11 +35,7 @@ data Episode = Episode
 
 
 data Site
-    = DramaBay
-    | DramaFire
-    | DramaNet
-    | DramaNice
-    | IKShow
-    | MyAsianFever
+    = DramaNice
     | MyAsianTV
+    | NewAsianTV
     deriving (Show, Read, Eq)
