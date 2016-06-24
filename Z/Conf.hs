@@ -266,8 +266,6 @@ conf =
 
         , "hp" ｜
             [ "c ~/ぶ/$1"
-            , "g Main.hs"
-            , "k -m Main.hs"
             ]
 
         , "kk" ｜
