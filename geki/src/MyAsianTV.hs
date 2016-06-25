@@ -18,8 +18,8 @@ spec = Spec
     , parser = do
         name <- manyTill anyChar $ string " Ep "
         ep   <- some digitChar
-        sub  <- optional $ string " (" *> string "Sub: " *> some digitChar
-        return [Episode MyAsianTV name (read ep) (read <$> sub)]
+        -- sub  <- optional $ string " (" *> string "Sub: " *> some digitChar
+        return [Episode MyAsianTV name (read ep) True]
 
     , links = \html
        -> ($ html)

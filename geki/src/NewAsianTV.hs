@@ -1,8 +1,6 @@
 module NewAsianTV (spec) where
 
 
-import Data.List          (nub)
-
 import Text.HandsomeSoup  (css, (!))
 import Text.XML.HXT.Core  (getText, hasAttrValue, hread, removeAllWhiteSpace, runLA, (>>>), (/>), (<+>))
 import Text.Megaparsec
@@ -18,7 +16,9 @@ spec = Spec
     , parser = do
         name <- manyTill anyChar $ string "\xa0 [Ep "
         ep   <- some digitChar
-        return [Episode NewAsianTV name (read ep) Nothing]
+        space
+        sub  <- string "RAW" <|> string "Engsub"
+        return [Episode NewAsianTV name (read ep) (sub /= "RAW")]
 
     , links = \html
        -> uncurry (zipWith (++))
@@ -31,9 +31,3 @@ spec = Spec
         >>> removeAllWhiteSpace
         >>> css "a" ! "title" <+> (css "li" /> getText)
     }
-
-    where
-    chunk n
-        = foldr ((:) . take n) []
-        . takeWhile (not . null)
-        . iterate (drop n)

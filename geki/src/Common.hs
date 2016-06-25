@@ -30,7 +30,7 @@ data Episode = Episode
     { _site :: Site
     , _name :: String
     , _ep   :: Int
-    , _sub  :: Maybe Int
+    , _sub  :: Bool
     } deriving (Show, Read, Eq)
 
 

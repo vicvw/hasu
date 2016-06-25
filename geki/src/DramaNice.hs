@@ -18,7 +18,7 @@ spec = Spec
     , parser = do
         name <- manyTill anyChar $ string " Episode "
         ep   <- some digitChar
-        return [Episode DramaNice name (read ep) Nothing]
+        return [Episode DramaNice name (read ep) True]
 
     , links = \html
        -> nub

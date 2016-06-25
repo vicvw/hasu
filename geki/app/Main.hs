@@ -20,7 +20,6 @@ import Nara
 
 import Common
 import qualified DramaNice
-import qualified MyAsianTV
 import qualified NewAsianTV
 
 
@@ -31,9 +30,8 @@ main = do
     古 <- r劇
     未 <- r未
     劇 <- whitelist 白 <$> getDramas
-        -- [ DramaNice.spec
-        -- , MyAsianTV.spec
-        [ NewAsianTV.spec
+        [ DramaNice.spec
+        , NewAsianTV.spec
         ]
 
     let 新 = reverse $ 劇 \\ union 古 未
@@ -53,12 +51,11 @@ main = do
         (\Spec {..} -> fmap (parseEpisodes url parser <=< links) <$> getUrl url)
 
     notify xs wl = forM_ xs $ \(Episode site name ep sub) -> system $ printf
-        -- "notify-send -u low -a %s '【 %02d 】　%s%s'"
         "notify-send -u low -a %s '　%02d　　%s%s'"
         (show site)
         ep
         (name `lookup'` wl)
-        (maybe "" (printf "　  %d%%") sub)
+        (ii "" "　  生" sub)
 
     outputTodo = putStr . if' null id (++ sep) . intercalate sep . lines =<< SIO.readFile (フ "椴")
         where sep = "　"

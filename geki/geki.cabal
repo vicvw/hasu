@@ -18,9 +18,8 @@ library
   exposed-modules:     Nara
                      , Common
                      , DramaNice
-                     , IKShow
-                     , MyAsianFever
                      , MyAsianTV
+                     , NewAsianTV
   build-depends:       base
                      , HandsomeSoup
                      , HTTP

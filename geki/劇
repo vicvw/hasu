@@ -1,3 +1,3 @@
-Episode {_site = DramaNice, _name = "Five Children", _ep = 33, _sub = Nothing}
-Episode {_site = DramaNice, _name = "Beautiful Gong Shim", _ep = 9, _sub = Nothing}
-Episode {_site = DramaNice, _name = "Mirror of the Witch", _ep = 10, _sub = Nothing}
+Episode {_site = DramaNice, _name = "Lucky Romance", _ep = 10, _sub = True}
+Episode {_site = NewAsianTV, _name = "Mirror of the Witch", _ep = 13, _sub = False}
+Episode {_site = NewAsianTV, _name = "Lucky Romance", _ep = 10, _sub = True}
