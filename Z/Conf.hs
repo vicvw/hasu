@@ -99,8 +99,8 @@ conf =
         , "nr"    ｜  s "netctl restart"
         , "nrr"   ｜  s "netctl stop-all" ＆ s "netctl start"
 
-        , "dvd"   ｜  s "mount /dev/sr0 /media/dvd"
-        , "udvd"  ｜  s "umount /media/dvd"
+        , "dvd"   ｜  s "mount /dev/sr0 /mnt/sr0"
+        , "udvd"  ｜  s "umount /mnt/sr0"
 
         , "pa"    ｜      "packer"
         , "pas"   ｜  pa  "-S"
