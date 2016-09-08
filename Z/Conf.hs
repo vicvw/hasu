@@ -166,6 +166,8 @@ conf =
         , "dbr"   ｜  dbc "stop" ＆ "sleep 5" ＆ dbc "start"
         , "ds"    ｜  dbc "status"
         , "dsw"   ｜  pre "watch -n 1" (dbc "status")
+        , "sei"   ｜  "encfs ~/Dropbox/to/.sei ~/ん/正"
+        , "usei"  ｜  "fusermount -u ~/ん/正"
 
         , "ci"    ｜  cpu "frequency-info"
         , "cif"   ｜  cpu "frequency-info | grep \"current CPU frequency\""
