@@ -36,6 +36,7 @@ data Episode = Episode
 
 data Site
     = DramaNice
+    | DramaLove
     | MyAsianTV
     | NewAsianTV
     deriving (Show, Read, Eq)

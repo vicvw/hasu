@@ -23,10 +23,11 @@ spec = Spec
         then
             return [Episode NewAsianTV name 0 False]
         else do
-            string "Ep "
+            string "Ep" <|> string "EP"
+            space
             ep  <- some digitChar
             space
-            sub <- string "RAW" <|> string "Engsub"
+            sub <- string "RAW" <|> string "Engsub" <|> string "Emgsub"
             return [Episode NewAsianTV name (read ep) (sub /= "RAW")]
 
     , links = \html
