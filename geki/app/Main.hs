@@ -26,27 +26,27 @@ import qualified NewAsianTV
 
 main :: IO ()
 main = do
-    有 <- head <$> getArgs
-    白 <- getWhitelist
-    古 <- r劇
-    未 <- r未
-    劇 <- whitelist 白 <$> getDramas
+    arg <- head <$> getArgs
+    wht <- getWhitelist
+    old <- r劇
+    yet <- r未
+    drm <- whitelist wht <$> getDramas
         [ DramaCool.spec
         , DramaLove.spec
         , NewAsianTV.spec
         ]
 
-    let 新 = reverse $ 劇 \\ union 古 未
-    notify 新 白
+    let new = reverse $ drm \\ union old yet
+    notify new wht
 
-    w劇 劇
-    a未 新
+    w劇 drm
+    a未 new
 
     outputTodo
-    output 有 白
+    output arg wht
 
     where
-    getWhitelist  = fmap read . SIO.readFile $ フ "白" :: IO [([String], String)]
+    getWhitelist  = fmap read . SIO.readFile $ ne "白" :: IO [([String], String)]
     whitelist l   = filter $ (`elem` concatMap fst l) . _name
 
     getDramas specs = concat . catMaybes <$> (`mapConcurrently` specs)
@@ -59,7 +59,7 @@ main = do
         (ii "　" "・" sub)
         (name `lookup'` wl)
 
-    outputTodo = putStr . if' null id (++ sep) . intercalate sep . lines =<< SIO.readFile (フ "椴")
+    outputTodo = putStr . if' null id (++ sep) . intercalate sep . lines =<< SIO.readFile (ne "椴")
         where sep = "　"
 
     output sep wl = do
@@ -73,11 +73,11 @@ main = do
 
     lookup' x = maybe (error x) snd . find (isJust . find (x `isInfixOf`) . fst)
 
-    w劇 = writeFile  (フ "劇") . show'
-    a未 = appendFile (フ "未") . show'
+    w劇 = writeFile  (ne "劇") . show'
+    a未 = appendFile (ne "未") . show'
 
-    r劇 = read' <$> SIO.readFile (フ "劇")
-    r未 = read' <$> SIO.readFile (フ "未")
+    r劇 = read' <$> SIO.readFile (ne "劇")
+    r未 = read' <$> SIO.readFile (ne "未")
 
     show' :: [Episode] -> String
     show' eps = unlines $ show <$> eps
@@ -85,4 +85,4 @@ main = do
     read' :: String -> [Episode]
     read' = map read . lines
 
-    フ  = ("/home/v/ぶ/geki/" ++)
+    ne  = ("/home/v/ぶ/geki/" ++)
