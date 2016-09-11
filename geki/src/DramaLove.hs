@@ -1,7 +1,10 @@
 module DramaLove (spec) where
 
 
+import Control.Arrow      ((&&&))
+
 import Data.List          (isPrefixOf)
+
 import Text.HandsomeSoup  (css, (!))
 import Text.XML.HXT.Core  (getText, hread, runLA, (>>>), (/>), (<+>))
 import Text.Megaparsec
@@ -10,7 +13,6 @@ import Text.Megaparsec
 import Nara
 
 import Common
-import Debug.Trace
 
 
 spec :: Spec
@@ -26,17 +28,11 @@ spec = Spec
         return [Episode DramaLove name (read ep) (sub == "Sub")]
 
     , links = \html
-       -> map concat . chunk 2
+       -> map (uncurry (++))
         . ($ html)
         . runLA
         $ hread
         >>> css ".recent div"
         >>> (css ".title"         /> getText)
-        <+> (css ".episode-type"  /> getText)
+        &&& (css ".episode-type"  /> getText)
     }
-
-    where
-    chunk n
-        = foldr ((:) . take n) []
-        . takeWhile (not . null)
-        . iterate (drop n)
