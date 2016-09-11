@@ -35,8 +35,7 @@ data Episode = Episode
 
 
 data Site
-    = DramaNice
+    = DramaCool
     | DramaLove
-    | MyAsianTV
     | NewAsianTV
     deriving (Show, Read, Eq)

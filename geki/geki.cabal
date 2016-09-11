@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Nara
                      , Common
+                     , DramaCool
                      , DramaLove
                      , NewAsianTV
   build-depends:       base
