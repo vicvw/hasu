@@ -1,9 +1,9 @@
 module DramaLove (spec) where
 
 
-import Control.Arrow      ((&&&))
+import Control.Arrow      (second, (&&&))
 
-import Data.List          (isPrefixOf)
+import Data.List          (isInfixOf, isPrefixOf)
 
 import Text.HandsomeSoup  (css, (!))
 import Text.XML.HXT.Core  (getText, hread, runLA, (>>>), (/>), (<+>))
@@ -29,6 +29,7 @@ spec = Spec
 
     , links = \html
        -> map (uncurry (++))
+        . filter (("Episode" `isPrefixOf`) . snd)
         . ($ html)
         . runLA
         $ hread
