@@ -128,7 +128,7 @@ appSinks app = (<$> sinkInputs) .
 
 sinkInputs :: IO [SinkInput]
 sinkInputs = parsePacmd ["list-sink-inputs"] id $ do
-    manyTill anyChar . try $ string "index: 0"
+    -- manyTill anyChar . try $ string "index: 0"
 
     many . try $ do
         index <- jumptTo "index: " $
