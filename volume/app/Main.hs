@@ -56,7 +56,7 @@ main = do
     displayVolumeBar v m
 
 
-state = "/home/v/ぶ/Volume/様"
+state = "/home/v/ぶ/volume/様"
 
 
 save :: ((a -> Integer) -> (Integer, Integer) -> (Integer, Integer)) -> IO ()
