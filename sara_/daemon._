@@ -1,0 +1,4 @@
+#!/bin/bash
+
+
+ghc -O2 Daemon.hs -o daemon && strip daemon
