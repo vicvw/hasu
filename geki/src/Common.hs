@@ -35,7 +35,6 @@ data Episode = Episode
 
 
 data Site
-    = DramaCool
-    | DramaLove
-    | NewAsianTV
+    = DramaLove
+    | HDFree
     deriving (Show, Read, Eq)

@@ -19,9 +19,8 @@ import Text.Printf                        (printf)
 import Nara
 
 import Common
-import qualified DramaCool
 import qualified DramaLove
-import qualified NewAsianTV
+import qualified HDFree
 
 
 main :: IO ()
@@ -31,9 +30,8 @@ main = do
     old <- r劇
     yet <- r未
     drm <- whitelist wht <$> getDramas
-        [ DramaCool.spec
-        , DramaLove.spec
-        , NewAsianTV.spec
+        [ DramaLove.spec
+        , HDFree.spec
         ]
 
     let new = reverse $ drm \\ union old yet

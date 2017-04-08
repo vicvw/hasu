@@ -17,7 +17,7 @@ import Common
 
 spec :: Spec
 spec = Spec
-    { url = "http://www.dramalove.tv"
+    { url = "http://www.dramalike.tv"
 
     , parser = do
         name  <- manyTill anyChar $ string "Episode "
