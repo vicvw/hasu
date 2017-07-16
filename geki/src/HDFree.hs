@@ -1,11 +1,15 @@
 module HDFree (spec) where
 
 
-import Control.Arrow      (second, (&&&))
+import Control.Arrow      (first, second, (&&&))
+
+import Data.List          (isInfixOf)
 
 import Text.HandsomeSoup  (css, (!))
 import Text.XML.HXT.Core  (getText, hread, runLA, (>>>), (/>))
 import Text.Megaparsec
+import Debug.Trace
+
 
 import Nara (fi)
 
@@ -15,7 +19,7 @@ import Common
 
 spec :: Spec
 spec = Spec
-    { url = "http://hdfree.se"
+    { url = "http://fastdrama.co"
 
     , parser = do
         name  <- manyTill anyChar $ string " Ep"
@@ -31,11 +35,15 @@ spec = Spec
                 []
 
     , links = \html
-       -> map (uncurry (++))
+       -- -> traceShowId
+       -- -> map (uncurry (++))
+       -> filter (" Ep" `isInfixOf`)
+        . filter (not . ("Completed" `isInfixOf`))
+        . map (uncurry (++) . first  (takeWhile (/= '-')))
         . ($ html)
         . runLA
         $ hread
-      >>> css ".left-home .line-title h4"
-      >>> css "a" /> getText
-      &&& css "b" /> getText
+      >>> css ".grid .image"
+      >>> (css "a" ! "title")
+      &&& (css ".status" /> getText)
     }

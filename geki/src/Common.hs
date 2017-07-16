@@ -35,6 +35,7 @@ data Episode = Episode
 
 
 data Site
-    = DramaLove
+    = DramaCool
+    | DramaLove
     | HDFree
     deriving (Show, Read, Eq)

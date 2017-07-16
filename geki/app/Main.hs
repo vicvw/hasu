@@ -19,7 +19,7 @@ import Text.Printf                        (printf)
 import Nara
 
 import Common
-import qualified DramaLove
+import qualified DramaCool
 import qualified HDFree
 
 
@@ -30,7 +30,7 @@ main = do
     old <- r劇
     yet <- r未
     drm <- whitelist wht <$> getDramas
-        [ DramaLove.spec
+        [ DramaCool.spec
         , HDFree.spec
         ]
 
