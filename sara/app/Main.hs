@@ -28,8 +28,8 @@ main = do
 
     where
     kurod = different []
-        $ 風 ["anki", "qtwebkit", "xcape-git"]
-        . 空 ["compton-git", "packer", "xcape-git"]
+        $ 風 ["qtwebkit-bin", "xcape-git"]
+        . 空 []
 
 
 ji :: String -> Int -> String

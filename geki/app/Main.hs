@@ -31,7 +31,7 @@ main = do
     yet <- r未
     drm <- whitelist wht <$> getDramas
         [ DramaCool.spec
-        , HDFree.spec
+        -- , HDFree.spec
         ]
 
     let new = reverse $ drm \\ union old yet
