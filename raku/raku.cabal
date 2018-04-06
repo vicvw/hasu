@@ -16,8 +16,9 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Nara
-                     , MediaPlayer.Interface, MediaPlayer.Cmus, MediaPlayer.Vlc
+                     , MediaPlayer.Interface, MediaPlayer.Cmus, MediaPlayer.Spotify, MediaPlayer.Vlc
                      , Cmus, Cmus.General, Cmus.Query, Cmus.Control
+                     , Spotify, Spotify.General, Spotify.Query, Spotify.Control
                      , Vlc, Vlc.General, Vlc.Query, Vlc.Control
   build-depends:       base
                      , dbus

@@ -19,21 +19,15 @@ spotify = MediaPlayer
     { _isRunning  = S.isRunning
 
     , _status     = showStatus . S._status <$> query
-    , _progress   = show
-                  . uncurry div
-                  . ((* 100) . S._position
-                     &&&
-                     S._length)
-                <$> query
+    , _progress   = return "0"
 
-    , _artist     = \p -> (p ++)
-                        . intercalate ", "
-                        . S._artist
-                      <$> query
-    , _album      = const $ return ""
-    , _title      = \p -> (p ++)
-                        . S._title
-                      <$> query
+    , _artist     = intercalate ", " . S._artist <$> query
+    -- , _artist     = \p -> (p ++)
+    --                     . intercalate ", "
+    --                     . S._artist
+    --                   <$> query
+    , _album      = return ""
+    , _title      = S._title <$> query
 
     , _play       = S.play
     , _toggle     = S.toggle

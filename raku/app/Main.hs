@@ -11,6 +11,7 @@ import Nara
 
 import MediaPlayer.Interface
 import MediaPlayer.Cmus
+import MediaPlayer.Spotify
 import MediaPlayer.Vlc
 
 
@@ -49,4 +50,4 @@ main = do
     fail      = putStrLn . const "失"
 
     running   = listToMaybe . take 1 <$> filterM (fmap (== True) . _isRunning) players
-    players   = [vlc, cmus]
+    players   = [vlc, spotify, cmus]
